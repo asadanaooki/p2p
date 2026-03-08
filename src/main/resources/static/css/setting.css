@@ -1,0 +1,35 @@
+body {
+  background-color: #f3f4f6;
+}
+
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 24px;
+  color: #2f3b52;
+}
+
+h1 {
+  margin: 0 0 18px;
+  font-size: 26px;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.settings-card {
+  text-decoration: none;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: #2f3b52;
+}
+
+.settings-card h2 {
+  margin: 0;
+  font-size: 14px;
+}
