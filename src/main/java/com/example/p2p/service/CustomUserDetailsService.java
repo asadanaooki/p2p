@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.p2p.entity.User;
 import com.example.p2p.mapper.UserMapper;
+import com.example.p2p.mapper.UserMapperCustom;
 import com.example.p2p.security.CustomUserDetails;
 
 import lombok.AllArgsConstructor;
@@ -15,8 +16,8 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private UserMapper userMapper;
-    
+    private UserMapperCustom userMapper;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User u = userMapper.selectByEmail(username.strip().toLowerCase());
@@ -26,5 +27,4 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new CustomUserDetails(u);
     }
 
-    
 }

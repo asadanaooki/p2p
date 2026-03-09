@@ -1,5 +1,5 @@
-create table users (
-    user_id uuid primary key default gen_random_uuid (),
+create table "user" (
+    user_id char(36) primary key default gen_random_uuid () ::text,
     email varchar(254) unique not null,
     password_hash varchar(255) not null,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
