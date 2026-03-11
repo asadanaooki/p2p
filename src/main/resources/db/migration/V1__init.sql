@@ -1,4 +1,4 @@
-create table "user" (
+create table users (
     user_id char(36) primary key default gen_random_uuid () ::text,
     email varchar(254) unique not null,
     password_hash varchar(255) not null,

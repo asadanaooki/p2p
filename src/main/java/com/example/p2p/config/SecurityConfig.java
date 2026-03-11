@@ -16,7 +16,7 @@ public class SecurityConfig {
             .formLogin(form -> form
                     .loginPage("/login")
                     .loginProcessingUrl("/login")
-                    .defaultSuccessUrl("/test")
+                    .defaultSuccessUrl("/test", true)
                     .failureHandler((req, res, exp) -> {
                         String u = req.getParameter("username");
                         req.getSession().setAttribute("LAST_LOGIN_USERNAME", u);

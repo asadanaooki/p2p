@@ -3,7 +3,10 @@
 
 <generatorConfiguration>
   <context id="PostgresTables" targetRuntime="MyBatis3">
-
+    <!-- MapperにMapperアノテーションを付与 -->
+    <plugin
+      type="org.mybatis.generator.plugins.MapperAnnotationPlugin" />
+      
     <!-- TODO -->
     <!-- スキーマ情報を取得する DB への接続設定 -->
     <jdbcConnection driverClass="org.postgresql.Driver"
@@ -37,7 +40,7 @@
     </javaClientGenerator>
 
     <!-- コードを生成するテーブルを指定 -->
-    <table tableName="user"></table>
+    <table tableName="users" domainObjectName="User"></table>
     <table tableName="unit"></table>
 
   </context>

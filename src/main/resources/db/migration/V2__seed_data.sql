@@ -1,4 +1,4 @@
-insert into "user" (
+insert into users (
   email,
   password_hash
 )

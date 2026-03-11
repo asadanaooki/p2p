@@ -1,0 +1,51 @@
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 48px;
+}
+
+.new-button {
+  display: inline-block;
+  padding: 6px 30px;
+  border: 1px solid #9fb3ad;
+  background-color: #fff;
+  color: #1aa34a;
+  font-size: 16px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.new-button:hover {
+  background-color: #dff5e5;
+}
+
+.unit-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.unit-table thead th,
+.unit-table tbody td {
+  border: 1px solid #aeb8b4;
+  padding: 16px 20px;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.unit-table thead th {
+  background-color: #d5dfdc;
+}
+
+.unit-link {
+  display: block;
+  width: 100%;
+  color: #1aa34a;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.unit-table tbody tr:hover td {
+  background-color: #f3f8f5;
+}

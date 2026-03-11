@@ -1,13 +1,15 @@
 package com.example.p2p.service;
 
+import java.util.List;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.example.p2p.entity.User;
+import com.example.p2p.entity.UserExample;
 import com.example.p2p.mapper.UserMapper;
-import com.example.p2p.mapper.UserMapperCustom;
 import com.example.p2p.security.CustomUserDetails;
 
 import lombok.AllArgsConstructor;
@@ -16,15 +18,17 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private UserMapperCustom userMapper;
+    private UserMapper userMapper;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User u = userMapper.selectByEmail(username.strip().toLowerCase());
-        if (u == null) {
+        UserExample ex = new UserExample();
+        ex.createCriteria().andEmailEqualTo(username.strip().toLowerCase());
+        List<User> u = userMapper.selectByExample(ex);
+        if (u.isEmpty()) {
             throw new UsernameNotFoundException("not found");
         }
-        return new CustomUserDetails(u);
+        return new CustomUserDetails(u.get(0));
     }
 
 }
