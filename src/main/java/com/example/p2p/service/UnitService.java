@@ -17,8 +17,12 @@ public class UnitService {
 
     private UnitMapper unitMapper;
 
-    public List<UnitListItemDto> getUnitList() {
-        List<Unit> list = unitMapper.selectByExample(new UnitExample());
+    public List<UnitListItemDto> getUnitList(Boolean status) {
+        UnitExample ex =new UnitExample();
+        if (status != null) {
+            ex.createCriteria().andIsActiveEqualTo(status);
+        }
+        List<Unit> list = unitMapper.selectByExample(ex);
         return list.stream().map(u -> 
             new UnitListItemDto(u.getName(), u.getIsActive()))
                 .toList();

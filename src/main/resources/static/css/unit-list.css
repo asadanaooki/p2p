@@ -49,3 +49,37 @@
 .unit-table tbody tr:hover td {
   background-color: #f3f8f5;
 }
+
+.filter-bar {
+  padding: 18px 24px 24px;
+  background-color: #dfe4e1;
+  border: 1px solid #c8d0cc;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+.filter-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.status-select {
+  padding: 8px 16px;
+  border: 1px solid #9eb1ab;
+  outline: none;
+}
+
+.search-button {
+  align-self: flex-end;
+  min-width: 100px;
+  height: 45px;
+  padding: 0 24px;
+  border: 1px solid #9eb1ab;
+  color: #19a34a;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 16px;
+}
