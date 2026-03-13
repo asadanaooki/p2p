@@ -8,7 +8,8 @@
 
 <body>
   <main class="page">
-    <a href="#" class="new-button">作成</a>
+    <div class="success-message" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <a th:href="@{/setting/unit/create}" class="new-button">作成</a>
 
     <form method="get" th:action="@{/setting/unit}" class="filter-bar">
       <div class="filter-left">
