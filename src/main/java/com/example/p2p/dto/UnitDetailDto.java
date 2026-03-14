@@ -5,10 +5,10 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class UnitListItemDto {
-    
-    private String unitId;
+public class UnitDetailDto {
 
+    private String unitId;
+    
     private String name;
     
     private boolean active;

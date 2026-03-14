@@ -1,17 +1,21 @@
 package com.example.p2p.controller;
 
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.p2p.dto.UnitDetailDto;
 import com.example.p2p.exception.BusinessException;
 import com.example.p2p.form.UnitCreateForm;
+import com.example.p2p.form.UnitEditForm;
 import com.example.p2p.service.UnitService;
 
 import jakarta.validation.Valid;
@@ -24,6 +28,8 @@ public class UnitController {
 
     private UnitService unitService;
 
+    private MessageSource messageSource;
+
     @GetMapping
     public String showUnit(Model model, @RequestParam(required = false) Boolean status) {
         model.addAttribute("status", status);
@@ -32,29 +38,62 @@ public class UnitController {
     }
 
     @GetMapping("/create")
-    public String showUnitCreateForm(@ModelAttribute("form") UnitCreateForm form, Model model) {
-        model.addAttribute("form", form);
+    public String showUnitCreateForm(@ModelAttribute("form") UnitCreateForm form) {
         return "unit-create";
     }
 
     @PostMapping("/create")
-    public String create(@Valid @ModelAttribute("form") UnitCreateForm form, BindingResult result, Model model,
+    public String create(@Valid @ModelAttribute("form") UnitCreateForm form, BindingResult result,
             RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
-            model.addAttribute("form", form);
             return "unit-create";
         }
-        // TODO: 例外処理増えたら共通化
         try {
             unitService.create(form.getName());
         }
         catch (BusinessException e) {
-            model.addAttribute("form", form);
-            result.rejectValue("name", "duplicate", "既に登録されています");
+            result.rejectValue("name", "duplicate",
+                    messageSource.getMessage("unit.name.duplicate", null, null));
             return "unit-create";
         }
-        redirectAttributes.addFlashAttribute("successMessage", "登録成功しました");
+        redirectAttributes.addFlashAttribute("successMessage",
+                messageSource.getMessage("unit.create.success", null, null));
         return "redirect:/setting/unit";
+    }
+
+    @GetMapping("/{unitId}")
+    public String showUnitEditForm(@PathVariable String unitId, @ModelAttribute("form") UnitEditForm form,
+            Model model) {
+        UnitDetailDto unit = unitService.getUnitDetail(unitId);
+        form.setName(unit.getName());
+        form.setStatus(unit.isActive());
+
+        model.addAttribute("unitId", unitId);
+
+        return "unit-edit";
+    }
+
+    @PostMapping("/{unitId}/update")
+    public String update(@PathVariable String unitId, @Valid @ModelAttribute("form") UnitEditForm form,
+            BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("unitId", unitId);
+            return "unit-edit";
+        }
+        try {
+            unitService.update(unitId, form);
+        }
+        catch (BusinessException e) {
+            model.addAttribute("unitId", unitId);
+            bindingResult.rejectValue("name", "duplicate",
+                    messageSource.getMessage("unit.name.duplicate", null, null));
+            return "unit-edit";
+        }
+        redirectAttributes.addFlashAttribute("successMessage",
+                messageSource.getMessage("unit.update.success", null, null));
+        redirectAttributes.addAttribute("unitId", unitId);
+        return "redirect:/setting/unit/{unitId}";
+
     }
 
 }

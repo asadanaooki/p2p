@@ -34,7 +34,7 @@
       <tbody>
         <tr th:each="unit : ${unitList}">
           <td>
-            <a class="unit-link" href="#" th:text="${unit.name}"></a>
+            <a class="unit-link" th:href="@{/setting/unit/{unitId}(unitId=${unit.unitId})}" th:text="${unit.name}"></a>
           </td>
 
           <td th:text="${unit.active} ? '有効' : '無効'"></td>

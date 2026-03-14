@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" th:href="@{/css/unit-edit.css}">
+</head>
+
+<body>
+  <main class="page">
+    <div class="success-message" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <h1 class="page-title">単位編集</h1>
+
+    <form th:action="@{/setting/unit/{unitId}/update(unitId=${unitId})}" th:object="${form}" method="post"
+      class="unit-form">
+      <div class="form-group">
+        <label class="form-label" for="name">名称</label>
+        <input class="form-input" id="name" type="text" th:field="*{name}"
+          th:classappend="${#fields.hasErrors('name')} ? 'input-error' : ''">
+        <p class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="status">状態</label>
+        <select id="status" class="form-select" th:field="*{status}">
+          <option th:value="${true}">有効</option>
+          <option th:value="${false}">無効</option>
+        </select>
+      </div>
+
+      <div class="button-row">
+        <button class="save-button" type="submit">保存</button>
+        <a th:href="@{/setting/unit}" class="cancel-button">キャンセル</a>
+      </div>
+
+    </form>
+  </main>
+</body>
+
+</html>

@@ -1,7 +1,7 @@
 package com.example.p2p.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Map;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,33 +39,71 @@ class UnitControllerTest {
     @MockitoBean
     UnitService unitService;
 
-    @Test
-    void create_success() throws Exception {
-        doNothing().when(unitService).create(anyString());
+    @Nested
+    class create {
+        @Test
+        void create_success() throws Exception {
+            doNothing().when(unitService).create(anyString());
 
-        MvcResult res = mockMvc.perform(post("/setting/unit/create").with(csrf()).param("name", "test"))
-            .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrl("/setting/unit"))
-            .andReturn();
+            MvcResult res = mockMvc.perform(post("/setting/unit/create").with(csrf()).param("name", "test"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/setting/unit"))
+                .andReturn();
 
-        assertThat(res.getFlashMap().get("successMessage")).isEqualTo("登録成功しました");
+            assertThat(res.getFlashMap().get("successMessage")).isEqualTo("登録成功しました");
+        }
+
+        @Test
+        void create_duplicate() throws Exception {
+            doThrow(BusinessException.class).when(unitService).create(anyString());
+
+            MvcResult res = mockMvc.perform(post("/setting/unit/create").with(csrf()).param("name", "test"))
+                .andExpect(view().name("unit-create"))
+                .andReturn();
+            Map<String, Object> model = res.getModelAndView().getModel();
+            BindingResult br = (BindingResult) model.get(BindingResult.MODEL_KEY_PREFIX + "form");
+            FieldError fe = br.getFieldError("name");
+            assertThat(fe.getField()).isEqualTo("name");
+            assertThat(fe.getCode()).isEqualTo("duplicate");
+            assertThat(fe.getDefaultMessage()).isEqualTo("既に登録されています");
+
+            assertThat(model.get("form")).isNotNull();
+        }
+
     }
 
-    @Test
-    void create_duplicate() throws Exception {
-        doThrow(BusinessException.class).when(unitService).create(anyString());
+    @Nested
+    class update {
+        @Test
+        void update_success() throws Exception {
+            doNothing().when(unitService).update(anyString(),any());
 
-        MvcResult res = mockMvc.perform(post("/setting/unit/create").with(csrf()).param("name", "test"))
-            .andExpect(view().name("unit-create"))
-            .andReturn();
-        Map<String, Object> model = res.getModelAndView().getModel();
-        BindingResult br = (BindingResult) model.get(BindingResult.MODEL_KEY_PREFIX + "form");
-        FieldError fe = br.getFieldError("name");
-        assertThat(fe.getField()).isEqualTo("name");
-        assertThat(fe.getCode()).isEqualTo("duplicate");
-        assertThat(fe.getDefaultMessage()).isEqualTo("既に登録されています");
+            MvcResult res = mockMvc.perform(post("/setting/unit/{unitId}/update", "testId")
+                    .with(csrf()).param("name", "test").param("status", "false"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/setting/unit/testId"))
+                .andReturn();
 
-        assertThat(model.get("form")).isNotNull();
+            assertThat(res.getFlashMap().get("successMessage")).isEqualTo("編集完了しました");
+        }
+
+        @Test
+        void update_duplicate() throws Exception {
+            doThrow(BusinessException.class).when(unitService).update(anyString(), any());
+
+            MvcResult res = mockMvc.perform(post("/setting/unit/{unitId}/update", "testId")
+                    .with(csrf()).param("name", "test").param("status", "false"))
+                .andExpect(view().name("unit-edit"))
+                .andReturn();
+            Map<String, Object> model = res.getModelAndView().getModel();
+            BindingResult br = (BindingResult) model.get(BindingResult.MODEL_KEY_PREFIX + "form");
+            FieldError fe = br.getFieldError("name");
+            assertThat(fe.getField()).isEqualTo("name");
+            assertThat(fe.getCode()).isEqualTo("duplicate");
+            assertThat(fe.getDefaultMessage()).isEqualTo("既に登録されています");
+
+            assertThat(model.get("form")).isNotNull();
+        }
+
     }
-
 }
