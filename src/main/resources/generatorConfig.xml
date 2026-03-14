@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+  <context id="PostgresTables" targetRuntime="MyBatis3">
+    <!-- MapperにMapperアノテーションを付与 -->
+    <plugin type="org.mybatis.generator.plugins.MapperAnnotationPlugin" />
+      
+    <commentGenerator>
+      <property name="suppressAllComments" value="true"></property>
+    </commentGenerator>
+    <!-- TODO -->
+    <!-- スキーマ情報を取得する DB への接続設定 -->
+    <jdbcConnection driverClass="org.postgresql.Driver"
+      connectionURL="jdbc:postgresql://localhost/p2p" userId="postgres"
+      password="softeni0926">
+    </jdbcConnection>
+
+    <javaTypeResolver>
+      <property name="useJSR310Types" value="true" />
+    </javaTypeResolver>
+
+    <!-- SELECT 結果等を格納するドメインモデルを生成する設定 -->
+    <javaModelGenerator
+      targetPackage="com.example.p2p.entity"
+      targetProject="src/main/java">
+      <property name="enableSubPackages" value="false" />
+      <property name="trimStrings" value="false" />
+    </javaModelGenerator>
+
+    <!-- SQL 設定が記述された XML を生成する設定 -->
+    <sqlMapGenerator
+      targetPackage="com.example.p2p.mapper"
+      targetProject="src/main/resources">
+      <property name="enableSubPackages" value="false" />
+    </sqlMapGenerator>
+    <!-- マッパークラスを生成する設定 -->
+    <javaClientGenerator type="XMLMAPPER"
+      targetPackage="com.example.p2p.mapper"
+      targetProject="src/main/java">
+      <property name="enableSubPackages" value="false" />
+    </javaClientGenerator>
+
+    <!-- コードを生成するテーブルを指定 -->
+    <table tableName="users" domainObjectName="User"></table>
+    <table tableName="unit"></table>
+
+  </context>
+</generatorConfiguration>

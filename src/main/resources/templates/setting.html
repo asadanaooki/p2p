@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>設定</title>
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" th:href="@{/css/setting.css}" />
+</head>
+
+<body>
+  <main>
+    <h1>設定</h1>
+
+    <div class="settings-grid">
+      <a href="#" class="settings-card">
+        <h2>サプライヤー管理</h2>
+      </a>
+
+      <a href="#" class="settings-card">
+        <h2>アイテム管理</h2>
+      </a>
+
+      <a th:href="@{/setting/unit}" class="settings-card">
+        <h2>単位管理</h2>
+      </a>
+
+      <a href="#" class="settings-card">
+        <h2>ユーザー管理</h2>
+      </a>
+      <a href="#" class="settings-card">
+        <h2>ロール管理</h2>
+      </a>
+
+      <a href="#" class="settings-card">
+        <h2>支払い条件管理</h2>
+      </a>
+
+      <a href="#" class="settings-card">
+        <h2>会社情報</h2>
+      </a>
+
+      <a href="#" class="settings-card">
+        <h2>承認設定</h2>
+      </a>
+    </div>
+  </main>
+
+</body>
+
+</html>

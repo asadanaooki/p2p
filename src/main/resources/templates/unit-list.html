@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" th:href="@{/css/unit-list.css}">
+</head>
+
+<body>
+  <main class="page">
+    <div class="success-message" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <a th:href="@{/setting/unit/create}" class="new-button">作成</a>
+
+    <form method="get" th:action="@{/setting/unit}" class="filter-bar">
+      <div class="filter-left">
+        <label for="status">状態</label>
+        <select class="status-select" id="status" name="status">
+          <option value="" th:selected="${status == null}">すべて</option>
+          <option value="true" th:selected="${status == true}">有効</option>
+          <option value="false" th:selected="${status == false}">無効</option>
+        </select>
+      </div>
+
+      <button class="search-button" type="submit">検索</button>
+    </form>
+
+    <table class="unit-table">
+      <thead>
+        <tr>
+          <th>単位名</th>
+          <th>状態</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="unit : ${unitList}">
+          <td>
+            <a class="unit-link" th:href="@{/setting/unit/{unitId}(unitId=${unit.unitId})}" th:text="${unit.name}"></a>
+          </td>
+
+          <td th:text="${unit.active} ? '有効' : '無効'"></td>
+        </tr>
+      </tbody>
+
+    </table>
+  </main>
+</body>
+
+</html>

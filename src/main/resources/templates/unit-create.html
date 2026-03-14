@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" th:href="@{/css/unit-create.css}">
+</head>
+
+<body>
+  <main class="page">
+    <h1 class="page-title">単位作成</h1>
+
+    <form th:action="@{/setting/unit/create}" method="post" class="unit-form" th:object="${form}">
+      <div class="form-group">
+        <label class="form-label" for="name">単位名</label>
+        <input class="form-input" type="text" id="name" th:field="*{name}"
+          th:classappend="${#fields.hasErrors('name')} ? 'input-error' : ''">
+        <div class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+      </div>
+
+      <div class="button-area">
+        <button type="submit" class="submit-button">登録</button>
+        <a th:href="@{/setting/unit}" class="cancel-button">キャンセル</a>
+      </div>
+
+    </form>
+  </main>
+</body>
+
+</html>
