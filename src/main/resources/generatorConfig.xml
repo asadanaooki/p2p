@@ -4,12 +4,11 @@
 <generatorConfiguration>
   <context id="PostgresTables" targetRuntime="MyBatis3">
     <!-- MapperにMapperアノテーションを付与 -->
-    <plugin type="org.mybatis.generator.plugins.MapperAnnotationPlugin" />
-      
-    <commentGenerator>
-      <property name="suppressAllComments" value="true"></property>
-    </commentGenerator>
-    <!-- TODO -->
+    <plugin
+      type="org.mybatis.generator.plugins.MapperAnnotationPlugin" />
+
+
+    <!-- TODO PWとID別の場所へ -->
     <!-- スキーマ情報を取得する DB への接続設定 -->
     <jdbcConnection driverClass="org.postgresql.Driver"
       connectionURL="jdbc:postgresql://localhost/p2p" userId="postgres"
@@ -44,6 +43,7 @@
     <!-- コードを生成するテーブルを指定 -->
     <table tableName="users" domainObjectName="User"></table>
     <table tableName="unit"></table>
+    <table tableName="payment_term"></table>
 
   </context>
 </generatorConfiguration>

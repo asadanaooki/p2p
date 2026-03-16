@@ -2,32 +2,33 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-  <title>ログイン</title>
-  <link rel="stylesheet" th:href="@{/css/common.css}" />
-  <link rel="stylesheet" th:href="@{/css/login.css}" />
+<title>ログイン</title>
+<link rel="stylesheet" th:href="@{/css/common.css}" />
+<link rel="stylesheet" th:href="@{/css/login.css}" />
 </head>
-
+<div class=""></div>
 <body>
   <main class="page">
     <div>
-      <div class="error-message" th:text="${param.error} ? 'ログインに失敗しました' : ''"></div>
+      <div class="error-message"
+        th:text="${param.error} ? 'ログインに失敗しました' : ''"></div>
 
       <form class="form" method="post" th:action="@{/login}">
         <div class="field">
-          <label class="label" for="email">メールアドレス</label>
-          <input class="input" id="email" name="username" type="text"
+          <label class="label" for="email">メールアドレス</label> <input
+            class="input" id="email" name="username" type="text"
             th:value="${param.error} ?${session.LAST_LOGIN_USERNAME} : ''" />
         </div>
 
         <div class="field">
-          <label class="label" for="password">パスワード</label>
-          <input class="input" id="password" name="password" type="password" autocomplete="new-password" />
+          <label class="label" for="password">パスワード</label> <input
+            class="input" id="password" name="password" type="password"
+            autocomplete="new-password" />
         </div>
 
         <button class="btn" type="submit">ログイン</button>
       </form>
     </div>
-
   </main>
 
 </body>

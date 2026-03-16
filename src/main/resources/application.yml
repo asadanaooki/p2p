@@ -1,12 +1,18 @@
 spring:
-  flyway:
-    locations: "classpath:db/migration"
-    # TODO: passwordを別の場所に保存
-  datasource:
-    url: "jdbc:postgresql://localhost/p2p"
-    username: "postgres"
-    password: "softeni0926"
+    flyway:
+        locations: "classpath:db/migration"
+        # TODO: passwordを別の場所に保存
+    datasource:
+        url: "jdbc:postgresql://localhost/p2p"
+        username: "postgres"
+        password: "softeni0926"
 mybatis:
-  configuration:
-    map-underscore-to-camel-case: true
+    configuration:
+        map-underscore-to-camel-case: true
 
+logging:
+    level:
+        com:
+            example:
+                p2p:
+                    mapper: DEBUG
