@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.p2p.dto.PaymentTermDetailDto;
 import com.example.p2p.exception.BusinessException;
 import com.example.p2p.form.PaymentTermEditForm;
 import com.example.p2p.service.PaymentTermService;
@@ -34,17 +35,21 @@ public class PaymentTermController {
     }
 
     @GetMapping("/{paymentTermId}")
-    public String showPaymentTerm(@PathVariable String paymentTermId, Model model) {
-        model.addAttribute("list", paymentTermService.getPaymentTerms());
-        return "payment-term-list";
+    public String showPaymentTermEditForm(@PathVariable String paymentTermId,
+            @ModelAttribute("form") PaymentTermEditForm form, Model model) {
+        PaymentTermDetailDto pt = paymentTermService.getPaymentTermDetail(paymentTermId);
+        form.setName(pt.getName());
+        form.setDays(pt.getDays());
+        form.setDueDateType(pt.getDueDateType());
+        form.setActive(pt.isActive());
+        model.addAttribute("paymentTermId", paymentTermId);
+        
+        return "payment-term-edit";
     }
 
     @PostMapping("/{paymentTermId}/update")
-    public String update(@PathVariable String paymentTermId, 
-            @Valid @ModelAttribute("form") PaymentTermEditForm form,
-            BindingResult bindingResult, 
-            Model model, 
-            RedirectAttributes redirectAttributes) {
+    public String update(@PathVariable String paymentTermId, @Valid @ModelAttribute("form") PaymentTermEditForm form,
+            BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("paymentTermId", paymentTermId);
             return "payment-term-edit";
@@ -54,8 +59,7 @@ public class PaymentTermController {
         }
         catch (BusinessException e) {
             model.addAttribute("paymentTermId", paymentTermId);
-            bindingResult.rejectValue("name", "duplicate", 
-                    messageSource.getMessage("common.duplicate", null, null));
+            bindingResult.rejectValue("name", "duplicate", messageSource.getMessage("common.duplicate", null, null));
             return "payment-term-edit";
         }
         redirectAttributes.addFlashAttribute("successMessage",

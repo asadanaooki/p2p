@@ -67,7 +67,7 @@ class UnitServiceTest {
 
         @Test
         void update_duplicate() {
-            UnitEditForm form = new UnitEditForm(" 個", true);
+            UnitEditForm form = new UnitEditForm("個", true);
 
             assertThatThrownBy(() -> unitService.update(unitId, form)).isInstanceOf(BusinessException.class);
         }
