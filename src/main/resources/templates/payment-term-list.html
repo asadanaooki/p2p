@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>支払い条件一覧</title>
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" th:href="@{/css/payment-term-list.css}">
+</head>
+
+<body>
+  <main class="page">
+    <div class="success-message" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <a th:href="@{/setting/payment-term/create}" class="new-button">作成</a>
+
+    <table class="payment-term-table">
+      <thead>
+        <tr>
+          <th>名称</th>
+          <th>日数</th>
+          <th>種別</th>
+          <th>状態</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="elm : ${list}">
+          <td>
+            <a class="payment-term-link" th:text="${elm.name}"
+              th:href="@{/setting/payment-term/{paymentTermId}(paymentTermId=${elm.paymentTermId})}"></a>
+          </td>
+          <td th:text="${elm.days}"></td>
+          <td th:text="${elm.dueDateType}"></td>
+          <td th:text="${elm.active} ? '有効' : '無効'"></td>
+        </tr>
+      </tbody>
+    </table>
+  </main>
+</body>
+
+</html>

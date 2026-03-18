@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<link rel="stylesheet" th:href="@{/css/common.css}" />
+<link rel="stylesheet" th:href="@{/css/payment-term-edit.css}">
+</head>
+
+<body>
+  <main class="page">
+    <div class="success-message" th:if="${successMessage}"
+      th:text="${successMessage}"></div>
+    <h1 class="page-title">支払条件編集</h1>
+
+    <form
+      th:action="@{/setting/payment-term/{paymentTermId}/update(paymentTermId=${paymentTermId})}"
+      th:object="${form}" method="post" class="payment-term-form">
+      <div class="form-group">
+        <label class="form-label" for="name">名称</label> <input
+          class="form-input" id="name" type="text" th:field="*{name}"
+          th:classappend="${#fields.hasErrors('name')} ? 'input-error' : ''">
+        <p class="field-error" th:if="${#fields.hasErrors('name')}"
+          th:errors="*{name}"></p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="days">日数</label> <input
+          class="form-input" id="days" type="text" th:field="*{days}"
+          th:classappend="${#fields.hasErrors('days')} ? 'input-error' : ''">
+        <p class="field-error" th:if="${#fields.hasErrors('days')}"
+          th:errors="*{days}"></p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="dueDateType">種別</label> <select
+          id="dueDateType" class="form-select" th:field="*{dueDateType}">
+          <option value="NET_DAYS">指定日数後</option>
+          <option value="THIS_MONTH_DAY">当月指定日</option>
+          <option value="NEXT_MONTH_DAY">翌月指定日</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="active">状態</label> <select
+          id="active" class="form-select" th:field="*{active}">
+          <option value="true">有効</option>
+          <option value="false">無効</option>
+        </select>
+      </div>
+
+      <div class="button-row">
+        <button class="save-button" type="submit">保存</button>
+        <a th:href="@{/setting/payment-term}" class="cancel-button">キャンセル</a>
+      </div>
+
+    </form>
+  </main>
+</body>
+
+</html>

@@ -26,11 +26,13 @@ public class UnitService {
             ex.createCriteria().andIsActiveEqualTo(status);
         }
         List<Unit> list = unitMapper.selectByExample(ex);
-        return list.stream().map(u -> new UnitListItemDto(u.getUnitId(), u.getName(), u.getIsActive())).toList();
+        return list.stream().map(u -> new UnitListItemDto(
+                u.getUnitId(),
+                u.getName(),
+                u.getIsActive())).toList();
     }
 
     public void create(String name) {
-        String trimmed = name.strip();
         UnitExample ex = new UnitExample();
         ex.createCriteria().andNameEqualTo(name);
         // 重複チェック
@@ -38,7 +40,7 @@ public class UnitService {
             throw new BusinessException();
         }
         Unit u = new Unit();
-        u.setName(trimmed);
+        u.setName(name);
         unitMapper.insertSelective(u);
     }
 
@@ -48,9 +50,8 @@ public class UnitService {
     }
 
     public void update(String unitId, UnitEditForm form) {
-        String trimmed = form.getName().strip();
         UnitExample ex = new UnitExample();
-        ex.createCriteria().andNameEqualTo(trimmed).andUnitIdNotEqualTo(unitId);
+        ex.createCriteria().andNameEqualTo(form.getName()).andUnitIdNotEqualTo(unitId);
 
         // 重複チェック
         if (unitMapper.countByExample(ex) > 0) {
@@ -58,7 +59,7 @@ public class UnitService {
         }
         Unit target = new Unit();
         target.setUnitId(unitId);
-        target.setName(trimmed);
+        target.setName(form.getName());
         target.setIsActive(form.isStatus());
 
         unitMapper.updateByPrimaryKeySelective(target);

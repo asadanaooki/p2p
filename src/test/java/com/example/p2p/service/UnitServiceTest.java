@@ -42,11 +42,11 @@ class UnitServiceTest {
 
         @Test
         void create_success() {
-            String name = " テスト 　";
+            String name = "テスト";
             unitService.create(name);
 
             UnitExample e = new UnitExample();
-            e.createCriteria().andNameEqualTo(name.strip());
+            e.createCriteria().andNameEqualTo(name);
             List<Unit> actual = unitMapper.selectByExample(e);
 
             assertThat(actual).hasSize(1);
@@ -63,11 +63,11 @@ class UnitServiceTest {
     @Nested
     class update {
 
-        String unitId = "a69c8356-eed0-4755-8247-4c303b534092";
+        String unitId = "22222222-2222-2222-2222-222222222225";
 
         @Test
         void update_duplicate() {
-            UnitEditForm form = new UnitEditForm(" 個", true);
+            UnitEditForm form = new UnitEditForm("個", true);
 
             assertThatThrownBy(() -> unitService.update(unitId, form)).isInstanceOf(BusinessException.class);
         }

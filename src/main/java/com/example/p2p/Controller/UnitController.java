@@ -53,11 +53,11 @@ public class UnitController {
         }
         catch (BusinessException e) {
             result.rejectValue("name", "duplicate",
-                    messageSource.getMessage("unit.name.duplicate", null, null));
+                    messageSource.getMessage("common.duplicate", null, null));
             return "unit-create";
         }
         redirectAttributes.addFlashAttribute("successMessage",
-                messageSource.getMessage("unit.create.success", null, null));
+                messageSource.getMessage("common.create.success", null, null));
         return "redirect:/setting/unit";
     }
 
@@ -86,11 +86,11 @@ public class UnitController {
         catch (BusinessException e) {
             model.addAttribute("unitId", unitId);
             bindingResult.rejectValue("name", "duplicate",
-                    messageSource.getMessage("unit.name.duplicate", null, null));
+                    messageSource.getMessage("common.duplicate", null, null));
             return "unit-edit";
         }
         redirectAttributes.addFlashAttribute("successMessage",
-                messageSource.getMessage("unit.update.success", null, null));
+                messageSource.getMessage("common.update.success", null, null));
         redirectAttributes.addAttribute("unitId", unitId);
         return "redirect:/setting/unit/{unitId}";
 

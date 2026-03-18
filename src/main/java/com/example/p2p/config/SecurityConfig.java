@@ -12,21 +12,22 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
-        http
-            .formLogin(form -> form
-                    .loginPage("/login")
-                    .loginProcessingUrl("/login")
-                    .defaultSuccessUrl("/test", true)
-                    .failureHandler((req, res, exp) -> {
-                        String u = req.getParameter("username");
-                        req.getSession().setAttribute("LAST_LOGIN_USERNAME", u);
-                        res.sendRedirect("/login?error");
-                    })
-                    )
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login","/css/**").permitAll()
-                .anyRequest().authenticated()
-                    );
+        // http
+        // .formLogin(form -> form
+        // .loginPage("/login")
+        // .loginProcessingUrl("/login")
+        // .defaultSuccessUrl("/test", true)
+        // .failureHandler((req, res, exp) -> {
+        // String u = req.getParameter("username");
+        // req.getSession().setAttribute("LAST_LOGIN_USERNAME", u);
+        // res.sendRedirect("/login?error");
+        // })
+        // )
+        // .authorizeHttpRequests(auth -> auth
+        // .requestMatchers("/login","/css/**").permitAll()
+        // .anyRequest().authenticated()
+        // );
+        http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
         return http.build();
     }
 

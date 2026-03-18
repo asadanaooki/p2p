@@ -1,0 +1,16 @@
+spring:
+  flyway:
+    locations: classpath:db/test-migration
+  datasource:
+    url: jdbc:postgresql://localhost/p2p_test
+    username: postgres
+    password: softeni0926
+
+logging:
+  level:
+    root: INFO
+    org.springframework: DEBUG
+    org.flywaydb: DEBUG
+    org.springframework.boot.autoconfigure: DEBUG
+
+debug: true

@@ -19,14 +19,14 @@
   background-color: #dff5e5;
 }
 
-.unit-table {
+.payment-term-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
 }
 
-.unit-table thead th,
-.unit-table tbody td {
+.payment-term-table thead th,
+.payment-term-table tbody td {
   border: 1px solid #aeb8b4;
   padding: 16px 20px;
   text-align: left;
@@ -34,19 +34,18 @@
   font-weight: 500;
 }
 
-.unit-table thead th {
+.payment-term-table thead th {
   background-color: #d5dfdc;
 }
 
-.unit-link {
+.payment-term-link {
   display: block;
-  width: 100%;
   color: #1aa34a;
   text-decoration: none;
   font-weight: 500;
 }
 
-.unit-table tbody tr:hover td {
+.payment-term-table tbody tr:hover td {
   background-color: #f3f8f5;
 }
 

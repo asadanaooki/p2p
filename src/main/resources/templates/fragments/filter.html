@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <a></a>
+  <div th:fragment="statusFilter(action)">
+    <form method="get" th:action="${action}" class="filter-bar">
+      <div class="filter-left">
+        <label for="status">状態</label>
+        <select class="status-select" id="status" name="status">
+          <option value="" th:selected="${status == null}">すべて</option>
+          <option value="true" th:selected="${status == true}">有効</option>
+          <option value="false" th:selected="${status == false}">無効</option>
+        </select>
+      </div>
+
+      <button class="search-button" type="submit">検索</button>
+    </form>
+  </div>
+</body>
+
+</html>
