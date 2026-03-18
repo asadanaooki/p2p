@@ -13,7 +13,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.p2p.dto.PaymentTermDetailDto;
 import com.example.p2p.exception.BusinessException;
+import com.example.p2p.form.PaymentTermCreateForm;
 import com.example.p2p.form.PaymentTermEditForm;
+import com.example.p2p.form.UnitCreateForm;
 import com.example.p2p.service.PaymentTermService;
 
 import jakarta.validation.Valid;
@@ -45,6 +47,30 @@ public class PaymentTermController {
         model.addAttribute("paymentTermId", paymentTermId);
         
         return "payment-term-edit";
+    }
+    
+    @GetMapping("/create")
+    public String showPaymentTermCreateForm(@ModelAttribute("form") PaymentTermCreateForm form) {
+        return "payment-term-create";
+    }
+
+    @PostMapping("/create")
+    public String create(@Valid @ModelAttribute("form") PaymentTermCreateForm form, BindingResult result,
+            RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "payment-term-create";
+        }
+        try {
+            paymentTermService.create(form);
+        }
+        catch (BusinessException e) {
+            result.rejectValue("name", "duplicate",
+                    messageSource.getMessage("common.duplicate", null, null));
+            return "payment-term-create";
+        }
+        redirectAttributes.addFlashAttribute("successMessage",
+                messageSource.getMessage("common.create.success", null, null));
+        return "redirect:/setting/payment-term";
     }
 
     @PostMapping("/{paymentTermId}/update")

@@ -10,8 +10,10 @@ import com.example.p2p.dto.UnitDetailDto;
 import com.example.p2p.entity.PaymentTerm;
 import com.example.p2p.entity.PaymentTermExample;
 import com.example.p2p.entity.Unit;
+import com.example.p2p.entity.UnitExample;
 import com.example.p2p.enums.DueDateType;
 import com.example.p2p.exception.BusinessException;
+import com.example.p2p.form.PaymentTermCreateForm;
 import com.example.p2p.form.PaymentTermEditForm;
 import com.example.p2p.mapper.PaymentTermMapper;
 
@@ -45,6 +47,21 @@ public class PaymentTermService {
                 pt.getDays(),
                 DueDateType.valueOf(pt.getDueDateType()),
                 pt.getIsActive());
+    }
+    
+    public void create(PaymentTermCreateForm form) {
+        PaymentTermExample ex = new PaymentTermExample();
+        ex.createCriteria().andNameEqualTo(form.getName());
+        // 重複チェック
+        if (paymentTermMapper.countByExample(ex) > 0) {
+            throw new BusinessException();
+        }
+        PaymentTerm newPaymentTerm = new PaymentTerm();
+        newPaymentTerm.setName(form.getName());
+        newPaymentTerm.setDays(form.getDays());
+        newPaymentTerm.setDueDateType(form.getDueDateType().toString());
+        
+        paymentTermMapper.insertSelective(newPaymentTerm);
     }
     
     public void update(String paymentTermId, PaymentTermEditForm form) {

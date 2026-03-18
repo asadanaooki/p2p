@@ -34,7 +34,11 @@ import com.example.p2p.enums.DueDateType;
 import com.example.p2p.exception.BusinessException;
 import com.example.p2p.service.PaymentTermService;
 
-@SpringBootTest
+@SpringBootTest(
+        properties = {
+            "spring.test.context.failure.threshold=999"
+        }
+    )
 @AutoConfigureMockMvc
 @WithMockUser
 class PaymentTermControllerTest {
@@ -44,6 +48,96 @@ class PaymentTermControllerTest {
 
     @MockitoBean
     PaymentTermService paymentTermService;
+    
+    @Nested
+    class Create {
+        @ParameterizedTest
+        @MethodSource("createOkCases")
+        void create_parameter_ok(String name, int days, DueDateType type) throws Exception {
+            mockMvc
+                .perform(post("/setting/payment-term/create").with(csrf())
+                    .param("name", name)
+                    .param("days", String.valueOf(days))
+                    .param("dueDateType", type.toString()))
+                .andExpect(status().is3xxRedirection());
+        }
+
+        @ParameterizedTest
+        @MethodSource("createNgCases")
+        void create_parameter_ng(String name, Integer days, DueDateType type) throws Exception {
+             mockMvc
+                .perform(post("/setting/payment-term/create").with(csrf())
+                    .param("name", name)
+                    .param("days", String.valueOf(days))
+                    .param("dueDateType", type.toString()))
+                .andExpect(model().attributeHasErrors("form"))
+                .andExpect(view().name("payment-term-create"));
+        }
+
+        static Stream<Arguments> createOkCases() {
+            return Stream.of(
+                    // name
+                    Arguments.of("あ", 20, DueDateType.NET_DAYS),
+                    Arguments.of("あ".repeat(50), 20, DueDateType.NET_DAYS),
+
+                    // days
+                    Arguments.of("test", 1, DueDateType.NET_DAYS),
+                    // assertTrue
+                    Arguments.of("test", null, DueDateType.NEXT_MONTH_DAY),
+                    Arguments.of("test", 5, DueDateType.NET_DAYS),
+                    Arguments.of("test", 31, DueDateType.NEXT_MONTH_DAY));
+        }
+
+        static Stream<Arguments> createNgCases() {
+            return Stream.of(
+                    // name
+                    Arguments.of("", 20, DueDateType.NET_DAYS), 
+                    Arguments.of("あ".repeat(51), 20, DueDateType.NET_DAYS),
+                    // days
+                    Arguments.of("test", null, DueDateType.NET_DAYS),
+                    Arguments.of("test", 0, DueDateType.NET_DAYS),
+                    // assertTrue
+                    Arguments.of("test", 32, DueDateType.THIS_MONTH_DAY));
+        }
+        
+        @Test
+        void create_success() throws Exception {
+            doNothing().when(paymentTermService).create(any());
+
+            MvcResult res = mockMvc
+                .perform(post("/setting/payment-term/create").with(csrf())
+                    .param("name", "test")
+                    .param("days", "30")
+                    .param("dueDateType", "THIS_MONTH_DAY"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/setting/payment-term"))
+                .andReturn();
+
+            assertThat(res.getFlashMap().get("successMessage")).isEqualTo("登録成功しました");
+        }
+
+        @Test
+        void create_duplicate() throws Exception {
+            doThrow(BusinessException.class).when(paymentTermService).create(any());
+
+            MvcResult res = mockMvc
+                .perform(post("/setting/payment-term/create").with(csrf())
+                    .param("name", "test")
+                    .param("days", "30")
+                    .param("dueDateType", "THIS_MONTH_DAY"))
+                .andExpect(view().name("payment-term-create"))
+                .andReturn();
+            Map<String, Object> model = res.getModelAndView().getModel();
+            BindingResult br = (BindingResult) model.get(BindingResult.MODEL_KEY_PREFIX + "form");
+            FieldError fe = br.getFieldError("name");
+            assertThat(fe.getField()).isEqualTo("name");
+            assertThat(fe.getCode()).isEqualTo("duplicate");
+            assertThat(fe.getDefaultMessage()).isEqualTo("既に登録されています");
+
+            assertThat(model.get("form")).isNotNull();
+        }
+        
+    }
 
     @Nested
     class Update {

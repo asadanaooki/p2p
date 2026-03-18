@@ -63,7 +63,7 @@ class UnitServiceTest {
     @Nested
     class update {
 
-        String unitId = "3b5928ee-6e20-4afb-915b-6540f80f3bef";
+        String unitId = "22222222-2222-2222-2222-222222222225";
 
         @Test
         void update_duplicate() {
