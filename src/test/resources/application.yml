@@ -6,11 +6,10 @@ spring:
     username: postgres
     password: softeni0926
 
+#mybatis:
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
 logging:
   level:
-    root: INFO
-    org.springframework: DEBUG
-    org.flywaydb: DEBUG
-    org.springframework.boot.autoconfigure: DEBUG
-
-debug: true
+    com.example.p2p.mapper: DEBUG

@@ -1,0 +1,53 @@
+insert into supplier (
+    supplier_id,
+    name,
+    email,
+    phone_number,
+    postal_code,
+    prefecture,
+    city,
+    street_address,
+    building_name,
+    payment_term_id,
+    is_active
+)
+values
+(
+    'a7f3c9d2-4b8e-41f1-9c6a-1d2e3f4a5b6c',
+    '神奈川文具株式会社',
+    'info@kanagawa-bungu.co.jp',
+    '0452123456',
+    '2200004',
+    '神奈川県',
+    '横浜市西区',
+    'みなとみらい2-3-1',
+    null,
+    '33333333-3333-3333-3333-333333333331',
+    true
+),
+(
+    'b4d8e1f7-92ac-4c35-8f21-6a7b8c9d0e1f',
+    '関西オフィスサービス株式会社',
+    'contact@kansai-office.jp',
+    '0661234567',
+    '5400008',
+    '大阪府',
+    '大阪市中央区',
+    '北浜1-8-16',
+    '北浜オフィスタワー 8F',
+    '33333333-3333-3333-3333-333333333333',
+    true
+),
+(
+    'c9e2a4b6-7d1f-43a8-b5c2-9f0e1d2c3b4a',
+    '中部設備サプライ株式会社',
+    'support@chubu-supply.co.jp',
+    '0529876543',
+    '4600003',
+    '愛知県',
+    '名古屋市中区',
+    '錦2-10-13',
+    '桜通センタービル 5F',
+    '33333333-3333-3333-3333-333333333332',
+    false
+);

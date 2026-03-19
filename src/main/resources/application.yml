@@ -11,8 +11,5 @@ mybatis:
         map-underscore-to-camel-case: true
 
 logging:
-    level:
-        com:
-            example:
-                p2p:
-                    mapper: DEBUG
+  level:
+    com.example.p2p.mapper: DEBUG

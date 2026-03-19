@@ -44,6 +44,7 @@
     <table tableName="users" domainObjectName="User"></table>
     <table tableName="unit"></table>
     <table tableName="payment_term"></table>
+    <table tableName="supplier"></table>
 
   </context>
 </generatorConfiguration>

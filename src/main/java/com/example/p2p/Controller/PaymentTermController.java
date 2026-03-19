@@ -15,7 +15,6 @@ import com.example.p2p.dto.PaymentTermDetailDto;
 import com.example.p2p.exception.BusinessException;
 import com.example.p2p.form.PaymentTermCreateForm;
 import com.example.p2p.form.PaymentTermEditForm;
-import com.example.p2p.form.UnitCreateForm;
 import com.example.p2p.service.PaymentTermService;
 
 import jakarta.validation.Valid;
