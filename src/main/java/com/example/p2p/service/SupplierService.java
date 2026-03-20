@@ -4,11 +4,13 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example.p2p.dto.SupplierDetailDto;
 import com.example.p2p.dto.SupplierListItemDto;
 import com.example.p2p.entity.Supplier;
 import com.example.p2p.entity.SupplierExample;
 import com.example.p2p.entity.SupplierExample.Criteria;
 import com.example.p2p.mapper.SupplierMapper;
+import com.example.p2p.mapper.SupplierMapperCustom;
 
 import ch.qos.logback.core.util.StringUtil;
 import lombok.AllArgsConstructor;
@@ -18,6 +20,8 @@ import lombok.AllArgsConstructor;
 public class SupplierService {
 
     private SupplierMapper supplierMapper;
+    
+    private SupplierMapperCustom supplierMapperCustom;
 
     public List<SupplierListItemDto> getSuppliers(Boolean status, String keyword) {
         SupplierExample ex = new SupplierExample();
@@ -36,6 +40,10 @@ public class SupplierService {
                 s.getEmail(),
                 s.getPhoneNumber(),
                 s.getIsActive())).toList();
+    }
+    
+    public SupplierDetailDto getSupplierDetail(String supplierId) {
+        return supplierMapperCustom.selectSupplierDetail(supplierId);
     }
 
     // public void create(String name) {

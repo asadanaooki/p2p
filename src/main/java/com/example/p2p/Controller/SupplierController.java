@@ -3,23 +3,13 @@ package com.example.p2p.controller;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.example.p2p.dto.UnitDetailDto;
-import com.example.p2p.exception.BusinessException;
-import com.example.p2p.form.UnitCreateForm;
-import com.example.p2p.form.UnitEditForm;
 import com.example.p2p.service.SupplierService;
-import com.example.p2p.service.UnitService;
 
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @Controller
@@ -32,7 +22,7 @@ public class SupplierController {
     private MessageSource messageSource;
 
     @GetMapping
-    public String showSupplier(@RequestParam(required = false) Boolean status,
+    public String showSuppliers(@RequestParam(required = false) Boolean status,
             @RequestParam(required = false) String keyword,
             Model model) {
         model.addAttribute("status", status);
@@ -40,6 +30,14 @@ public class SupplierController {
         model.addAttribute("list", supplierService.getSuppliers(status, keyword ));
         return "supplier-list";
     }
+    
+    @GetMapping("/{supplierId}")
+    public String showSupplierDetail(@PathVariable String supplierId, Model model) {
+        model.addAttribute("supplierId", supplierId);
+        model.addAttribute("supplier", supplierService.getSupplierDetail(supplierId));
+        return "supplier-detail";
+    }
+    
 
     // @GetMapping("/create")
     // public String showUnitCreateForm(@ModelAttribute("form") UnitCreateForm form) {
