@@ -11,15 +11,31 @@
       s.city,
       s.street_address,
       s.building_name,
+      pt.payment_term_id,
       pt.name as paymentTermName,
       s.is_active as active
     from
     supplier s
-    join
+    left join
     payment_term pt
       on
       s.payment_term_id = pt.payment_term_id
     where supplier_id = #{supplierId};
-
   </select>
+
+  <update id="update">
+    update supplier
+    set
+      name = #{name},
+      email = #{email},
+      phone_number = #{phoneNumber},
+      postal_code = #{postalCode},
+      prefecture = #{prefecture},
+      city = #{city},
+      street_address = #{streetAddress},
+      building_name = #{buildingName},
+      payment_term_id = #{paymentTermId},
+      is_active = #{isActive}
+    where supplier_id = #{supplierId}
+  </update>
 </mapper>

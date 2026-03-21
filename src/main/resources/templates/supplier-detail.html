@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-<link rel="stylesheet" th:href="@{/css/common.css}" />
-<link rel="stylesheet" th:href="@{/css/supplier-detail.css}" />
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" th:href="@{/css/supplier-detail.css}" />
 </head>
+
 <body>
   <main class="page">
+    <div class="success-message" th:if="${successMessage}" th:text="${successMessage}"></div>
     <div class="action-area">
-      <a class="edit-button"
-        th:href="@{/setting/supplier/{supplierId}/edit(supplierId=${supplierId})}">編集</a>
+      <a class="edit-button" th:href="@{/setting/supplier/{supplierId}/edit(supplierId=${supplierId})}">編集</a>
     </div>
 
     <div class="detail-list">
@@ -60,11 +62,11 @@
 
       <div class="detail-item">
         <div class="detail-label">状態</div>
-        <div class="detail-value"
-          th:text="${supplier.active} ? '有効' : '無効'"></div>
+        <div class="detail-value" th:text="${supplier.active} ? '有効' : '無効'"></div>
       </div>
     </div>
   </main>
 
 </body>
+
 </html>

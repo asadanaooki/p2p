@@ -20,6 +20,8 @@ public class SupplierDetailDto {
     private String streetAddress;
 
     private String buildingName;
+    
+    private String paymentTermId;
 
     private String paymentTermName;
 

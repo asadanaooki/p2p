@@ -9,12 +9,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.NullSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.p2p.dto.SupplierListItemDto;
+import com.example.p2p.entity.Supplier;
+import com.example.p2p.form.SupplierEditForm;
 import com.example.p2p.mapper.SupplierMapper;
 
 @SpringBootTest
@@ -68,5 +69,60 @@ class SupplierServiceTest {
             .containsExactly("a7f3c9d2-4b8e-41f1-9c6a-1d2e3f4a5b6c");
         }
     }
+    
+    @Nested
+    class Update{
+        @Test
+        void update_all() {
+            SupplierEditForm form = new SupplierEditForm();
+            form.setName("test");
+            form.setEmail("test@example.com");
+            form.setPhoneNumber("0743712224");
+            form.setPostalCode("6312214");
+            form.setPrefecture("青森県");
+            form.setCity("青森市");
+            form.setStreetAddress("2-3-4");
+            form.setBuildingName("テストビル");
+            form.setPaymentTermId("33333333-3333-3333-3333-333333333332");
+            form.setStatus(false);
+            
+            supplierService.update("b4d8e1f7-92ac-4c35-8f21-6a7b8c9d0e1f", form);
+            
+          Supplier updated =  supplierMapper.selectByPrimaryKey("b4d8e1f7-92ac-4c35-8f21-6a7b8c9d0e1f");
+          assertThat(updated.getName()).isEqualTo("test");
+          assertThat(updated.getEmail()).isEqualTo("test@example.com");
+          assertThat(updated.getPhoneNumber()).isEqualTo("0743712224");
+          assertThat(updated.getPostalCode()).isEqualTo("6312214");
+          assertThat(updated.getPrefecture()).isEqualTo("青森県");
+          assertThat(updated.getCity()).isEqualTo("青森市");
+          assertThat(updated.getStreetAddress()).isEqualTo("2-3-4");
+          assertThat(updated.getPaymentTermId()).isEqualTo("33333333-3333-3333-3333-333333333332");
+          assertThat(updated.getBuildingName()).isEqualTo("テストビル");
+          assertThat(updated.getIsActive()).isFalse();
+        }
+        
+        @Test
+        void update_notSet() {
+            SupplierEditForm form = new SupplierEditForm();
+            form.setName("test");
+            form.setEmail("test@example.com");
+            form.setStatus(false);
+            
+            supplierService.update("b4d8e1f7-92ac-4c35-8f21-6a7b8c9d0e1f", form);
+            
+          Supplier updated =  supplierMapper.selectByPrimaryKey("b4d8e1f7-92ac-4c35-8f21-6a7b8c9d0e1f");
+          assertThat(updated.getName()).isEqualTo("test");
+          assertThat(updated.getEmail()).isEqualTo("test@example.com");
+          assertThat(updated.getPhoneNumber()).isNull();
+          assertThat(updated.getPostalCode()).isNull();
+          assertThat(updated.getPrefecture()).isNull();
+          assertThat(updated.getCity()).isNull();
+          assertThat(updated.getStreetAddress()).isNull();
+          assertThat(updated.getPaymentTermId()).isNull();
+          assertThat(updated.getBuildingName()).isNull();
+          assertThat(updated.getIsActive()).isFalse();
+        }
+    }
+    
     
 }

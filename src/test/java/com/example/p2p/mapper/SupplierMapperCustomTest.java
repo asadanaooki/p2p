@@ -28,6 +28,7 @@ class SupplierMapperCustomTest {
         assertThat(detail.getCity()).isEqualTo("大阪市中央区");
         assertThat(detail.getStreetAddress()).isEqualTo("北浜1-8-16");
         assertThat(detail.getBuildingName()).isEqualTo("北浜オフィスタワー 8F");
+        assertThat(detail.getPaymentTermId()).isEqualTo("33333333-3333-3333-3333-333333333333");
         assertThat(detail.getPaymentTermName()).isEqualTo("今月末払い");
         assertThat(detail.isActive()).isTrue();
         

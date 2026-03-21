@@ -1,15 +1,27 @@
 package com.example.p2p.controller;
 
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.p2p.dto.SupplierDetailDto;
+import com.example.p2p.exception.BusinessException;
+import com.example.p2p.form.SupplierEditForm;
+import com.example.p2p.form.UnitEditForm;
 import com.example.p2p.service.SupplierService;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @Controller
@@ -21,23 +33,26 @@ public class SupplierController {
 
     private MessageSource messageSource;
 
-    @GetMapping
-    public String showSuppliers(@RequestParam(required = false) Boolean status,
-            @RequestParam(required = false) String keyword,
-            Model model) {
-        model.addAttribute("status", status);
-        model.addAttribute("keyword", keyword);
-        model.addAttribute("list", supplierService.getSuppliers(status, keyword ));
-        return "supplier-list";
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
     
+    @GetMapping
+    public String showSuppliers(@RequestParam(required = false) Boolean status,
+            @RequestParam(required = false) String keyword, Model model) {
+        model.addAttribute("status", status);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("list", supplierService.getSuppliers(status, keyword));
+        return "supplier-list";
+    }
+
     @GetMapping("/{supplierId}")
     public String showSupplierDetail(@PathVariable String supplierId, Model model) {
         model.addAttribute("supplierId", supplierId);
         model.addAttribute("supplier", supplierService.getSupplierDetail(supplierId));
         return "supplier-detail";
     }
-    
 
     // @GetMapping("/create")
     // public String showUnitCreateForm(@ModelAttribute("form") UnitCreateForm form) {
@@ -64,41 +79,45 @@ public class SupplierController {
     // return "redirect:/setting/unit";
     // }
     //
-    // @GetMapping("/{unitId}")
-    // public String showUnitEditForm(@PathVariable String unitId, @ModelAttribute("form")
-    // UnitEditForm form,
-    // Model model) {
-    // UnitDetailDto unit = unitService.getUnitDetail(unitId);
-    // form.setName(unit.getName());
-    // form.setStatus(unit.isActive());
-    //
-    // model.addAttribute("unitId", unitId);
-    //
-    // return "unit-edit";
-    // }
-    //
-    // @PostMapping("/{unitId}/update")
-    // public String update(@PathVariable String unitId, @Valid @ModelAttribute("form")
-    // UnitEditForm form,
-    // BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
-    // if (bindingResult.hasErrors()) {
-    // model.addAttribute("unitId", unitId);
-    // return "unit-edit";
-    // }
-    // try {
-    // unitService.update(unitId, form);
-    // }
-    // catch (BusinessException e) {
-    // model.addAttribute("unitId", unitId);
-    // bindingResult.rejectValue("name", "duplicate",
-    // messageSource.getMessage("common.duplicate", null, null));
-    // return "unit-edit";
-    // }
-    // redirectAttributes.addFlashAttribute("successMessage",
-    // messageSource.getMessage("common.update.success", null, null));
-    // redirectAttributes.addAttribute("unitId", unitId);
-    // return "redirect:/setting/unit/{unitId}";
-    //
-    // }
+    @GetMapping("/{supplierId}/edit")
+    public String showSupplierEditForm(@PathVariable String supplierId,
+            @ModelAttribute("form") SupplierEditForm form,
+            Model model) {
+        SupplierDetailDto supplier = supplierService.getSupplierDetail(supplierId);
+        form.setName(supplier.getSupplierName());
+        form.setEmail(supplier.getEmail());
+        form.setPhoneNumber(supplier.getPhoneNumber());
+        form.setPostalCode(supplier.getPostalCode());
+        form.setPrefecture(supplier.getPrefecture());
+        form.setCity(supplier.getCity());
+        form.setStreetAddress(supplier.getStreetAddress());
+        form.setBuildingName(supplier.getBuildingName());
+        form.setPaymentTermId(supplier.getPaymentTermId());
+        form.setStatus(supplier.isActive());
+
+        model.addAttribute("paymentTerms", supplierService.getPaymentTermOptions());
+
+        model.addAttribute("supplierId", supplierId);
+
+        return "supplier-edit";
+    }
+
+    @PostMapping("/{supplierId}/update")
+    public String update(@PathVariable String supplierId,
+            @Valid @ModelAttribute("form") SupplierEditForm form,
+            BindingResult bindingResult,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("supplierId", supplierId);
+            return "supplier-edit";
+        }
+        supplierService.update(supplierId, form);
+        redirectAttributes.addFlashAttribute("successMessage",
+                messageSource.getMessage("common.update.success", null, null));
+        redirectAttributes.addAttribute("supplierId", supplierId);
+        
+        return "redirect:/setting/supplier/{supplierId}";
+    }
 
 }

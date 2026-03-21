@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.p2p.mapper.PaymentTermMapperCustom">
+  <select id="selectPaymentTermOptions" resultType="com.example.p2p.dto.PaymentTermOptionDto">
+    select
+      payment_term_id,
+      name
+    from payment_term;
+
+  </select>
+</mapper>

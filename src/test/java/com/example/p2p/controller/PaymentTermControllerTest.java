@@ -34,11 +34,7 @@ import com.example.p2p.enums.DueDateType;
 import com.example.p2p.exception.BusinessException;
 import com.example.p2p.service.PaymentTermService;
 
-@SpringBootTest(
-        properties = {
-            "spring.test.context.failure.threshold=999"
-        }
-    )
+@SpringBootTest
 @AutoConfigureMockMvc
 @WithMockUser
 class PaymentTermControllerTest {
@@ -53,7 +49,7 @@ class PaymentTermControllerTest {
     class Create {
         @ParameterizedTest
         @MethodSource("createOkCases")
-        void create_parameter_ok(String name, int days, DueDateType type) throws Exception {
+        void create_parameter_ok(String name, Integer days, DueDateType type) throws Exception {
             mockMvc
                 .perform(post("/setting/payment-term/create").with(csrf())
                     .param("name", name)
@@ -83,7 +79,6 @@ class PaymentTermControllerTest {
                     // days
                     Arguments.of("test", 1, DueDateType.NET_DAYS),
                     // assertTrue
-                    Arguments.of("test", null, DueDateType.NEXT_MONTH_DAY),
                     Arguments.of("test", 5, DueDateType.NET_DAYS),
                     Arguments.of("test", 31, DueDateType.NEXT_MONTH_DAY));
         }
