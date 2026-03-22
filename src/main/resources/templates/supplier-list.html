@@ -2,28 +2,25 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-<link rel="stylesheet" th:href="@{/css/common.css}" />
-<link rel="stylesheet" th:href="@{/css/supplier-list.css}">
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" th:href="@{/css/supplier-list.css}">
 </head>
 
 <body>
   <main class="page">
-    <div class="success-message" th:if="${successMessage}"
-      th:text="${successMessage}"></div>
-    <a th:href="@{/supplier/create}" class="new-button">作成</a>
+   <div class="success-message" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <a th:href="@{/setting/supplier/create}" class="new-button">作成</a>
     <form method="get" th:action="@{/setting/supplier}" class="supplier-search-form">
       <div class="search-area">
         <div class="filter-item">
           <label for="status">状態</label>
-          <select id="status"
-            name="status" class="status-select">
+          <select id="status" name="status" class="status-select">
             <option value="" th:selected="${status == null}">すべて</option>
             <option value="true" th:selected="${status == true}">有効</option>
             <option value="false" th:selected="${status == false}">無効</option>
           </select>
         </div>
-        <input type="text" name="keyword" th:value="${keyword}"
-          class="keyword-input">
+        <input type="text" name="keyword" th:value="${keyword}" class="keyword-input">
         <button type="submit" class="search-button">検索</button>
       </div>
     </form>
@@ -38,9 +35,8 @@
       </thead>
       <tbody>
         <tr th:each="elm : ${list}">
-          <td><a class="supplier-link"
-            th:href="@{/setting/supplier/{supplierId}(supplierId=${elm.supplierId})}"
-            th:text="${elm.name}"></a></td>
+          <td><a class="supplier-link" th:href="@{/setting/supplier/{supplierId}(supplierId=${elm.supplierId})}"
+              th:text="${elm.name}"></a></td>
           <td th:text="${elm.email}"></td>
           <td th:text="${elm.phoneNumber}"></td>
           <td th:text="${elm.active} ? '有効' : '無効'"></td>

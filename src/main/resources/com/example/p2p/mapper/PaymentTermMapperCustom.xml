@@ -5,7 +5,8 @@
     select
       payment_term_id,
       name
-    from payment_term;
+    from payment_term
+    order by name asc;
 
   </select>
 </mapper>

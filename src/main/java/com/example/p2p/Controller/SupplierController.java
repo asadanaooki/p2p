@@ -17,8 +17,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.p2p.dto.SupplierDetailDto;
 import com.example.p2p.exception.BusinessException;
+import com.example.p2p.form.SupplierCreateForm;
 import com.example.p2p.form.SupplierEditForm;
-import com.example.p2p.form.UnitEditForm;
+import com.example.p2p.form.UnitCreateForm;
 import com.example.p2p.service.SupplierService;
 
 import jakarta.validation.Valid;
@@ -54,31 +55,28 @@ public class SupplierController {
         return "supplier-detail";
     }
 
-    // @GetMapping("/create")
-    // public String showUnitCreateForm(@ModelAttribute("form") UnitCreateForm form) {
-    // return "unit-create";
-    // }
-    //
-    // @PostMapping("/create")
-    // public String create(@Valid @ModelAttribute("form") UnitCreateForm form,
-    // BindingResult result,
-    // RedirectAttributes redirectAttributes) {
-    // if (result.hasErrors()) {
-    // return "unit-create";
-    // }
-    // try {
-    // unitService.create(form.getName());
-    // }
-    // catch (BusinessException e) {
-    // result.rejectValue("name", "duplicate",
-    // messageSource.getMessage("common.duplicate", null, null));
-    // return "unit-create";
-    // }
-    // redirectAttributes.addFlashAttribute("successMessage",
-    // messageSource.getMessage("common.create.success", null, null));
-    // return "redirect:/setting/unit";
-    // }
-    //
+     @GetMapping("/create")
+     public String showSupplierCreateForm(@ModelAttribute("form") SupplierCreateForm form, Model model) {
+         model.addAttribute("paymentTerms", supplierService.getPaymentTermOptions());
+         return "supplier-create";
+     }
+
+     @PostMapping("/create")
+     public String create(@Valid @ModelAttribute("form") SupplierCreateForm form,
+             BindingResult result,
+             Model model,
+             RedirectAttributes redirectAttributes) {
+         if (result.hasErrors()) {
+             model.addAttribute("paymentTerms", supplierService.getPaymentTermOptions());
+             return "supplier-create";
+         }
+         supplierService.create(form);
+         
+         redirectAttributes.addFlashAttribute("successMessage",
+                 messageSource.getMessage("common.create.success", null, null));
+         return "redirect:/setting/supplier";
+     }
+    
     @GetMapping("/{supplierId}/edit")
     public String showSupplierEditForm(@PathVariable String supplierId,
             @ModelAttribute("form") SupplierEditForm form,
@@ -109,6 +107,7 @@ public class SupplierController {
             Model model,
             RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("paymentTerms", supplierService.getPaymentTermOptions());
             model.addAttribute("supplierId", supplierId);
             return "supplier-edit";
         }

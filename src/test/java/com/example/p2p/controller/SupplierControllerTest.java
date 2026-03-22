@@ -104,6 +104,7 @@ class SupplierControllerTest {
             params.add("prefecture", "秋田県");
             params.add("city", "testcity");
             params.add("streetAddress", "teststreea");
+            params.add("buildingName", "testbuild");
             params.add("paymentTermId", "a".repeat(36));
             params.add("status", "true");
 
@@ -177,5 +178,96 @@ class SupplierControllerTest {
         }
 
     }
+    
+    @Nested
+    class Create {
+
+        @Test
+        void create_success() throws Exception {
+            doNothing().when(supplierService).create(any());
+
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+            params.add("name", "test");
+            params.add("email", "trest@example.com");
+            params.add("phoneNumber", "123");
+            params.add("postalCode", "0123456");
+            params.add("prefecture", "秋田県");
+            params.add("city", "testcity");
+            params.add("streetAddress", "teststreea");
+            params.add("buildingName", "testbuild");
+            params.add("paymentTermId", "a".repeat(36));
+
+            MvcResult res = mockMvc
+                .perform(post("/setting/supplier/create", "test").with(csrf()).params(params))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/setting/supplier"))
+                .andReturn();
+
+            assertThat(res.getFlashMap().get("successMessage")).isEqualTo("登録成功しました");
+        }
+
+        @ParameterizedTest
+        @MethodSource("createOkCases")
+        void create_parameter_ok(MultiValueMap<String, String> param) throws Exception {
+            mockMvc.perform(post("/setting/supplier/create", "test").with(csrf()).params(param))
+                .andExpect(status().is3xxRedirection());
+        }
+
+        @ParameterizedTest
+        @MethodSource("createNgCases")
+        void create_parameter_ng(MultiValueMap<String, String> param) throws Exception {
+            mockMvc.perform(post("/setting/supplier/create").with(csrf()).params(param))
+                .andExpect(model().attributeHasErrors("form"))
+                .andExpect(model().attributeExists("paymentTerms"))
+                .andExpect(view().name("supplier-create"));
+        }
+
+        static Stream<Arguments> createOkCases() {
+            // name
+            MultiValueMap<String, String> okmap1 = baseParam();
+            okmap1.set("name", "test");
+            // email
+            MultiValueMap<String, String> okmap2 = baseParam();
+            okmap2.set("email", "test@gmail.com");
+            return Stream.of(
+                    // name
+                    Arguments.of(okmap1),
+                    // email
+                    Arguments.of(okmap2));
+        }
+
+        static Stream<Arguments> createNgCases() {
+            // name
+            MultiValueMap<String, String> ngmap1 = baseParam();
+            ngmap1.set("name", "  ");
+            // email
+            MultiValueMap<String, String> ngmap2 = baseParam();
+            ngmap2.set("email", "sample@");
+            return Stream.of(
+                    // name
+                    Arguments.of(ngmap1),
+                    // email
+                    Arguments.of(ngmap2));
+        }
+
+        private static MultiValueMap<String, String> baseParam() {
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("name", "テストサプライヤー");
+            params.add("email", "test@example.com");
+            params.add("phoneNumber", "09012345678");
+            params.add("postalCode", "1234567");
+            params.add("prefecture", "大阪府");
+            params.add("city", "大阪市北区");
+            params.add("streetAddress", "梅田1-1-1");
+            params.add("buildingName", "テストビル");
+            params.add("paymentTermId", "a".repeat(36));
+            params.add("status", "true");
+
+            return params;
+        }
+
+    }
+    
+    
 
 }
