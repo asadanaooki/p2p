@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" th:href="@{/css/supplier-create.css}">
+</head>
+
+<body>
+  <main class="page">
+    <h1 class="page-title">サプライヤー作成</h1>
+
+    <form th:action="@{/setting/supplier/create}" th:object="${form}" method="post" class="supplier-form">
+      <div class="form-group">
+        <label class="form-label" for="name">名称</label>
+        <input class="form-input" id="name" type="text" th:field="*{name}"
+          th:classappend="${#fields.hasErrors('name')} ? 'input-error' : ''">
+        <p class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="email">メールアドレス</label>
+        <input class="form-input" id="email" type="text" th:field="*{email}"
+          th:classappend="${#fields.hasErrors('email')} ? 'input-error' : ''">
+        <p class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="postalCode">郵便番号</label>
+        <input class="form-input" id="postalCode" type="text" th:field="*{postalCode}"
+          th:classappend="${#fields.hasErrors('postalCode')} ? 'input-error' : ''">
+        <p class="field-error" th:if="${#fields.hasErrors('postalCode')}" th:errors="*{postalCode}"></p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="prefecture">都道府県</label>
+        <input class="form-input" id="prefecture" type="text" th:field="*{prefecture}"
+          th:classappend="${#fields.hasErrors('prefecture')} ? 'input-error' : ''">
+        <p class="field-error" th:if="${#fields.hasErrors('prefecture')}" th:errors="*{prefecture}"></p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="city">市区町村</label>
+        <input class="form-input" id="city" type="text" th:field="*{city}"
+          th:classappend="${#fields.hasErrors('city')} ? 'input-error' : ''">
+        <p class="field-error" th:if="${#fields.hasErrors('city')}" th:errors="*{city}"></p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="streetAddress">番地</label>
+        <input class="form-input" id="streetAddress" type="text" th:field="*{streetAddress}"
+          th:classappend="${#fields.hasErrors('streetAddress')} ? 'input-error' : ''">
+        <p class="field-error" th:if="${#fields.hasErrors('streetAddress')}" th:errors="*{streetAddress}"></p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="buildingName">建物名</label>
+        <input class="form-input" id="buildingName" type="text" th:field="*{buildingName}"
+          th:classappend="${#fields.hasErrors('buildingName')} ? 'input-error' : ''">
+        <p class="field-error" th:if="${#fields.hasErrors('buildingName')}" th:errors="*{buildingName}"></p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="paymentTermId">支払い条件</label>
+        <select id="paymentTermId" class="form-select" th:field="*{paymentTermId}">
+          <option value=""></option>
+          <option th:each="pt : ${paymentTerms}" th:value="${pt.paymentTermId}" th:text="${pt.name}"></option>
+        </select>
+      </div>
+
+      <div class="button-row">
+        <button class="save-button" type="submit">作成</button>
+        <a th:href="@{/setting/supplier}" class="cancel-button">キャンセル</a>
+      </div>
+
+    </form>
+  </main>
+</body>
+
+</html>

@@ -1,0 +1,141 @@
+.page {
+  max-width: 1200px;
+  margin: 0;
+  padding: 32px 24px 48px;
+}
+
+.new-button {
+  display: inline-block;
+  padding: 6px 30px;
+  border: 1px solid #9fb3ad;
+  background-color: #fff;
+  color: #1aa34a;
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+  margin-bottom: 20px;
+}
+
+.new-button:hover {
+  background-color: #dff5e5;
+}
+
+.supplier-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  margin-top: 20px;
+}
+
+.supplier-table thead th, .supplier-table tbody td {
+  border: 1px solid #aeb8b4;
+  padding: 16px 20px;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 500;
+  vertical-align: middle;
+}
+
+.supplier-table thead th {
+  background-color: #d5dfdc;
+}
+
+.supplier-table th:nth-child(1), .supplier-table td:nth:child(1) {
+  width: 43%;
+}
+
+.supplier-table th:nth-child(2), .supplier-table td:nth-child(2) {
+  width: 30%;
+}
+
+.supplier-table th:nth-child(3), .supplier-table td:nth-child(3) {
+  width: 15%;
+}
+
+.supplier-table th:nth-child(4), .supplier-table td:nth-child(4) {
+  width: 12%;
+}
+
+.supplier-link {
+  display: block;
+  width: 100%;
+  color: #1aa34a;
+  text-decoration: none;
+}
+
+.supplier-link:hover {
+  text-decoration: underline;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.keyword-input {
+  width: 280px;
+  height: 40px;
+  padding: 0 12px;
+  font-size: 14px;
+}
+
+.search-button {
+  height: 50px;
+  padding: 0 16px;
+  font-size: 14px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  margin-left: auto;
+}
+
+.filter-bar {
+  display: flex;
+  align-items: end;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+}
+
+.supplier-search-form {
+  padding: 18px 24px 24px;
+  background-color: #dfe4e1;
+  border: 1px solid #c8d0cc;
+}
+
+.search-area {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.keyword-input {
+  width: 260px;
+  padding: 0 12px;
+}

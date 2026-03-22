@@ -33,7 +33,6 @@ body {
 }
 
 .search-button {
-  align-self: flex-end;
   min-width: 100px;
   height: 45px;
   padding: 0 24px;

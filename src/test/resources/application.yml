@@ -5,12 +5,13 @@ spring:
     url: jdbc:postgresql://localhost/p2p_test
     username: postgres
     password: softeni0926
+mybatis:
+    configuration:
+        map-underscore-to-camel-case: true
+#mybatis:
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 logging:
   level:
-    root: INFO
-    org.springframework: DEBUG
-    org.flywaydb: DEBUG
-    org.springframework.boot.autoconfigure: DEBUG
-
-debug: true
+    com.example.p2p.mapper: DEBUG

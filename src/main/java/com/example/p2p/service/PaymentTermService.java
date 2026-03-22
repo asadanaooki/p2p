@@ -6,11 +6,8 @@ import org.springframework.stereotype.Service;
 
 import com.example.p2p.dto.PaymentTermDetailDto;
 import com.example.p2p.dto.PaymentTermListItemDto;
-import com.example.p2p.dto.UnitDetailDto;
 import com.example.p2p.entity.PaymentTerm;
 import com.example.p2p.entity.PaymentTermExample;
-import com.example.p2p.entity.Unit;
-import com.example.p2p.entity.UnitExample;
 import com.example.p2p.enums.DueDateType;
 import com.example.p2p.exception.BusinessException;
 import com.example.p2p.form.PaymentTermCreateForm;

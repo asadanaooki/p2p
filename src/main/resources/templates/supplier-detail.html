@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" th:href="@{/css/supplier-detail.css}" />
+</head>
+
+<body>
+  <main class="page">
+    <div class="success-message" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <div class="action-area">
+      <a class="edit-button" th:href="@{/setting/supplier/{supplierId}/edit(supplierId=${supplierId})}">編集</a>
+    </div>
+
+    <div class="detail-list">
+      <div class="detail-item">
+        <div class="detail-label">名称</div>
+        <div class="detail-value" th:text="${supplier.supplierName}"></div>
+      </div>
+
+      <div class="detail-item">
+        <div class="detail-label">メールアドレス</div>
+        <div class="detail-value" th:text="${supplier.email}"></div>
+      </div>
+
+      <div class="detail-item">
+        <div class="detail-label">電話番号</div>
+        <div class="detail-value" th:text="${supplier.phoneNumber}"></div>
+      </div>
+
+      <div class="detail-item">
+        <div class="detail-label">郵便番号</div>
+        <div class="detail-value" th:text="${supplier.postalCode}"></div>
+      </div>
+
+      <div class="detail-item">
+        <div class="detail-label">都道府県</div>
+        <div class="detail-value" th:text="${supplier.prefecture}"></div>
+      </div>
+
+      <div class="detail-item">
+        <div class="detail-label">市区町村</div>
+        <div class="detail-value" th:text="${supplier.city}"></div>
+      </div>
+
+      <div class="detail-item">
+        <div class="detail-label">町名・番地</div>
+        <div class="detail-value" th:text="${supplier.streetAddress}"></div>
+      </div>
+
+      <div class="detail-item">
+        <div class="detail-label">建物名</div>
+        <div class="detail-value" th:text="${supplier.buildingName}"></div>
+      </div>
+
+
+      <div class="detail-item">
+        <div class="detail-label">支払い条件</div>
+        <div class="detail-value" th:text="${supplier.paymentTermName}"></div>
+      </div>
+
+      <div class="detail-item">
+        <div class="detail-label">状態</div>
+        <div class="detail-value" th:text="${supplier.active} ? '有効' : '無効'"></div>
+      </div>
+    </div>
+  </main>
+
+</body>
+
+</html>
