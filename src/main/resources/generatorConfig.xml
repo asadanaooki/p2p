@@ -45,6 +45,7 @@
     <table tableName="unit"></table>
     <table tableName="payment_term"></table>
     <table tableName="supplier"></table>
+    <table tableName="item"></table>
 
   </context>
 </generatorConfiguration>
