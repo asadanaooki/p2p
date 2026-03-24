@@ -9,7 +9,7 @@
       u.name as unitName,
       i.price,
       s.name as supplierName,
-      i.is_active
+      i.is_active as active
     from item i 
     left join unit u
         on i.unit_id = u.unit_id
@@ -29,30 +29,30 @@
         and s.supplier_id = #{supplierId}
       </if>
       <if test="status != null">
-        and s.is_active = #{status}
+        and i.is_active = #{status}
       </if>
       
       <if test="keywords.size() > 0">
         and ( 
           i.name ~ #{keywordRegex}
-          or s.name ~ #{keywordRegex}
+          or s.name ~#{keywordRegex}
         )
       </if>
     </where>
     order by
       <choose>
-        <when test="sortBy == 'NAME'">i.name</when>
-        <when test="sortBy == 'KIND'">s.kind</when>
-        <when test="sortBy == 'UNIT'">u.name</when>
-        <when test="sortBy == 'PRICE'">i.price</when>
-        <when test="sortBy == 'SUPPLIER'">s.name</when>
-        <when test="sortBy == 'STATUS'">i.is_active</when>
+        <when test="sortBy.toString().equals('NAME')">i.name</when>
+        <when test="sortBy.toString().equals('KIND')">i.kind</when>
+        <when test="sortBy.toString().equals('UNIT')">u.name</when>
+        <when test="sortBy.toString().equals('PRICE')">i.price</when>
+        <when test="sortBy.toString().equals('SUPPLIER')">s.name</when>
+        <when test="sortBy.toString().equals('STATUS')">i.is_active</when>
       </choose>
       <choose>
-        <when test="sortDirection == 'ASC'">asc</when>
-        <when test="sortDirection == 'DESC'">desc</when>
+        <when test="sortDirection.toString().equals('ASC')">asc</when>
+        <when test="sortDirection.toString().equals('DESC')">desc</when>
       </choose>
-    limit #{limit} offset #{offset}
+    limit #{size} offset #{offset}
 
   </select>
 </mapper>
