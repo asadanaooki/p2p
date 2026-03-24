@@ -3,12 +3,16 @@ package com.example.p2p.controller;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.p2p.form.ItemSearchForm;
 import com.example.p2p.service.ItemService;
 
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @Controller
@@ -19,12 +23,26 @@ public class ItemController {
     private ItemService itemService;
 
     private MessageSource messageSource;
+    
+    private static final String LAST_SEARCH_CONDITION = "lastSearchCondition";
 
     @GetMapping
-    public String showItem(@RequestParam(required = false, defaultValue = "1") int page,
-            @RequestParam(required = false, defaultValue = "2") int size,
-            Model model) {
-        model.addAttribute("items", itemService.getItems(page, size));
+    public String showItem(@Valid @ModelAttribute("form") ItemSearchForm form,
+            BindingResult bindingResult,
+            Model model,
+            HttpSession session
+            ) {
+        if (bindingResult.hasErrors()) {
+            ItemSearchForm formToSearch;
+            ItemSearchForm lastCondition = 
+                    (ItemSearchForm) session.getAttribute(LAST_SEARCH_CONDITION);
+            formToSearch = lastCondition == null ? new ItemSearchForm() : lastCondition;
+            model.addAttribute("items", itemService.searchItems(formToSearch));
+            return "item-list";
+        }
+        session.setAttribute(LAST_SEARCH_CONDITION, form);
+        model.addAttribute("items", itemService.searchItems(form));
+        
         return "item-list";
     }
 

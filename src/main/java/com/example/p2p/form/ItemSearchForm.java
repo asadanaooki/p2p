@@ -15,11 +15,16 @@ import lombok.Data;
 
 @Data
 public class ItemSearchForm {
+    
+    // ページング
+    private int page = 1;
+    
+    private int size = 2; // TODO: 仮値
 
     // フィルター
     private ItemKind kind;
 
-    private Integer priceMIn;
+    private Integer priceMin;
 
     private Integer priceMax;
 
@@ -31,19 +36,23 @@ public class ItemSearchForm {
     private String keyword;
 
     // ソート
-    private ItemSortBy sortBy;
+    private ItemSortBy sortBy = ItemSortBy.NAME;
 
-    private SortDirection sortDirection;
+    private SortDirection sortDirection = SortDirection.ASC;
 
     public List<String> getKeywords() {
         if (StringUtils.hasText(keyword)) {
-            return Arrays.asList(keyword.split("[\\s]+"));
+            return Arrays.asList(keyword.split("[\\p{Zs}]+"));
         }
         return Collections.emptyList();
     }
     
     public String getKeywordRegex() {
-        return String.join("\\", getKeywords());
+        return "^(?=.*" + String.join(".*)(?=.*", getKeywords()) + ".*).*$";
+    }
+    
+    public int getOffset() {
+        return (page - 1) * size;
     }
 
 }
