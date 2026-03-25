@@ -51,7 +51,7 @@ public class ItemSearchForm {
 
     private SortDirection sortDirection = SortDirection.ASC;
     
-    @AssertTrue
+    @AssertTrue(message = "{item.price.range.invalid}")
     public boolean isPriceRangeValid() {
         if (priceMin == null || priceMax == null) {
             return true;

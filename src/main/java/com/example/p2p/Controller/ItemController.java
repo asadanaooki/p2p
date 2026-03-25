@@ -44,6 +44,7 @@ public class ItemController {
             ItemSearchForm lastCondition = 
                     (ItemSearchForm) session.getAttribute(LAST_SEARCH_CONDITION);
             ItemSearchForm formToSearch = lastCondition == null ? new ItemSearchForm() : lastCondition;
+            formToSearch = lastCondition == null ? new ItemSearchForm() : lastCondition;
             model.addAttribute("items", itemService.searchItems(formToSearch));
             return "item-list";
         }

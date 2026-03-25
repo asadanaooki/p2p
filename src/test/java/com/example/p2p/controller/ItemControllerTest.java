@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import java.util.UUID;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Nested;
@@ -28,7 +27,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.validation.BindingResult;
 
 import com.example.p2p.dto.ItemListViewDto;
 import com.example.p2p.enums.ItemKind;
@@ -91,7 +91,8 @@ class ItemControllerTest {
                     Arguments.of("sortBy", ItemSortBy.UNIT.toString()),
                     Arguments.of("sortDirection", SortDirection.DESC.toString()),
                     Arguments.of("keyword", ""),
-                    Arguments.of("keyword", "あ".repeat(100)));
+                    Arguments.of("keyword", "あ".repeat(100))
+                    );
         }
         
         static Stream<Arguments> createNgCases() {
@@ -168,5 +169,27 @@ class ItemControllerTest {
             assertThat(captured.getSortBy()).isEqualTo(ItemSortBy.NAME);
             assertThat(captured.getSortDirection()).isEqualTo(SortDirection.ASC);
         }
+        
+        @Test
+        void isPriceRangeValid_reversed() throws Exception {
+            doReturn(new ItemListViewDto()).when(itemService).searchItems(any());
+
+            MvcResult res = mockMvc
+                .perform(get("/setting/item").with(csrf())
+                        .param("priceMin", "200")
+                        .param("priceMax", "100"))
+                .andExpect(model().attributeExists("items"))
+                .andExpect(model().attributeHasErrors("form"))
+                .andExpect(view().name("item-list"))
+                .andReturn();
+
+            BindingResult br = (BindingResult) res.getModelAndView()
+                .getModel()
+                .get(BindingResult.MODEL_KEY_PREFIX + "form");
+
+            assertThat(br.getFieldError().getDefaultMessage())
+            .isEqualTo("最小価格は最大価格以下で入力してください");
+        }
+
     }
 }
