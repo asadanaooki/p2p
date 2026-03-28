@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example.p2p.dto.ItemDetailDto;
 import com.example.p2p.dto.ItemListItemDto;
 import com.example.p2p.dto.ItemListViewDto;
 import com.example.p2p.entity.ItemExample;
@@ -38,6 +39,10 @@ public class ItemService {
                 page,
                 2));
         return dto;
+    }
+    
+    public ItemDetailDto getItemDetail(String itemId) {
+        return itemMapperCustom.selectItemDetail(itemId);
     }
 
     // public void create(String name) {

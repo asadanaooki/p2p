@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" th:href="@{/css/item-detail.css}" />
+</head>
+
+<body>
+  <main class="page">
+    <div class="detail-actions">
+      <a class="edit-button" th:href="@{/setting/item/{itemId}/edit(itemId=${itemId})}">
+        編集
+      </a>
+    </div>
+
+    <div class="detail-item">
+      <p class="detail-label">名称</p>
+      <p class="detail-value" th:text="${detail.name}"></p>
+    </div>
+
+    <div class="detail-item">
+      <p class="detail-label">種別</p>
+      <p class="detail-value" th:text="${detail.kind}"></p>
+    </div>
+
+    <div class="detail-item">
+      <p class="detail-label">単位</p>
+      <p class="detail-value" th:text="${detail.unitName}"></p>
+    </div>
+
+    <div class="detail-item">
+      <p class="detail-label">価格</p>
+      <p class="detail-value" th:text="${#numbers.formatInteger(detail.price, 1, 'COMMA')}"></p>
+    </div>
+
+    <div class="detail-item">
+      <p class="detail-label">サプライヤー</p>
+      <p class="detail-value" th:text="${detail.supplierName}"></p>
+    </div>
+
+    <div class="detail-item">
+      <p class="detail-label">説明</p>
+      <p class="detail-value" th:text="${detail.description}"></p>
+    </div>
+
+    <div class="detail-item">
+      <p class="detail-label">状態</p>
+      <p class="detail-value" th:text="${detail.active == true ? '有効' : '無効'}"></p>
+    </div>
+
+  </main>
+
+</body>
+
+</html>

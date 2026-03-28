@@ -55,4 +55,21 @@
     limit #{size} offset #{offset}
 
   </select>
+  
+  <select id="selectItemDetail" resultType="com.example.p2p.dto.ItemDetailDto">
+    select
+      i.name,
+      i.kind,
+      u.name as unitName,
+      i.price,
+      s.name as supplierName,
+      i.description,
+      i.is_active as active
+    from item i 
+    left join unit u
+        on i.unit_id = u.unit_id
+    left join supplier s
+        on i.supplier_id = s.supplier_id 
+    where i.item_id = #{itemId}
+  </select>
 </mapper>

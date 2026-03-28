@@ -9,6 +9,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.p2p.form.ItemSearchForm;
@@ -17,6 +18,8 @@ import com.example.p2p.service.ItemService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @Controller
 @RequestMapping("/setting/item")
@@ -53,6 +56,14 @@ public class ItemController {
         
         return "item-list";
     }
+    
+    @GetMapping("/{itemId}")
+    public String getMethodName(@PathVariable String itemId, Model model) {
+        model.addAttribute("itemId", itemId);
+        model.addAttribute("detail", itemService.getItemDetail(itemId));
+        return "item-detail";
+    }
+    
 
 //    @GetMapping("/create")
 //    public String showUnitCreateForm(@ModelAttribute("form") UnitCreateForm form) {
