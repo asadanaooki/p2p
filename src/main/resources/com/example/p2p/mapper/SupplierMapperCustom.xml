@@ -38,4 +38,12 @@
       is_active = #{isActive}
     where supplier_id = #{supplierId}
   </update>
+  
+  <select id="selectSupplierOptions" resultType="com.example.p2p.dto.SupplierOptionDto">
+    select
+      supplier_id,
+      name
+    from supplier
+    order by name asc;
+  </select>
 </mapper>

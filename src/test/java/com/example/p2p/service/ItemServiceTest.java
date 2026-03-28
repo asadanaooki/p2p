@@ -1,9 +1,7 @@
 package com.example.p2p.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.intThat;
 
-import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -49,7 +47,7 @@ class ItemServiceTest {
 
         @ParameterizedTest
         @MethodSource("createPaginationCases")
-        void searchItems_exists(int page, int expItemcount, List<Integer> pageNumbers) {
+        void searchItems_exists(int page, int expItemcount,int expSupplierCount, List<Integer> pageNumbers) {
             StringBuilder sb = new StringBuilder();
             sb.append("0".repeat(8));
             sb.append("-");
@@ -82,9 +80,8 @@ class ItemServiceTest {
             form.setSize(7);
             ItemListViewDto actual = itemService.searchItems(form);
             
-            var a = itemMapper.selectByExample(new ItemExample());
-
             assertThat(actual.getItems()).hasSize(expItemcount);
+            assertThat(actual.getSupplierOptions()).hasSize(expSupplierCount);
             assertThat(actual.getPageNumberList()).isEqualTo(pageNumbers);
             assertThat(actual.getCurrentPage()).isEqualTo(page);
 
@@ -92,15 +89,14 @@ class ItemServiceTest {
 
         static Stream<Arguments> createPaginationCases() {
             // 8ページ作成
-            return Stream.of(
-                    Arguments.of(1, 7, CommonUtil.createPageNumbers(50, 7, 1, 2)),
-                    Arguments.of(2, 7, CommonUtil.createPageNumbers(50, 7, 2, 2)),
-                    Arguments.of(3, 7, CommonUtil.createPageNumbers(50, 7, 3, 2)),
-                    Arguments.of(4, 7, CommonUtil.createPageNumbers(50, 7, 4, 2)),
-                    Arguments.of(5, 7, CommonUtil.createPageNumbers(50, 7, 5, 2)),
-                    Arguments.of(6, 7, CommonUtil.createPageNumbers(50, 7, 6, 2)),
-                    Arguments.of(7, 7, CommonUtil.createPageNumbers(50, 7, 7, 2)),
-                    Arguments.of(8, 1, CommonUtil.createPageNumbers(50, 7, 8, 2)));
+            return Stream.of(Arguments.of(1, 7, 3, CommonUtil.createPageNumbers(50, 7, 1, 2)),
+                    Arguments.of(2, 7, 3, CommonUtil.createPageNumbers(50, 7, 2, 2)),
+                    Arguments.of(3, 7, 3, CommonUtil.createPageNumbers(50, 7, 3, 2)),
+                    Arguments.of(4, 7, 3, CommonUtil.createPageNumbers(50, 7, 4, 2)),
+                    Arguments.of(5, 7, 3, CommonUtil.createPageNumbers(50, 7, 5, 2)),
+                    Arguments.of(6, 7, 3, CommonUtil.createPageNumbers(50, 7, 6, 2)),
+                    Arguments.of(7, 7, 3, CommonUtil.createPageNumbers(50, 7, 7, 2)),
+                    Arguments.of(8, 1, 3, CommonUtil.createPageNumbers(50, 7, 8, 2)));
         }
 
         @Test

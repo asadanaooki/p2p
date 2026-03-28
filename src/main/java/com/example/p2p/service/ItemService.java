@@ -1,7 +1,6 @@
 package com.example.p2p.service;
 
 import java.util.List;
-import java.util.stream.IntStream;
 
 import org.springframework.stereotype.Service;
 
@@ -11,6 +10,7 @@ import com.example.p2p.entity.ItemExample;
 import com.example.p2p.form.ItemSearchForm;
 import com.example.p2p.mapper.ItemMapper;
 import com.example.p2p.mapper.ItemMapperCustom;
+import com.example.p2p.mapper.SupplierMapperCustom;
 import com.example.p2p.util.CommonUtil;
 
 import lombok.AllArgsConstructor;
@@ -22,12 +22,15 @@ public class ItemService {
     private ItemMapperCustom itemMapperCustom;
     
     private ItemMapper itemMapper;
+    
+    private SupplierMapperCustom supplierMapperCustom;
 
     public ItemListViewDto searchItems(ItemSearchForm form) {
         ItemListViewDto dto = new ItemListViewDto();
         int page = form.getPage();
         List<ItemListItemDto> items = itemMapperCustom.selectItems(form);
         dto.setItems(items);
+        dto.setSupplierOptions(supplierMapperCustom.selectSupplierOptions());
         dto.setCurrentPage(page);
         dto.setPageNumberList(CommonUtil.createPageNumbers(
                 (int) itemMapper.countByExample(new ItemExample()),

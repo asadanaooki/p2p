@@ -3,34 +3,212 @@
 
 <head>
   <link rel="stylesheet" th:href="@{/css/common.css}" />
-  <link rel="stylesheet" th:href="@{/css/unit-list.css}">
+  <link rel="stylesheet" th:href="@{/css/item-list.css}">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script th:src="@{/js/item-list.js}"></script>
 </head>
 
 <body>
   <main class="page">
     <div class="success-message" th:if="${successMessage}" th:text="${successMessage}"></div>
-    <a th:href="@{/setting/unit/create}" class="new-button">作成</a>
+    <div class="toolbar">
+      <a th:href="@{/setting/item/create}" class="new-button">作成</a>
 
-    <div th:replace="~{fragments/filter :: statusFilter(@{/setting/unit})}"></div>
+      <div class="toolbar-right">
+        <form th:action="@{/setting/item}" th:object="${form}" method="get" class="keyword-search-form">
+          <input type="hidden" th:field="*{kind}">
+          <input type="hidden" th:field="*{priceMin}">
+          <input type="hidden" th:field="*{priceMax}">
+          <input type="hidden" th:field="*{supplierId}">
+          <input type="hidden" th:field="*{status}">
+          <input type="hidden" th:field="*{sortBy}">
+          <input type="hidden" th:field="*{sortDirection}">
 
-    <table class="unit-table">
-      <thead>
-        <tr>
-          <th>単位名</th>
-          <th>状態</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr th:each="unit : ${unitList}">
-          <td>
-            <a class="unit-link" th:href="@{/setting/unit/{unitId}(unitId=${unit.unitId})}" th:text="${unit.name}"></a>
-          </td>
+          <div class="search-box">
+            <input id="keyword" type="text" th:field="*{keyword}" class="search-input">
+            <button type="submit" class="search-icon-button">
+              <svg class="search-icon" viewBox="0 0 632.399 632.399">
+                <path
+                  d="M255.108,0C119.863,0,10.204,109.66,10.204,244.904c0,135.245,109.659,244.905,244.904,244.905
+                     c52.006,0,100.238-16.223,139.883-43.854l185.205,185.176c1.671,1.672,4.379,1.672,5.964,0.115l34.892-34.891
+                     c1.613-1.613,1.47-4.379-0.115-5.965L438.151,407.605c38.493-43.246,61.86-100.237,61.86-162.702
+                     C500.012,109.66,390.353,0,255.108,0z M255.108,460.996c-119.34,0-216.092-96.752-216.092-216.092
+                     c0-119.34,96.751-216.091,216.092-216.091s216.091,96.751,216.091,216.091C471.199,364.244,374.448,460.996,255.108,460.996z" />
+              </svg>
+            </button>
+          </div>
+          <p class="field-error" th:if="${#fields.hasErrors('keyword')}" th:errors="*{keyword}"></p>
+        </form>
 
-          <td th:text="${unit.active} ? '有効' : '無効'"></td>
-        </tr>
-      </tbody>
+        <button type="button" id="filterToggleButton" class="filter-toggle-button">
+          <svg class="filter-toggle-icon" viewBox="0 0 48 48">
+            <polyline points="6.33 7 20.01 24 20.01 42 28.01 37 28.01 24 27.99 24 41.99 7 15.01 7" fill="none"
+              stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4" />
+          </svg>
+        </button>
+      </div>
+    </div>
 
-    </table>
+    <div id="filterPanel" class="filter-panel">
+      <form th:action="@{/setting/item}" th:object="${form}" method="get" class="filter-form">
+        <input type="hidden" th:field="*{keyword}">
+        <input type="hidden" th:field="*{sortBy}">
+        <input type="hidden" th:field="*{sortDirection}">
+
+        <div class="filter-grid">
+          <div class="filter-item">
+            <label for="kind" class="field-label">種別</label>
+            <select id="kind" th:field="*{kind}">
+              <option value="">すべて</option>
+              <option th:each="kind : ${T(com.example.p2p.enums.ItemKind).values()}" th:value="${kind}"
+                th:text="${kind.label}">
+              </option>
+            </select>
+          </div>
+
+          <div class="filter-item price-filter-item">
+            <label for="priceMin" class="field-label">価格</label>
+            <div class="price-range">
+              <input id="priceMin" type="number" th:field="*{priceMin}">
+              <span>～</span>
+              <input id="priceMax" type="number" th:field="*{priceMax}">
+            </div>
+
+            <p class="field-error" th:if="${#fields.hasErrors('priceMin')}" th:errors="*{priceMin}"></p>
+            <p class="field-error" th:if="${#fields.hasErrors('priceMax')}" th:errors="*{priceMax}"></p>
+            <p class="field-error" th:if="${#fields.hasErrors('priceRangeValid')}" th:errors="*{priceRangeValid}"></p>
+          </div>
+
+          <div class="filter-item">
+            <label for="supplierId" class="field-label">サプライヤー</label>
+            <select id="supplierId" th:field="*{supplierId}">
+              <option value="">すべて</option>
+              <option th:each="s : ${view.supplierOptions}" th:value="${s.supplierId}" th:text="${s.name}"></option>
+            </select>
+            <p class="field-error" th:if="${#fields.hasErrors('supplierId')}" th:errors="*{supplierId}"></p>
+          </div>
+
+          <div class="filter-item">
+            <label for="status" class="field-label">状態</label>
+            <select id="status" th:field="*{status}">
+              <option value="">すべて</option>
+              <option value="true">有効</option>
+              <option value="false">無効</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="filter-actions">
+          <button type="submit" class="filter-submit-button">絞り込む</button>
+          <a th:href="@{/setting/item}" class="filter-reset-button">リセット</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="table-card">
+      <table class="item-table" th:if="${!#lists.isEmpty(view.items)}">
+        <thead>
+          <tr>
+            <th class="col-name">
+              <button type="button" class="sort-button" data-sort-by="NAME">
+                <span>名称</span>
+                <span class="sort-icon" th:if="${form.sortBy.name() == 'NAME'}"
+                  th:text="${form.sortDirection.name() == 'ASC' ? '▲' : '▼'}"></span>
+              </button>
+            </th>
+            <th class="col-kind">
+              <button type="button" class="sort-button" data-sort-by="KIND">
+                <span>種別</span>
+                <span class="sort-icon" th:if="${form.sortBy.name() == 'KIND'}"
+                  th:text="${form.sortDirection.name() == 'ASC' ? '▲' : '▼'}"></span>
+              </button>
+            </th>
+            <th class="col-unit">
+              <button type="button" class="sort-button" data-sort-by="UNIT">
+                <span>単位</span>
+                <span class="sort-icon" th:if="${form.sortBy.name() == 'UNIT'}"
+                  th:text="${form.sortDirection.name() == 'ASC' ? '▲' : '▼'}"></span>
+              </button>
+            </th>
+            <th class="col-price">
+              <button type="button" class="sort-button" data-sort-by="PRICE">
+                <span>価格</span>
+                <span class="sort-icon" th:if="${form.sortBy.name() == 'PRICE'}"
+                  th:text="${form.sortDirection.name() == 'ASC' ? '▲' : '▼'}"></span>
+              </button>
+            </th>
+            <th class="col-supplier">
+              <button type="button" class="sort-button" data-sort-by="SUPPLIER">
+                <span>サプライヤー</span>
+                <span class="sort-icon" th:if="${form.sortBy.name() == 'SUPPLIER'}"
+                  th:text="${form.sortDirection.name() == 'ASC' ? '▲' : '▼'}"></span>
+              </button>
+            </th>
+            <th class="col-status">
+              <button type="button" class="sort-button" data-sort-by="STATUS">
+                <span>状態</span>
+                <span class="sort-icon" th:if="${form.sortBy.name() == 'STATUS'}"
+                  th:text="${form.sortDirection.name() == 'ASC' ? '▲' : '▼'}"></span>
+              </button>
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr th:each="item : ${view.items}">
+            <td class="col-name">
+              <a class="item-link" th:text="${item.name}"
+                th:href="@{/setting/item/{itemId}(itemId=${item.itemId})}"></a>
+            </td>
+            <td class="col-kind" th:text="${item.kind != null ? item.kind.label : ''}"></td>
+            <td class="col-unit" th:text="${item.unitName}"></td>
+            <td class="col-price" th:text="${#numbers.formatInteger(item.price, 1, 'COMMA')}"></td>
+            <td class="col-supplier" th:text="${item.supplierName}"></td>
+            <td class="col-status" th:text="${item.active} ? '有効' : '無効'"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination" th:if="${!#lists.isEmpty(view.pageNumberList)}">
+      <a class="page-link" th:if="${view.currentPage > 1}" th:href="@{/setting/item(
+          page=${view.currentPage - 1},
+          keyword=${form.keyword},
+          priceMin=${form.priceMin},
+          priceMax=${form.priceMax},
+          supplierId=${form.supplierId},
+          status=${form.status},
+          sortBy=${form.sortBy},
+          sortDirection=${form.sortDirection}
+        )}">
+        &lt;
+      </a>
+      <a class="page-link" th:each="pageNo : ${view.pageNumberList}"
+        th:classappend="${pageNo == view.currentPage} ? 'active' : ''" th:text="${pageNo}" th:href="@{/setting/item(
+          page=${pageNo},
+          keyword=${form.keyword},
+          priceMin=${form.priceMin},
+          priceMax=${form.priceMax},
+          supplierId=${form.supplierId},
+          status=${form.status},
+          sortBy=${form.sortBy},
+          sortDirection=${form.sortDirection}
+        )}">
+        &lt;
+      </a>
+      <a class="page-link" th:if="${view.currentPage < #lists.size(view.pageNumberList)}" th:href="@{/setting/item(
+          page=${view.currentPage + 1},
+          keyword=${form.keyword},
+          priceMin=${form.priceMin},
+          priceMax=${form.priceMax},
+          supplierId=${form.supplierId},
+          status=${form.status},
+          sortBy=${form.sortBy},
+          sortDirection=${form.sortDirection}
+        )}">
+        &gt;
+      </a>
+    </div>
   </main>
 </body>
 

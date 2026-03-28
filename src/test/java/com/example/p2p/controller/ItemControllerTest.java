@@ -61,7 +61,7 @@ class ItemControllerTest {
             .perform(get("/setting/item").with(csrf())
                     .param(name, value))
             .andExpect(request().sessionAttribute("lastSearchCondition", notNullValue()))
-            .andExpect(model().attributeExists("items"))
+            .andExpect(model().attributeExists("view"))
             .andExpect(model().attributeHasNoErrors("form"))
             .andExpect(view().name("item-list"));
         }
@@ -75,7 +75,7 @@ class ItemControllerTest {
             .perform(get("/setting/item").with(csrf())
                     .param(name, value))
             .andExpect(request().sessionAttribute("lastSearchCondition", nullValue()))
-            .andExpect(model().attributeExists("items"))
+            .andExpect(model().attributeExists("view"))
             .andExpect(model().attributeHasErrors("form"))
             .andExpect(view().name("item-list"));
         }
@@ -112,7 +112,7 @@ class ItemControllerTest {
             mockMvc
             .perform(get("/setting/item").with(csrf()))
             .andExpect(request().sessionAttribute("lastSearchCondition", notNullValue()))
-            .andExpect(model().attributeExists("items"))
+            .andExpect(model().attributeExists("view"))
             .andExpect(view().name("item-list"));
         }
         
@@ -130,7 +130,7 @@ class ItemControllerTest {
             .perform(get("/setting/item").with(csrf())
                     .sessionAttr("lastSearchCondition", form)
                     .param("priceMin", "-1"))
-            .andExpect(model().attributeExists("items"))
+            .andExpect(model().attributeExists("view"))
             .andExpect(view().name("item-list"));
             
             ItemSearchForm captured = cap.getValue();
@@ -154,7 +154,7 @@ class ItemControllerTest {
             mockMvc
             .perform(get("/setting/item").with(csrf())
                     .param("priceMin", "-1"))
-            .andExpect(model().attributeExists("items"))
+            .andExpect(model().attributeExists("view"))
             .andExpect(view().name("item-list"));
             
             ItemSearchForm captured = cap.getValue();
@@ -178,7 +178,7 @@ class ItemControllerTest {
                 .perform(get("/setting/item").with(csrf())
                         .param("priceMin", "200")
                         .param("priceMax", "100"))
-                .andExpect(model().attributeExists("items"))
+                .andExpect(model().attributeExists("view"))
                 .andExpect(model().attributeHasErrors("form"))
                 .andExpect(view().name("item-list"))
                 .andReturn();

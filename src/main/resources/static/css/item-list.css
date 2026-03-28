@@ -1,0 +1,329 @@
+/* =========================
+   ベース
+========================= */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.page {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* =========================
+   ツールバー全体
+========================= */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
+  padding: 20px 22px 16px;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+/* =========================
+   ツールバー内ボタン
+========================= */
+.new-button {
+  min-width: 160px;
+  height: 42px;
+  padding: 0 18px;
+  border: 1px solid #9db1ae;
+  color: #13a24a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.search-icon-button {
+  width: 48px;
+  height: 42px;
+  border: 1px solid #aab9b6;
+  cursor: pointer;
+  font-size: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filter-toggle-button {
+  width: 64px;
+  height: 42px;
+  border: 1px solid #aab9b6;
+  cursor: pointer;
+  font-size: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filter-toggle-button:hover,
+.search-icon-button:hover {
+  background-color: #e7efec;
+}
+
+/* =========================
+   検索エリア
+========================= */
+.search-box {
+  display: flex;
+  align-items: flex-start;
+}
+
+.search-input {
+  width: 215px;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid #aab9b6;
+  border-right: none;
+  outline: none;
+  font-size: 14px;
+}
+
+/* =========================
+   フィルターパネル
+========================= */
+.filter-panel {
+  border-top: 1px solid #d4dddb;
+  background: #dfe6e3;
+}
+
+.filter-form {
+  padding: 18px 22px 20px;
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field-label {
+  font-size: 14px;
+  color: #4f605d;
+}
+
+/* =========================
+   フィルター入力項目
+========================= */
+.filter-item input[type="number"],
+.filter-item select {
+  width: 100%;
+  padding: 6px 12px;
+  border: 1px solid #aab9b6;
+  font-size: 14px;
+}
+
+.filter-item input[type="number"]::-webkit-outer-spin-button,
+.filter-item input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.price-range {
+  display: flex;
+  gap: 8px;
+}
+
+.price-range input[type="number"] {
+  width: 120px;
+}
+
+.field-error {
+  margin: 0;
+  color: #d93025;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* =========================
+   フィルター操作ボタン
+========================= */
+.filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.filter-submit-button,
+.filter-reset-button {
+  min-width: 100px;
+  height: 40px;
+  padding: 0 16px;
+  border: 1px solid #9db1ae;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  background-color: #fff;
+}
+
+.filter-submit-button {
+  cursor: pointer;
+  color: #13a24a;
+}
+
+.filter-submit-button:hover,
+.filter-reset-button:hover {
+  background: #f5f8f7;
+}
+
+/* =========================
+   テーブル全体
+========================= */
+.table-card {
+  width: 100%;
+}
+
+.item-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+/* =========================
+   テーブルヘッダー
+========================= */
+.item-table thead th {
+  padding: 12px 10px;
+  border-right: 1px solid #c7d1ce;
+  background: #9fb3b2;
+  color: #1f2c30;
+  font-weight: 400;
+  font-size: 16px;
+  text-align: left;
+}
+
+.item-table thead th:last-child {
+  border-right: none;
+}
+
+.sort-button {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  color: #1f2c30;
+}
+
+.sort-icon {
+  display: inline-block;
+  min-width: 12px;
+  font-size: 12px;
+}
+
+/* =========================
+   テーブルボディ
+========================= */
+.item-table tbody td {
+  padding: 10px;
+  border-bottom: 1px solid #d8dfdd;
+  overflow-wrap: break-word;
+}
+
+.item-table tbody tr:hover {
+  background: #f8fbfa;
+}
+
+.item-link {
+  color: #14a648;
+}
+
+.item-link:hover {
+  text-decoration: underline;
+}
+
+/* =========================
+   ページネーション
+========================= */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 18px 0 28px;
+}
+
+.page-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  color: #243238;
+}
+
+.page-link:hover {
+  background: #f4f8f7;
+}
+
+.page-link.active {
+  background: #dfe8e5;
+  font-weight: 700;
+}
+
+/* =========================
+   列幅
+========================= */
+.col-name {
+  width: 28%;
+}
+
+.col-kind {
+  width: 12%;
+}
+
+.col-unit {
+  width: 10%;
+}
+
+.col-price {
+  width: 12%;
+}
+
+.col-supplier {
+  width: 28%;
+}
+
+.col-status {
+  width: 10%;
+}
+
+/* =========================
+   SVGアイコン
+========================= */
+.filter-toggle-icon {
+  width: 25px;
+  height: 25px;
+}
+
+.search-icon {
+  width: 25px;
+  height: 25px;
+}

@@ -45,11 +45,11 @@ public class ItemController {
                     (ItemSearchForm) session.getAttribute(LAST_SEARCH_CONDITION);
             ItemSearchForm formToSearch = lastCondition == null ? new ItemSearchForm() : lastCondition;
             formToSearch = lastCondition == null ? new ItemSearchForm() : lastCondition;
-            model.addAttribute("items", itemService.searchItems(formToSearch));
+            model.addAttribute("view", itemService.searchItems(formToSearch));
             return "item-list";
         }
         session.setAttribute(LAST_SEARCH_CONDITION, form);
-        model.addAttribute("items", itemService.searchItems(form));
+        model.addAttribute("view", itemService.searchItems(form));
         
         return "item-list";
     }
