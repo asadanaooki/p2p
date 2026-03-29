@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -11,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -30,10 +32,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.validation.BindingResult;
 
+import com.example.p2p.dto.ItemEditViewDto;
 import com.example.p2p.dto.ItemListViewDto;
+import com.example.p2p.dto.SupplierOptionDto;
+import com.example.p2p.dto.UnitOptionDto;
 import com.example.p2p.enums.ItemKind;
 import com.example.p2p.enums.ItemSortBy;
 import com.example.p2p.enums.SortDirection;
+import com.example.p2p.form.ItemEditForm;
 import com.example.p2p.form.ItemSearchForm;
 import com.example.p2p.service.ItemService;
 
@@ -191,5 +197,43 @@ class ItemControllerTest {
             .isEqualTo("最小価格は最大価格以下で入力してください");
         }
 
+    }
+    
+    @Test
+    void showItemEditForm() throws Exception {
+        ItemEditViewDto dto = new ItemEditViewDto();
+        dto.setName("test");
+        dto.setKind(ItemKind.GOODS);
+        dto.setUnitId("testUnitId");
+        dto.setPrice(300);
+        dto.setSupplierId("testSupp");
+        dto.setDescription("testDesc");
+        dto.setActive(true);
+        dto.setUnitOptions(List.of(new UnitOptionDto()));
+        dto.setSupplierOptions(List.of(new SupplierOptionDto(), new SupplierOptionDto()));
+        doReturn(dto).when(itemService).prepareItemEditView(anyString());
+        
+        MvcResult res = mockMvc.perform(get("/setting/item/{itemId}/edit", "testId").with(csrf()))
+            .andExpect(model().attribute("itemId", "testId"))
+            .andExpect(view().name("item-edit"))
+            .andReturn();
+        
+        ItemEditForm form = (ItemEditForm) res.getModelAndView().getModel().get("form");
+        assertThat(form.getName()).isEqualTo("test");
+        assertThat(form.getKind()).isEqualTo(ItemKind.GOODS);
+        assertThat(form.getUnitId()).isEqualTo("testUnitId");
+        assertThat(form.getPrice()).isEqualTo(300);
+        assertThat(form.getSupplierId()).isEqualTo("testSupp");
+        assertThat(form.getDescription()).isEqualTo("testDesc");
+        assertThat(form.isActive()).isTrue();
+
+        String itemId = (String) res.getModelAndView().getModel().get("itemId");
+        assertThat(itemId).isEqualTo("testId");
+        
+        List<UnitOptionDto> unitOptions = (List<UnitOptionDto>) res.getModelAndView().getModel().get("unitOptions");
+        assertThat(unitOptions).hasSize(1);
+        
+        List<SupplierOptionDto> supplierOptions = (List<SupplierOptionDto>) res.getModelAndView().getModel().get("supplierOptions");
+        assertThat(supplierOptions).hasSize(2);
     }
 }

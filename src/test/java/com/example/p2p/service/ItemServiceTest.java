@@ -2,6 +2,7 @@ package com.example.p2p.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -15,10 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.p2p.dto.ItemEditViewDto;
 import com.example.p2p.dto.ItemListViewDto;
 import com.example.p2p.entity.Item;
 import com.example.p2p.entity.ItemExample;
 import com.example.p2p.enums.ItemKind;
+import com.example.p2p.form.ItemEditForm;
 import com.example.p2p.form.ItemSearchForm;
 import com.example.p2p.mapper.ItemMapper;
 import com.example.p2p.mapper.ItemMapperCustom;
@@ -36,6 +39,7 @@ class ItemServiceTest {
 
     @Autowired
     ItemMapperCustom itemMapperCustom;
+    
 
     @Nested
     class SearchItems {
@@ -110,4 +114,44 @@ class ItemServiceTest {
 
     }
 
+    @Test
+    void update() {
+        ItemEditForm form = new ItemEditForm();
+        form.setName("test");
+        form.setKind(ItemKind.SERVICE);
+        form.setUnitId("22222222-2222-2222-2222-222222222222");
+        form.setPrice(1);
+        form.setSupplierId("b4d8e1f7-92ac-4c35-8f21-6a7b8c9d0e1f");
+        form.setDescription("testdescription");
+        form.setActive(false);
+        
+        itemService.update("a5c1b32a-7b01-49d3-8fef-48e0f39dc31f", form);
+        
+       Item updated = itemMapper.selectByPrimaryKey("a5c1b32a-7b01-49d3-8fef-48e0f39dc31f");
+       
+       assertThat(updated.getName()).isEqualTo("test");
+       assertThat(updated.getKind()).isEqualTo(ItemKind.SERVICE.toString());
+       assertThat(updated.getUnitId()).isEqualTo("22222222-2222-2222-2222-222222222222");
+       assertThat(updated.getPrice()).isEqualTo(1);
+       assertThat(updated.getSupplierId()).isEqualTo("b4d8e1f7-92ac-4c35-8f21-6a7b8c9d0e1f");
+       assertThat(updated.getDescription()).isEqualTo("testdescription");
+       assertThat(updated.getIsActive()).isFalse();
+       assertThat(updated.getCreatedAt().toLocalDate()).isEqualTo(LocalDate.of(2026, 3, 24));
+       assertThat(updated.getUpdatedAt().toLocalDate()).isEqualTo(LocalDate.now());
+    }
+    
+    @Test
+    void prepareItemEditView() {
+       ItemEditViewDto actual = itemService.prepareItemEditView("a5c1b32a-7b01-49d3-8fef-48e0f39dc31f");
+       
+       assertThat(actual.getName()).isEqualTo("A4コピー用紙 500枚");
+       assertThat(actual.getKind()).isEqualTo(ItemKind.GOODS);
+       assertThat(actual.getUnitId()).isEqualTo("22222222-2222-2222-2222-222222222221");
+       assertThat(actual.getPrice()).isEqualTo(680);
+       assertThat(actual.getSupplierId()).isEqualTo("a7f3c9d2-4b8e-41f1-9c6a-1d2e3f4a5b6c");
+       assertThat(actual.getDescription()).isEqualTo("社内文書や見積書の印刷に使用する標準的なA4コピー用紙です。");
+       assertThat(actual.isActive()).isTrue();
+       assertThat(actual.getUnitOptions().size()).isEqualTo(5);
+       assertThat(actual.getSupplierOptions().size()).isEqualTo(3);
+    }
 }

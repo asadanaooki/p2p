@@ -8,6 +8,7 @@
 
 <body>
   <main class="page">
+    <div class="success-message" th:if="${successMessage}" th:text="${successMessage}"></div>
     <div class="detail-actions">
       <a class="edit-button" th:href="@{/setting/item/{itemId}/edit(itemId=${itemId})}">
         編集

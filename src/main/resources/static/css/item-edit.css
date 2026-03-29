@@ -1,0 +1,93 @@
+.page {
+  min-height: 100vh;
+  padding: 24px 40px 56px;
+}
+
+.page-title {
+  font-size: 25px;
+  font-weight: 400;
+  color: #0d2b45;
+}
+
+.edit-form {
+  width: 100%;
+  max-width: 320px;
+}
+
+.form-item {
+  margin-bottom: 24px;
+}
+
+.form-item label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #8c775f;
+}
+
+.form-item input,
+.form-item select,
+.form-item textarea {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid #9fb0ae;
+}
+
+.form-item input:focus,
+.form-item select:focus,
+.form-item textarea:focus {
+  outline: none;
+  border-color: #7f9794;
+}
+
+.field-error {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: #d93025;
+}
+
+.form-actions {
+  display: flex;
+  gap: 18px;
+  margin-top: 42px;
+}
+
+.save-button,
+.cancel-button {
+  min-width: 110px;
+  height: 40px;
+  border: 1px solid #9fb0ae;
+  background-color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.save-button {
+  color: #1aa34a;
+  cursor: pointer;
+}
+
+.cancel-button {
+  color: #2f3a45;
+  text-decoration: none;
+}
+
+.save-button:hover,
+.cancel-button:hover {
+  background-color: #f8f8f8;
+}
+
+.form-item textarea {
+  resize: both;
+  padding: 10px 14px;
+  min-height: 70px;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
