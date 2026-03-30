@@ -1,0 +1,49 @@
+.page {
+  min-height: 100vh;
+  max-width: 820px;
+  padding: 24px 40px 56px;
+}
+
+.detail-actions {
+  margin-bottom: 46px;
+}
+
+.edit-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 84px;
+  height: 40px;
+  padding: 0 20px;
+  border: 1px solid #9caeab;
+  background-color: #ececea;
+  text-decoration: none;
+  color: #243534;
+}
+
+
+.detail-item {
+  margin-bottom: 30px;
+}
+
+.detail-label,
+.detail-value {
+  margin: 0;
+}
+
+.detail-label {
+  color: #8a8478;
+}
+
+.detail-value {
+  min-height: 22px;
+}
+
+.success-message {
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  border: 1px solid #b7dfc4;
+  border-radius: 4px;
+  background-color: #edf8f1;
+  color: #25643f;
+}

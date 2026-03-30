@@ -1,0 +1,23 @@
+{
+  "name": "p2p",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asadanaooki/p2p.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/asadanaooki/p2p/issues"
+  },
+  "homepage": "https://github.com/asadanaooki/p2p#readme",
+  "description": "",
+  "devDependencies": {
+    "@types/jquery": "^4.0.0"
+  }
+}

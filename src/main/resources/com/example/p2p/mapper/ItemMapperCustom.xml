@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.p2p.mapper.ItemMapperCustom">
+  <select id="selectItems" resultType="com.example.p2p.dto.ItemListItemDto">
+    select
+      i.item_id,
+      i.name,
+      i.kind,
+      u.name as unitName,
+      i.price,
+      s.name as supplierName,
+      i.is_active as active
+    from item i 
+    left join unit u
+        on i.unit_id = u.unit_id
+    left join supplier s
+        on i.supplier_id = s.supplier_id 
+    <where>
+      <if test="kind != null">
+        i.kind = #{kind}
+      </if>
+      <if test="priceMin != null">
+        and i.price &gt;= #{priceMin}
+      </if>
+      <if test="priceMax != null">
+        and i.price &lt;= #{priceMax}
+      </if>
+      <if test="supplierId != null">
+        and s.supplier_id = #{supplierId}
+      </if>
+      <if test="status != null">
+        and i.is_active = #{status}
+      </if>
+      
+      <if test="keywords.size() > 0">
+        and ( 
+          i.name ~ #{keywordRegex}
+          or s.name ~#{keywordRegex}
+        )
+      </if>
+    </where>
+    order by
+      <choose>
+        <when test="sortBy.toString().equals('NAME')">i.name</when>
+        <when test="sortBy.toString().equals('KIND')">i.kind</when>
+        <when test="sortBy.toString().equals('UNIT')">u.name</when>
+        <when test="sortBy.toString().equals('PRICE')">i.price</when>
+        <when test="sortBy.toString().equals('SUPPLIER')">s.name</when>
+        <when test="sortBy.toString().equals('STATUS')">i.is_active</when>
+      </choose>
+      <choose>
+        <when test="sortDirection.toString().equals('ASC')">asc</when>
+        <when test="sortDirection.toString().equals('DESC')">desc</when>
+      </choose>
+    limit #{size} offset #{offset}
+
+  </select>
+  
+  <select id="selectItemDetail" resultType="com.example.p2p.dto.ItemDetailDto">
+    select
+      i.name,
+      i.kind,
+      u.name as unitName,
+      i.price,
+      s.name as supplierName,
+      i.description,
+      i.is_active as active
+    from item i 
+    left join unit u
+        on i.unit_id = u.unit_id
+    left join supplier s
+        on i.supplier_id = s.supplier_id 
+    where i.item_id = #{itemId}
+  </select>
+</mapper>
