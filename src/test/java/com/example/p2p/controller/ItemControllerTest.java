@@ -39,7 +39,7 @@ import com.example.p2p.dto.UnitOptionDto;
 import com.example.p2p.enums.ItemKind;
 import com.example.p2p.enums.ItemSortBy;
 import com.example.p2p.enums.SortDirection;
-import com.example.p2p.form.ItemEditForm;
+import com.example.p2p.form.ItemUpsertForm;
 import com.example.p2p.form.ItemSearchForm;
 import com.example.p2p.service.ItemService;
 
@@ -218,14 +218,14 @@ class ItemControllerTest {
             .andExpect(view().name("item-edit"))
             .andReturn();
         
-        ItemEditForm form = (ItemEditForm) res.getModelAndView().getModel().get("form");
+        ItemUpsertForm form = (ItemUpsertForm) res.getModelAndView().getModel().get("form");
         assertThat(form.getName()).isEqualTo("test");
         assertThat(form.getKind()).isEqualTo(ItemKind.GOODS);
         assertThat(form.getUnitId()).isEqualTo("testUnitId");
         assertThat(form.getPrice()).isEqualTo(300);
         assertThat(form.getSupplierId()).isEqualTo("testSupp");
         assertThat(form.getDescription()).isEqualTo("testDesc");
-        assertThat(form.isActive()).isTrue();
+        assertThat(form.getActive()).isTrue();
 
         String itemId = (String) res.getModelAndView().getModel().get("itemId");
         assertThat(itemId).isEqualTo("testId");

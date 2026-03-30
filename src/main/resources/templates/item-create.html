@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" th:href="@{/css/item-create.css}" />
+</head>
+
+<body>
+  <main class="page">
+    <h1 class="page-title">アイテム作成</h1>
+
+    <form th:action="@{/setting/item/create}" th:object="${form}" method="post" class="create-form">
+      <div class="form-item">
+        <label for="name">名称</label>
+        <input id="name" type="text" th:field="*{name}">
+        <p class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+      </div>
+
+      <div class="form-item">
+        <label for="kind">種別</label>
+        <select id="kind" th:field="*{kind}">
+          <option value=""></option>
+          <option th:each="kind : ${T(com.example.p2p.enums.ItemKind).values()}" th:value="${kind}"
+            th:text="${kind.label}">
+          </option>
+        </select>
+        <p class="field-error" th:if="${#fields.hasErrors('kind')}" th:errors="*{kind}"></p>
+      </div>
+
+      <div class="form-item">
+        <label for="unitId">単位</label>
+        <select id="unitId" th:field="*{unitId}">
+          <option value=""></option>
+          <option th:each="unit : ${unitOptions}" th:value="${unit.unitId}" th:text="${unit.name}">
+          </option>
+        </select>
+        <p class="field-error" th:if="${#fields.hasErrors('unitId')}" th:errors="*{unitId}"></p>
+      </div>
+
+      <div class="form-item">
+        <label for="price">価格</label>
+        <input id="price" type="number" th:field="*{price}">
+        <p class="field-error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></p>
+      </div>
+
+      <div class="form-item">
+        <label for="supplierId">サプライヤー</label>
+        <select id="supplierId" th:field="*{supplierId}">
+          <option value=""></option>
+          <option th:each="supplier : ${supplierOptions}" th:value="${supplier.supplierId}" th:text="${supplier.name}">
+          </option>
+        </select>
+        <p class="field-error" th:if="${#fields.hasErrors('supplierId')}" th:errors="*{supplierId}"></p>
+      </div>
+
+      <div class="form-item">
+        <label for="description">説明</label>
+        <textarea id="description" th:field="*{description}"></textarea>
+        <p class="field-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
+      </div>
+
+      <div class="form-item">
+        <label for="active">状態</label>
+        <select id="active" th:field="*{active}">
+          <option th:value="true">有効</option>
+          <option th:value="false">無効</option>
+        </select>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="save-button">保存</button>
+        <a class="cancel-button" th:href="@{/setting/item}">戻る</a>
+      </div>
+    </form>
+  </main>
+</body>
+
+</html>

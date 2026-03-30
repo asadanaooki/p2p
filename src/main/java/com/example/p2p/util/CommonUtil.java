@@ -14,21 +14,19 @@ public class CommonUtil {
         if (totalItemCount == 0) {
             return Collections.EMPTY_LIST;
         }
-        
-        int totalPage = (int) Math.ceil((double) totalItemCount / pageSize);
-        int start = currentPage - sidePageCount;
-        int end = currentPage + sidePageCount;
 
-        if (start < 1) {
-            end += sidePageCount - currentPage + 1;
-            start = 1;
-        }
-        if (end > totalPage) {
-            start -= sidePageCount - totalPage + currentPage;
-            end = totalPage;
-        }
-        if (start < 1) {
-            start = 1;
+        int totalPage = (int) Math.ceil((double) totalItemCount / pageSize);
+        int displayCount = sidePageCount * 2 + 1;
+
+        int start = Math.max(1, currentPage - sidePageCount);
+        int end = Math.min(totalPage, currentPage + sidePageCount);
+
+        int currentCount = end - start + 1;
+
+        if (currentCount < displayCount) {
+            int shortage = displayCount - currentCount;
+            end = Math.min(totalPage, end + shortage);
+            start = Math.max(1, end - displayCount + 1);
         }
 
         return IntStream.rangeClosed(start, end).boxed().toList();

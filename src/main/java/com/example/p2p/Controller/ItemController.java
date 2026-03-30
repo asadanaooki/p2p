@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.p2p.dto.ItemEditViewDto;
-import com.example.p2p.form.ItemEditForm;
+import com.example.p2p.form.ItemUpsertForm;
 import com.example.p2p.form.ItemSearchForm;
 import com.example.p2p.service.ItemService;
 
@@ -65,54 +65,41 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public String getMethodName(@PathVariable String itemId, Model model) {
+    public String showItemDetail(@PathVariable String itemId, Model model) {
         model.addAttribute("itemId", itemId);
         model.addAttribute("detail", itemService.getItemDetail(itemId));
         return "item-detail";
     }
 
-    // @GetMapping("/create")
-    // public String showUnitCreateForm(@ModelAttribute("form") UnitCreateForm form) {
-    // return "unit-create";
-    // }
-    //
-    // @PostMapping("/create")
-    // public String create(@Valid @ModelAttribute("form") UnitCreateForm form,
-    // BindingResult result,
-    // RedirectAttributes redirectAttributes) {
-    // if (result.hasErrors()) {
-    // return "unit-create";
-    // }
-    // try {
-    // unitService.create(form.getName());
-    // }
-    // catch (BusinessException e) {
-    // result.rejectValue("name", "duplicate",
-    // messageSource.getMessage("common.duplicate", null, null));
-    // return "unit-create";
-    // }
-    // redirectAttributes.addFlashAttribute("successMessage",
-    // messageSource.getMessage("common.create.success", null, null));
-    // return "redirect:/setting/unit";
-    // }
-    //
-    // @GetMapping("/{unitId}")
-    // public String showUnitEditForm(@PathVariable String unitId, @ModelAttribute("form")
-    // UnitEditForm form,
-    // Model model) {
-    // UnitDetailDto unit = unitService.getUnitDetail(unitId);
-    // form.setName(unit.getName());
-    // form.setStatus(unit.isActive());
-    //
-    // model.addAttribute("unitId", unitId);
-    //
-    // return "unit-edit";
-    // }
-    //
+    @GetMapping("/create")
+    public String showItemCreateForm(@ModelAttribute("form") ItemUpsertForm form, Model model) {
+        Map<String, List> options = itemService.getOptions();
+        model.addAttribute("unitOptions", options.get("unitOptions"));
+        model.addAttribute("supplierOptions", options.get("supplierOptions"));
+        return "item-create";
+    }
+    
+    @PostMapping("/create")
+    public String create(@Valid @ModelAttribute("form") ItemUpsertForm form,
+            BindingResult result,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            Map<String, List> options = itemService.getOptions();
+            model.addAttribute("unitOptions", options.get("unitOptions"));
+            model.addAttribute("supplierOptions", options.get("supplierOptions"));
+            return "item-create";
+        }
+        itemService.create(form);
+
+        redirectAttributes.addFlashAttribute("successMessage",
+                messageSource.getMessage("common.create.success", null, null));
+        return "redirect:/setting/item";
+    }
     
     @GetMapping("/{itemId}/edit")
     public String showItemEditForm(@PathVariable String itemId,
-            @ModelAttribute("form") ItemEditForm form,
+            @ModelAttribute("form") ItemUpsertForm form,
             Model model) {
         ItemEditViewDto view = itemService.prepareItemEditView(itemId);
         modelMapper.map(view, form);
@@ -124,7 +111,7 @@ public class ItemController {
 
     @PostMapping("/{itemId}/edit")
     public String update(@PathVariable String itemId, 
-            @Valid @ModelAttribute("form") ItemEditForm form,
+            @Valid @ModelAttribute("form") ItemUpsertForm form,
             BindingResult bindingResult, 
             Model model, 
             RedirectAttributes redirectAttributes) {

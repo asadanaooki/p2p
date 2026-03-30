@@ -13,7 +13,7 @@ import com.example.p2p.dto.ItemListItemDto;
 import com.example.p2p.dto.ItemListViewDto;
 import com.example.p2p.entity.Item;
 import com.example.p2p.entity.ItemExample;
-import com.example.p2p.form.ItemEditForm;
+import com.example.p2p.form.ItemUpsertForm;
 import com.example.p2p.form.ItemSearchForm;
 import com.example.p2p.mapper.ItemMapper;
 import com.example.p2p.mapper.ItemMapperCustom;
@@ -71,51 +71,26 @@ public class ItemService {
         return itemMapperCustom.selectItemDetail(itemId);
     }
 
-    public void update(String itemId, ItemEditForm form) {
-        Item item = new Item();
+    public void update(String itemId, ItemUpsertForm form) {
+        Item item = toItem(form);
         item.setItemId(itemId);
+        itemMapper.updateByPrimaryKeySelective(item);
+    }
+
+    public void create(ItemUpsertForm form) {
+        itemMapper.insertSelective(toItem(form));
+    }
+    
+    private Item toItem(ItemUpsertForm form) {
+        Item item = new Item();
         item.setName(form.getName());
         item.setKind(form.getKind().name());
         item.setUnitId(form.getUnitId());
         item.setPrice(form.getPrice());
         item.setSupplierId(form.getSupplierId());
         item.setDescription(form.getDescription());
-        item.setIsActive(form.isActive());
-
-        itemMapper.updateByPrimaryKeySelective(item);
+        item.setIsActive(form.getActive());
+        return item;
     }
-
-    // public void create(String name) {
-    // UnitExample ex = new UnitExample();
-    // ex.createCriteria().andNameEqualTo(name);
-    // // 重複チェック
-    // if (unitMapper.countByExample(ex) > 0) {
-    // throw new BusinessException();
-    // }
-    // Unit u = new Unit();
-    // u.setName(name);
-    // unitMapper.insertSelective(u);
-    // }
-    //
-    // public UnitDetailDto getUnitDetail(String unitId) {
-    // Unit unit = unitMapper.selectByPrimaryKey(unitId);
-    // return new UnitDetailDto(unit.getUnitId(), unit.getName(), unit.getIsActive());
-    // }
-    //
-    // public void update(String unitId, UnitEditForm form) {
-    // UnitExample ex = new UnitExample();
-    // ex.createCriteria().andNameEqualTo(form.getName()).andUnitIdNotEqualTo(unitId);
-    //
-    // // 重複チェック
-    // if (unitMapper.countByExample(ex) > 0) {
-    // throw new BusinessException();
-    // }
-    // Unit target = new Unit();
-    // target.setUnitId(unitId);
-    // target.setName(form.getName());
-    // target.setIsActive(form.isStatus());
-    //
-    // unitMapper.updateByPrimaryKeySelective(target);
-    // }
 
 }

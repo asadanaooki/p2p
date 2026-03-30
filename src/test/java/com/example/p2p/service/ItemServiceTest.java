@@ -21,8 +21,8 @@ import com.example.p2p.dto.ItemListViewDto;
 import com.example.p2p.entity.Item;
 import com.example.p2p.entity.ItemExample;
 import com.example.p2p.enums.ItemKind;
-import com.example.p2p.form.ItemEditForm;
 import com.example.p2p.form.ItemSearchForm;
+import com.example.p2p.form.ItemUpsertForm;
 import com.example.p2p.mapper.ItemMapper;
 import com.example.p2p.mapper.ItemMapperCustom;
 import com.example.p2p.util.CommonUtil;
@@ -93,7 +93,8 @@ class ItemServiceTest {
 
         static Stream<Arguments> createPaginationCases() {
             // 8ページ作成
-            return Stream.of(Arguments.of(1, 7, 3, CommonUtil.createPageNumbers(50, 7, 1, 2)),
+            return Stream.of(
+                    Arguments.of(1, 7, 3, CommonUtil.createPageNumbers(50, 7, 1, 2)),
                     Arguments.of(2, 7, 3, CommonUtil.createPageNumbers(50, 7, 2, 2)),
                     Arguments.of(3, 7, 3, CommonUtil.createPageNumbers(50, 7, 3, 2)),
                     Arguments.of(4, 7, 3, CommonUtil.createPageNumbers(50, 7, 4, 2)),
@@ -116,7 +117,7 @@ class ItemServiceTest {
 
     @Test
     void update() {
-        ItemEditForm form = new ItemEditForm();
+        ItemUpsertForm form = new ItemUpsertForm();
         form.setName("test");
         form.setKind(ItemKind.SERVICE);
         form.setUnitId("22222222-2222-2222-2222-222222222222");
@@ -153,5 +154,33 @@ class ItemServiceTest {
        assertThat(actual.isActive()).isTrue();
        assertThat(actual.getUnitOptions().size()).isEqualTo(5);
        assertThat(actual.getSupplierOptions().size()).isEqualTo(3);
+    }
+    
+    @Test
+    void create() {
+        ItemUpsertForm form = new ItemUpsertForm();
+        form.setName("test");
+        form.setKind(ItemKind.SERVICE);
+        form.setUnitId("22222222-2222-2222-2222-222222222222");
+        form.setPrice(1300);
+        form.setSupplierId("b4d8e1f7-92ac-4c35-8f21-6a7b8c9d0e1f");
+        form.setDescription("testDesc");
+        
+        itemService.create(form);
+        
+        ItemExample ex = new ItemExample();
+        ex.createCriteria().andNameEqualTo("test");
+       Item created = itemMapper.selectByExample(ex).get(0);
+       
+       assertThat(created.getItemId()).isNotBlank();
+       assertThat(created.getName()).isEqualTo("test");
+       assertThat(created.getKind()).isEqualTo(ItemKind.SERVICE.toString());
+       assertThat(created.getUnitId()).isEqualTo("22222222-2222-2222-2222-222222222222");
+       assertThat(created.getPrice()).isEqualTo(1300);
+       assertThat(created.getSupplierId()).isEqualTo("b4d8e1f7-92ac-4c35-8f21-6a7b8c9d0e1f");
+       assertThat(created.getDescription()).isEqualTo("testDesc");
+       assertThat(created.getIsActive()).isTrue();
+       assertThat(created.getCreatedAt()).isNotNull();
+       assertThat(created.getUpdatedAt()).isNotNull();
     }
 }

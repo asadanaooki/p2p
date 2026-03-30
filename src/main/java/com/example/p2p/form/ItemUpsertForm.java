@@ -10,7 +10,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
 @Data
-public class ItemEditForm {
+public class ItemUpsertForm {
 
     @NotBlank
     @Length(max = 100)
@@ -31,6 +31,6 @@ public class ItemEditForm {
     @Length(max = 500)
     private String description;
 
-    private boolean active;
+    private Boolean active;
 
 }
