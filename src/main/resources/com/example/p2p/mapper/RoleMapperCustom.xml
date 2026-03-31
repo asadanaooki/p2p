@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.p2p.mapper.RoleMapperCustom">
+  <select id="selectRoleDetail" resultType="com.example.p2p.dto.RoleDetailDto">
+    select
+      name,
+      pr_create,
+      po_create,
+      receipt_create,
+      invoice_create,
+      pr_view_scope ,
+      po_view_scope ,
+      receipt_view_scope ,
+      invoice_view_scope ,
+      pr_approve ,
+      po_approve ,
+      invoice_approve ,
+      setting_manage
+    from role
+    where role_id = #{roleId}
+
+  </select>
+</mapper>

@@ -30,7 +30,7 @@ public class PaymentTermController {
     private MessageSource messageSource;
 
     @GetMapping
-    public String showPaymentTerm(Model model) {
+    public String showPaymentTermList(Model model) {
         model.addAttribute("list", paymentTermService.getPaymentTerms());
         return "payment-term-list";
     }

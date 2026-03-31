@@ -31,7 +31,7 @@ public class UnitController {
     private MessageSource messageSource;
 
     @GetMapping
-    public String showUnit(Model model, @RequestParam(required = false) Boolean status) {
+    public String showUnitList(Model model, @RequestParam(required = false) Boolean status) {
         model.addAttribute("status", status);
         model.addAttribute("unitList", unitService.getUnitList(status));
         return "unit-list";

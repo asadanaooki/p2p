@@ -1,0 +1,57 @@
+.page {
+  margin: 0;
+  padding: 32px 24px 48px;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.new-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 160px;
+  height: 42px;
+  margin: 0 0 26px 27px;
+  padding: 0 18px;
+  border: 1px solid #9db1ae;
+  background-color: #f7f8f7;
+  color: #1aa54a;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.role-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.role-table thead th {
+  height: 44px;
+  padding: 0 33px;
+  background-color: #9cafad;
+  color: #1f2f2e;
+  text-align: left;
+  font-weight: 400;
+}
+
+.role-table tbody td {
+  height: 45px;
+  padding: 0 33px;
+  border-bottom: 1px solid #d7d7d7;
+}
+
+.role-link {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  color: #15a142;
+}
+
+.role-table tbody tr:hover {
+  background-color: #f6f8f7;
+}

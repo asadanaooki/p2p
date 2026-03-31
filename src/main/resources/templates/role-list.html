@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" th:href="@{/css/role-list.css}">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script th:src="@{/js/common.js}"></script>
+</head>
+
+<body>
+  <main class="page">
+    <a th:href="@{/setting/role/create}" class="new-button">
+      作成
+    </a>
+
+    <div class="table-card">
+      <table class="role-table" th:if="${!#lists.isEmpty(roleList)}">
+        <thead>
+          <tr>
+            <th>ロール</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="role : ${roleList}" class="js-row-link"
+            th:data-href="@{/setting/role/{roleId}(roleId=${role.roleId})}">
+            <td>
+              <a th:href="@{/setting/role/{roleId}(roleId=${role.roleId})}" class="js-row-link-a role-link"
+                th:text="${role.name.label}">
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+
+  </main>
+</body>
+
+</html>

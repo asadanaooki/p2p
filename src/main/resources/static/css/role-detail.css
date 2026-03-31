@@ -1,0 +1,73 @@
+.page {
+  margin: 0;
+  padding: 25px 24px 48px;
+  min-height: 100vh;
+}
+
+.page-title {
+  font-weight: 400;
+  font-size: 24px;
+  color: #0d2b45;
+}
+
+.role-name-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 24px;
+}
+
+.role-name-label {
+  font-size: 14px;
+  color: #8c775f;
+}
+
+.role-table {
+  width: 100%;
+  max-width: 1180px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.role-table th,
+.role-table td {
+  padding: 12px 18px;
+  border: 1px solid #d7dddd;
+  text-align: left;
+  font-size: 14px;
+}
+
+.role-table thead th {
+  background-color: #9aacad;
+  color: #243534;
+  font-weight: 500;
+}
+
+.child-label {
+  padding-left: 30px !important;
+  font-weight: 400;
+}
+
+.role-table thead th:first-child {
+  width: 32%;
+}
+
+.role-table thead th:nth-child(2),
+.role-table thead th:nth-child(3),
+.role-table thead th:nth-child(4),
+.role-table thead th:nth-child(5) {
+  width: 17%;
+}
+
+.edit-button {
+  display: inline-block;
+  min-width: 92px;
+  padding: 10px 28px;
+  border: 1px solid #9fb3ad;
+  background-color: #ffffff;
+  color: #31454f;
+  font-size: 16px;
+  text-decoration: none;
+  text-align: center;
+  border-radius: 2px;
+}

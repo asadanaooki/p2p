@@ -40,7 +40,7 @@ public class SupplierController {
     }
     
     @GetMapping
-    public String showSuppliers(@RequestParam(required = false) Boolean status,
+    public String showSupplierList(@RequestParam(required = false) Boolean status,
             @RequestParam(required = false) String keyword, Model model) {
         model.addAttribute("status", status);
         model.addAttribute("keyword", keyword);
