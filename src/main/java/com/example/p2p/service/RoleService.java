@@ -2,12 +2,14 @@ package com.example.p2p.service;
 
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.example.p2p.dto.RoleDetailDto;
 import com.example.p2p.dto.RoleListItemDto;
+import com.example.p2p.entity.Role;
 import com.example.p2p.entity.RoleExample;
-import com.example.p2p.enums.RoleName;
+import com.example.p2p.form.RoleEditForm;
 import com.example.p2p.mapper.RoleMapper;
 import com.example.p2p.mapper.RoleMapperCustom;
 
@@ -20,13 +22,15 @@ public class RoleService {
     private RoleMapper roleMapper;
     
     private RoleMapperCustom roleMapperCustom;
+    
+    private ModelMapper modelMapper;
 
     public List<RoleListItemDto> getRoleList() {
         RoleExample ex = new RoleExample();
         ex.setOrderByClause("name asc");
         return roleMapper.selectByExample(ex)
             .stream()
-            .map(r -> new RoleListItemDto(r.getRoleId(), RoleName.valueOf(r.getName())))
+            .map(r -> new RoleListItemDto(r.getRoleId(), r.getName()))
             .toList();
     }
 
@@ -44,6 +48,12 @@ public class RoleService {
 //
     public RoleDetailDto getRoleDetail(String unitId) {
         return roleMapperCustom.selectRoleDetail(unitId);
+    }
+    
+    public void update(String roleId, RoleEditForm form) {
+       Role role = modelMapper.map(form, Role.class);
+       role.setRoleId(roleId);
+       roleMapper.updateByPrimaryKeySelective(role);
     }
     
 //

@@ -1,6 +1,6 @@
 create table role (
     role_id char(36) primary key default gen_random_uuid () ::text,
-    name varchar(50) not null,
+    name varchar(50) not null unique,
     pr_create boolean not null,
     po_create boolean not null,
     receipt_create boolean not null,

@@ -14,7 +14,7 @@ INSERT INTO role (
     setting_manage
 ) VALUES
 (
-    'ADMIN',
+    '管理者',
     true,
     true,
     true,
@@ -29,7 +29,7 @@ INSERT INTO role (
     true
 ),
 (
-    'MANAGER',
+    'マネージャー',
     true,
     true,
     true,
@@ -44,7 +44,7 @@ INSERT INTO role (
     false
 ),
 (
-    'MEMBER',
+    '一般社員',
     true,
     true,
     true,

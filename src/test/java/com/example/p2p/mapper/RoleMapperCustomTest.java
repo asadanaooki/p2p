@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 
 import com.example.p2p.dto.RoleDetailDto;
-import com.example.p2p.enums.RoleName;
 import com.example.p2p.enums.VisibilityScope;
 
 @MybatisTest
@@ -22,7 +21,7 @@ class RoleMapperCustomTest {
     void selectRoleDetail() {
         RoleDetailDto actual = roleMapperCustom.selectRoleDetail("0bc32b42-80e9-4a82-bc15-829d65790368");
         
-        assertThat(actual.getName()).isEqualTo(RoleName.MANAGER);
+        assertThat(actual.getName()).isEqualTo("マネージャー");
         assertThat(actual.isPrCreate()).isTrue();
         assertThat(actual.isPoCreate()).isTrue();
         assertThat(actual.isReceiptCreate()).isTrue();

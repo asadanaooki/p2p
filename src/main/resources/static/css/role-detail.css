@@ -22,6 +22,7 @@
   color: #8c775f;
 }
 
+.setting-table,
 .role-table {
   width: 100%;
   max-width: 1180px;
@@ -29,6 +30,27 @@
   table-layout: fixed;
 }
 
+.setting-table {
+  margin-bottom: 30px;
+}
+
+.setting-table th:first-child,
+.setting-table td:first-child {
+  width: 55%;
+}
+
+.setting-table td:first-child {
+  width: 55%;
+  font-weight: 700;
+}
+
+.setting-table th:last-child,
+.setting-table td:last-child {
+  width: 45%;
+}
+
+.setting-table th,
+.setting-table td,
 .role-table th,
 .role-table td {
   padding: 12px 18px;
@@ -37,6 +59,7 @@
   font-size: 14px;
 }
 
+.setting-table thead th,
 .role-table thead th {
   background-color: #9aacad;
   color: #243534;
@@ -70,4 +93,5 @@
   text-decoration: none;
   text-align: center;
   border-radius: 2px;
+  margin-bottom: 40px;
 }

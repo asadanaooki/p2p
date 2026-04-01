@@ -3,13 +3,18 @@ package com.example.p2p.controller;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.p2p.form.RoleEditForm;
 import com.example.p2p.service.RoleService;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @Controller
@@ -72,27 +77,22 @@ public class RoleController {
 //        return "unit-edit";
 //    }
 //
-//    @PostMapping("/{unitId}/update")
-//    public String update(@PathVariable String unitId, @Valid @ModelAttribute("form") UnitEditForm form,
-//            BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
-//        if (bindingResult.hasErrors()) {
-//            model.addAttribute("unitId", unitId);
-//            return "unit-edit";
-//        }
-//        try {
-//            unitService.update(unitId, form);
-//        }
-//        catch (BusinessException e) {
-//            model.addAttribute("unitId", unitId);
-//            bindingResult.rejectValue("name", "duplicate",
-//                    messageSource.getMessage("common.duplicate", null, null));
-//            return "unit-edit";
-//        }
-//        redirectAttributes.addFlashAttribute("successMessage",
-//                messageSource.getMessage("common.update.success", null, null));
-//        redirectAttributes.addAttribute("unitId", unitId);
-//        return "redirect:/setting/unit/{unitId}";
-//
-//    }
+    @PostMapping("/{roleId}/update")
+    public String update(@PathVariable String roleId,
+            @Valid @ModelAttribute("form") RoleEditForm form,
+            BindingResult bindingResult,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("roleId", roleId);
+            return "role-edit";
+        }
+        roleService.update(roleId, form);
+    
+        redirectAttributes.addFlashAttribute("successMessage",
+                messageSource.getMessage("common.update.success", null, null));
+        redirectAttributes.addAttribute("roleId", roleId);
+        return "redirect:/setting/role/{roleId}";
+    }
 
 }
