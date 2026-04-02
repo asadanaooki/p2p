@@ -9,7 +9,8 @@ import com.example.p2p.dto.RoleDetailDto;
 import com.example.p2p.dto.RoleListItemDto;
 import com.example.p2p.entity.Role;
 import com.example.p2p.entity.RoleExample;
-import com.example.p2p.form.RoleEditForm;
+import com.example.p2p.exception.BusinessException;
+import com.example.p2p.form.RoleUpsertForm;
 import com.example.p2p.mapper.RoleMapper;
 import com.example.p2p.mapper.RoleMapperCustom;
 
@@ -34,43 +35,31 @@ public class RoleService {
             .toList();
     }
 
-//    public void create(String name) {
-//        UnitExample ex = new UnitExample();
-//        ex.createCriteria().andNameEqualTo(name);
-//        // 重複チェック
-//        if (unitMapper.countByExample(ex) > 0) {
-//            throw new BusinessException();
-//        }
-//        Unit u = new Unit();
-//        u.setName(name);
-//        unitMapper.insertSelective(u);
-//    }
-//
+    public void create(RoleUpsertForm form) {
+        RoleExample ex = new RoleExample();
+        ex.createCriteria().andNameEqualTo(form.getName());
+        // 重複チェック
+        if (roleMapper.countByExample(ex) > 0) {
+            throw new BusinessException();
+        }
+        Role role = modelMapper.map(form, Role.class);
+        roleMapper.insertSelective(role);
+    }
+
     public RoleDetailDto getRoleDetail(String unitId) {
         return roleMapperCustom.selectRoleDetail(unitId);
     }
     
-    public void update(String roleId, RoleEditForm form) {
-       Role role = modelMapper.map(form, Role.class);
-       role.setRoleId(roleId);
-       roleMapper.updateByPrimaryKeySelective(role);
+    public void update(String roleId, RoleUpsertForm form) {
+        RoleExample ex = new RoleExample();
+        ex.createCriteria().andNameEqualTo(form.getName()).andRoleIdNotEqualTo(roleId);
+        // 重複チェック
+        if (roleMapper.countByExample(ex) > 0) {
+            throw new BusinessException();
+        }
+        Role role = modelMapper.map(form, Role.class);
+        role.setRoleId(roleId);
+        roleMapper.updateByPrimaryKeySelective(role);
     }
-    
-//
-//    public void update(String unitId, UnitEditForm form) {
-//        UnitExample ex = new UnitExample();
-//        ex.createCriteria().andNameEqualTo(form.getName()).andUnitIdNotEqualTo(unitId);
-//
-//        // 重複チェック
-//        if (unitMapper.countByExample(ex) > 0) {
-//            throw new BusinessException();
-//        }
-//        Unit target = new Unit();
-//        target.setUnitId(unitId);
-//        target.setName(form.getName());
-//        target.setIsActive(form.isStatus());
-//
-//        unitMapper.updateByPrimaryKeySelective(target);
-//    }
 
 }

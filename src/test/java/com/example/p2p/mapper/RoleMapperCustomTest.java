@@ -19,7 +19,7 @@ class RoleMapperCustomTest {
     
     @Test
     void selectRoleDetail() {
-        RoleDetailDto actual = roleMapperCustom.selectRoleDetail("0bc32b42-80e9-4a82-bc15-829d65790368");
+        RoleDetailDto actual = roleMapperCustom.selectRoleDetail("6862542a-1954-4192-81e8-f18c583ade01");
         
         assertThat(actual.getName()).isEqualTo("マネージャー");
         assertThat(actual.isPrCreate()).isTrue();

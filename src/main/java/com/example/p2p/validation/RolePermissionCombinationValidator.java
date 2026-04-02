@@ -1,16 +1,24 @@
 package com.example.p2p.validation;
 
+import org.springframework.context.MessageSource;
+import org.springframework.stereotype.Component;
+
 import com.example.p2p.enums.VisibilityScope;
-import com.example.p2p.form.RoleEditForm;
+import com.example.p2p.form.RoleUpsertForm;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
+@Component
 public class RolePermissionCombinationValidator
-        implements ConstraintValidator<RolePermissionCombination, RoleEditForm> {
+        implements ConstraintValidator<RolePermissionCombination, RoleUpsertForm> {
+
+    private MessageSource messageSource;
 
     @Override
-    public boolean isValid(RoleEditForm value, ConstraintValidatorContext context) {
+    public boolean isValid(RoleUpsertForm value, ConstraintValidatorContext context) {
         // PR承認ON→PR閲覧は ALL
         // PR作成ON ＆ PR承認OFF→PR閲覧はSELF OR ALL
         // PR作成OFF ＆ PR承認OFF→PR閲覧は 任意
@@ -27,27 +35,70 @@ public class RolePermissionCombinationValidator
         // INV作成ON ＆ INV承認OFF→INV閲覧はSELF OR ALL
         // INV作成OFF ＆ INV承認OFF→INV閲覧は 任意
 
-        return isPermissionValid(value.isPrCreate(), value.isPrApprove(), value.getPrViewScope())
-                && isPermissionValid(value.isPoCreate(), value.isPoApprove(), value.getPoViewScope())
-                && isReceiptPermissionValid(value)
-                && isPermissionValid(value.isInvoiceCreate(), value.isInvoiceApprove(), value.getInvoiceViewScope());
+        context.disableDefaultConstraintViolation();
 
+        boolean isValid = true;
+        // PR
+        isValid &= isPermissionValid(
+                value.isPrCreate(),
+                value.isPrApprove(),
+                value.getPrViewScope(),
+                context,
+                "role.pr.create.viewScope.error",
+                "role.pr.approve.viewScope.error");
+        // PO
+        isValid &= isPermissionValid(
+                value.isPoCreate(),
+                value.isPoApprove(),
+                value.getPoViewScope(),
+                context,
+                "role.po.create.viewScope.error",
+                "role.po.approve.viewScope.error");
+        // Receipt
+        isValid &= isReceiptPermissionValid(
+                value,
+                context,
+                "role.receipt.create.viewScope.error");
+        // Invoice
+        isValid &= isPermissionValid(
+                value.isInvoiceCreate(),
+                value.isInvoiceApprove(),
+                value.getInvoiceViewScope(),
+                context,
+                "role.invoice.create.viewScope.error",
+                "role.invoice.approve.viewScope.error");
+
+        return isValid;
     }
 
-    private boolean isPermissionValid( boolean isPrCreate, boolean isPrApprove, VisibilityScope scope) {
-        if (isPrApprove) {
-            return scope == VisibilityScope.ALL;
+    private boolean isPermissionValid(boolean isCreate, boolean isApprove, VisibilityScope scope,
+            ConstraintValidatorContext context, String createViolationMessageKey, String approveViolationMessageKey) {
+        boolean isValid = true;
+        if (isApprove && scope != VisibilityScope.ALL) {
+            context
+                .buildConstraintViolationWithTemplate(messageSource.getMessage(approveViolationMessageKey, null, null))
+                .addConstraintViolation();
+            isValid = false;
         }
-        if (isPrCreate) {
-            return (scope == VisibilityScope.ALL || scope == VisibilityScope.SELF);
+        if (isCreate && !isApprove && scope != VisibilityScope.ALL && scope != VisibilityScope.SELF) {
+            context
+                .buildConstraintViolationWithTemplate(messageSource.getMessage(createViolationMessageKey, null, null))
+                .addConstraintViolation();
+            isValid = false;
         }
-        return true;
+        return isValid;
     }
 
-    private boolean isReceiptPermissionValid(RoleEditForm form) {
-        if (form.isReceiptCreate()) {
-            return (form.getReceiptViewScope() == VisibilityScope.ALL
-                    || form.getReceiptViewScope() == VisibilityScope.SELF);
+    private boolean isReceiptPermissionValid(
+            RoleUpsertForm form,
+            ConstraintValidatorContext context,
+            String createViolationMessageKey) {
+        if (form.isReceiptCreate() && form.getReceiptViewScope() != VisibilityScope.ALL
+                && form.getReceiptViewScope() != VisibilityScope.SELF) {
+            context
+                .buildConstraintViolationWithTemplate(messageSource.getMessage(createViolationMessageKey, null, null))
+                .addConstraintViolation();
+            return false;
         }
         return true;
     }

@@ -1,5 +1,6 @@
 package com.example.p2p.controller;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,7 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.example.p2p.form.RoleEditForm;
+import com.example.p2p.dto.RoleDetailDto;
+import com.example.p2p.exception.BusinessException;
+import com.example.p2p.form.RoleUpsertForm;
 import com.example.p2p.service.RoleService;
 
 import jakarta.validation.Valid;
@@ -25,61 +28,61 @@ public class RoleController {
     private RoleService roleService;
 
     private MessageSource messageSource;
+    
+    private ModelMapper modelMapper;
 
     @GetMapping
     public String showRoleList(Model model) {
         model.addAttribute("roleList", roleService.getRoleList());
         return "role-list";
     }
-    
+
     @GetMapping("/{roleId}")
     public String showRoleDetail(@PathVariable String roleId, Model model) {
         model.addAttribute("roleId", roleId);
         model.addAttribute("role", roleService.getRoleDetail(roleId));
-        
+
         return "role-detail";
     }
-    
 
-//    @GetMapping("/create")
-//    public String showUnitCreateForm(@ModelAttribute("form") UnitCreateForm form) {
-//        return "unit-create";
-//    }
-//
-//    @PostMapping("/create")
-//    public String create(@Valid @ModelAttribute("form") UnitCreateForm form, BindingResult result,
-//            RedirectAttributes redirectAttributes) {
-//        if (result.hasErrors()) {
-//            return "unit-create";
-//        }
-//        try {
-//            unitService.create(form.getName());
-//        }
-//        catch (BusinessException e) {
-//            result.rejectValue("name", "duplicate",
-//                    messageSource.getMessage("common.duplicate", null, null));
-//            return "unit-create";
-//        }
-//        redirectAttributes.addFlashAttribute("successMessage",
-//                messageSource.getMessage("common.create.success", null, null));
-//        return "redirect:/setting/unit";
-//    }
-//
-//    @GetMapping("/{unitId}")
-//    public String showUnitEditForm(@PathVariable String unitId, @ModelAttribute("form") UnitEditForm form,
-//            Model model) {
-//        UnitDetailDto unit = unitService.getUnitDetail(unitId);
-//        form.setName(unit.getName());
-//        form.setStatus(unit.isActive());
-//
-//        model.addAttribute("unitId", unitId);
-//
-//        return "unit-edit";
-//    }
-//
+    // @GetMapping("/create")
+    // public String showUnitCreateForm(@ModelAttribute("form") UnitCreateForm form) {
+    // return "unit-create";
+    // }
+    //
+    @PostMapping("/create")
+    public String create(@Valid @ModelAttribute("form") RoleUpsertForm form, BindingResult result,
+            RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "role-create";
+        }
+        try {
+            roleService.create(form);
+        }
+        catch (BusinessException e) {
+            result.rejectValue("name", "duplicate",
+                    messageSource.getMessage("common.duplicate", null, null));
+            return "role-create";
+        }
+        redirectAttributes.addFlashAttribute("successMessage",
+                messageSource.getMessage("common.create.success", null, null));
+        return "redirect:/setting/role";
+    }
+
+    
+    @GetMapping("/{roleId}/edit")
+    public String showRoleEditForm(@PathVariable String roleId, @ModelAttribute("form") RoleUpsertForm form,
+            Model model) {
+        RoleDetailDto role = roleService.getRoleDetail(roleId);
+        modelMapper.map(role, form);
+        model.addAttribute("roleId", roleId);
+
+        return "role-edit";
+    }
+    
     @PostMapping("/{roleId}/update")
     public String update(@PathVariable String roleId,
-            @Valid @ModelAttribute("form") RoleEditForm form,
+            @Valid @ModelAttribute("form") RoleUpsertForm form,
             BindingResult bindingResult,
             Model model,
             RedirectAttributes redirectAttributes) {
@@ -87,12 +90,18 @@ public class RoleController {
             model.addAttribute("roleId", roleId);
             return "role-edit";
         }
-        roleService.update(roleId, form);
-    
+        try {
+            roleService.update(roleId, form);
+        }
+        catch (BusinessException e) {
+            model.addAttribute("roleId", roleId);
+            bindingResult.rejectValue("name", "duplicate",
+                    messageSource.getMessage("common.duplicate", null, null));
+            return "role-edit";
+        }
         redirectAttributes.addFlashAttribute("successMessage",
                 messageSource.getMessage("common.update.success", null, null));
         redirectAttributes.addAttribute("roleId", roleId);
         return "redirect:/setting/role/{roleId}";
     }
-
 }

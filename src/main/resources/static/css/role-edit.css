@@ -1,0 +1,218 @@
+.page {
+  padding: 25px 24px 48px;
+  min-height: 100vh;
+}
+
+.page-title {
+  font-weight: 400;
+  font-size: 24px;
+}
+
+/* =====================
+   ロール名入力
+===================== */
+.role-name-block {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 40px;
+  max-width: 320px;
+}
+
+.role-name-label {
+  font-size: 14px;
+  color: #8c775f;
+}
+
+.role-name-input {
+  height: 40px;
+  padding: 0 14px;
+  border: 1px solid #93a4a4;
+}
+
+.role-name-input:focus {
+  outline: none;
+  border-color: #6f8f88;
+}
+
+/* =====================
+   テーブル共通
+===================== */
+.setting-table,
+.role-table {
+  width: 100%;
+  max-width: 1180px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.setting-table {
+  margin-bottom: 60px;
+}
+
+.setting-table th,
+.setting-table td,
+.role-table th,
+.role-table td {
+  padding: 12px 18px;
+  border: 1px solid #d7dddd;
+  text-align: left;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.setting-table thead th,
+.role-table thead th {
+  background-color: #9aacad;
+  color: #243534;
+  font-weight: 500;
+}
+
+/* =====================
+   設定管理テーブル
+===================== */
+.setting-table th:first-child,
+.setting-table td:first-child {
+  width: 55%;
+}
+
+.setting-table td:first-child {
+  font-weight: 700;
+}
+
+.setting-table th:last-child,
+.setting-table td:last-child {
+  width: 45%;
+}
+
+/* =====================
+   権限テーブル
+===================== */
+.role-table thead th:first-child {
+  width: 32%;
+}
+
+.role-table thead th:nth-child(2),
+.role-table thead th:nth-child(3),
+.role-table thead th:nth-child(4) {
+  width: 22.66%;
+}
+
+/* 子項目だけ少し右にずらす */
+.child-label {
+  padding-left: 30px !important;
+  font-weight: 400;
+}
+
+/* =====================
+   通常のチェックボックス
+===================== */
+input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+/* =====================
+   ラジオボタン見た目用
+===================== */
+.scope-check {
+  position: relative;
+  cursor: default;
+}
+
+/* 本物のradioは見えなくして、spanを見た目として使う */
+.scope-check input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 未選択時の見た目 */
+.scope-check span {
+  position: relative;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 1.3px solid #7a8a8a;
+  background-color: #ffffff;
+  box-sizing: border-box;
+  border-radius: 2px;
+}
+
+/* 未選択のままホバーした時は枠だけ濃くする */
+.scope-check:hover span {
+  border-color: #6f6f6f;
+}
+
+/* 選択済みの通常状態 */
+.scope-check input[type="radio"]:checked+span {
+  background-color: #258292;
+  border-color: #258292;
+}
+
+/* 選択済みでホバーした時 */
+.scope-check:hover input[type="radio"]:checked+span {
+  background-color: #1A5A65;
+  border-color: #1A5A65;
+}
+
+/* チェックマーク */
+.scope-check input[type="radio"]:checked+span::after {
+  content: "";
+  position: absolute;
+  left: 3.5px;
+  top: 0;
+  width: 4px;
+  height: 9px;
+  border-right: 3px solid #ffffff;
+  border-bottom: 3px solid #ffffff;
+  transform: rotate(43deg);
+}
+
+/* =====================
+   エラーメッセージ
+===================== */
+.field-error {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: #c53929;
+}
+
+.form-error {
+  margin-bottom: 14px;
+  margin-top: 0;
+}
+
+/* =====================
+   ボタン
+===================== */
+.form-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 36px;
+}
+
+.save-button,
+.cancel-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 92px;
+  height: 42px;
+  padding: 0 24px;
+  border: 1px solid #9fb3ad;
+  border-radius: 2px;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  font-size: 16px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.save-button {
+  color: #16a34a;
+}
+
+.cancel-button {
+  color: #31454f;
+}

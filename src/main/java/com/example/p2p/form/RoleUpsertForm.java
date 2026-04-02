@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 @RolePermissionCombination
-public class RoleEditForm {
+public class RoleUpsertForm {
 
     @NotNull
     private String name;
