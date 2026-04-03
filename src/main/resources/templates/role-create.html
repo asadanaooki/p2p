@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" th:href="@{/css/role-form.css}" />
+</head>
+
+<body>
+  <main class="page">
+
+    <form th:action="@{/setting/role/create}" th:object="${form}" method="post">
+      <p class="field-error form-error" th:if="${#fields.hasGlobalErrors()}" th:each="err : ${#fields.globalErrors()}"
+        th:text="${err}"></p>
+
+      <h1 class="page-title">ロール作成</h1>
+
+      <div class="role-name-block">
+        <label class="role-name-label" for="name">ロール名</label> <input id="name" type="text" th:field="*{name}"
+          class="role-name-input">
+        <p class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+      </div>
+
+      <table class="setting-table">
+        <thead>
+          <tr>
+            <th>対象</th>
+            <th>権限</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>設定管理</td>
+            <td><input type="checkbox" th:field="*{settingManage}">
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table class="role-table">
+        <thead>
+          <tr>
+            <th>対象</th>
+            <th>作成</th>
+            <th>承認</th>
+            <th>閲覧</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <!-- 購買依頼 -->
+          <tr>
+            <th scope="row">購買依頼</th>
+            <td><input type="checkbox" th:field="*{prCreate}"></td>
+            <td><input type="checkbox" th:field="*{prApprove}"></td>
+            <td></td>
+          </tr>
+          <tr>
+            <th scope="row" class="child-label">全て</th>
+            <td></td>
+            <td></td>
+            <td><label class="scope-check"> <input type="radio" th:field="*{prViewScope}"
+                  th:value="${T(com.example.p2p.enums.VisibilityScope).ALL}">
+                <span></span>
+              </label></td>
+          </tr>
+          <tr>
+            <th scope="row" class="child-label">自分のみ</th>
+            <td></td>
+            <td></td>
+            <td><label class="scope-check"> <input type="radio" th:field="*{prViewScope}"
+                  th:value="${T(com.example.p2p.enums.VisibilityScope).SELF}">
+                <span></span>
+              </label></td>
+          </tr>
+          <tr>
+            <th scope="row" class="child-label">なし</th>
+            <td></td>
+            <td></td>
+            <td><label class="scope-check"> <input type="radio" th:field="*{prViewScope}"
+                  th:value="${T(com.example.p2p.enums.VisibilityScope).NONE}">
+                <span></span>
+              </label></td>
+          </tr>
+
+          <!-- 発注 -->
+          <tr>
+            <th scope="row">発注</th>
+            <td><input type="checkbox" th:field="*{poCreate}"></td>
+            <td><input type="checkbox" th:field="*{poApprove}"></td>
+            <td></td>
+          </tr>
+          <tr>
+            <th scope="row" class="child-label">全て</th>
+            <td></td>
+            <td></td>
+            <td><label class="scope-check"> <input type="radio" th:field="*{poViewScope}"
+                  th:value="${T(com.example.p2p.enums.VisibilityScope).ALL}">
+                <span></span>
+              </label></td>
+          </tr>
+          <tr>
+            <th scope="row" class="child-label">自分のみ</th>
+            <td></td>
+            <td></td>
+            <td><label class="scope-check"> <input type="radio" th:field="*{poViewScope}"
+                  th:value="${T(com.example.p2p.enums.VisibilityScope).SELF}">
+                <span></span>
+              </label></td>
+          </tr>
+          <tr>
+            <th scope="row" class="child-label">なし</th>
+            <td></td>
+            <td></td>
+            <td><label class="scope-check"> <input type="radio" th:field="*{poViewScope}"
+                  th:value="${T(com.example.p2p.enums.VisibilityScope).NONE}">
+                <span></span>
+              </label></td>
+          </tr>
+
+          <!-- 受領 -->
+          <tr>
+            <th scope="row">受領</th>
+            <td><input type="checkbox" th:field="*{receiptCreate}"></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <th scope="row" class="child-label">全て</th>
+            <td></td>
+            <td></td>
+            <td><label class="scope-check"> <input type="radio" th:field="*{receiptViewScope}"
+                  th:value="${T(com.example.p2p.enums.VisibilityScope).ALL}">
+                <span></span>
+              </label></td>
+          </tr>
+          <tr>
+            <th scope="row" class="child-label">自分のみ</th>
+            <td></td>
+            <td></td>
+            <td><label class="scope-check"> <input type="radio" th:field="*{receiptViewScope}"
+                  th:value="${T(com.example.p2p.enums.VisibilityScope).SELF}">
+                <span></span>
+              </label></td>
+          </tr>
+          <tr>
+            <th scope="row" class="child-label">なし</th>
+            <td></td>
+            <td></td>
+            <td><label class="scope-check"> <input type="radio" th:field="*{receiptViewScope}"
+                  th:value="${T(com.example.p2p.enums.VisibilityScope).NONE}">
+                <span></span>
+              </label></td>
+          </tr>
+
+          <!-- 請求 -->
+          <tr>
+            <th scope="row">請求</th>
+            <td><input type="checkbox" th:field="*{invoiceCreate}"></td>
+            <td><input type="checkbox" th:field="*{invoiceApprove}"></td>
+            <td></td>
+          </tr>
+          <tr>
+            <th scope="row" class="child-label">全て</th>
+            <td></td>
+            <td></td>
+            <td><label class="scope-check"> <input type="radio" th:field="*{invoiceViewScope}"
+                  th:value="${T(com.example.p2p.enums.VisibilityScope).ALL}">
+                <span></span>
+              </label></td>
+          </tr>
+          <tr>
+            <th scope="row" class="child-label">自分のみ</th>
+            <td></td>
+            <td></td>
+            <td><label class="scope-check"> <input type="radio" th:field="*{invoiceViewScope}"
+                  th:value="${T(com.example.p2p.enums.VisibilityScope).SELF}">
+                <span></span>
+              </label></td>
+          </tr>
+          <tr>
+            <th scope="row" class="child-label">なし</th>
+            <td></td>
+            <td></td>
+            <td><label class="scope-check"> <input type="radio" th:field="*{invoiceViewScope}"
+                  th:value="${T(com.example.p2p.enums.VisibilityScope).NONE}">
+                <span></span>
+              </label></td>
+          </tr>
+
+        </tbody>
+      </table>
+
+      <div class="form-actions">
+        <button type="submit" class="save-button">保存</button>
+        <a th:href="@{/setting/role}" class="cancel-button">キャンセル</a>
+      </div>
+
+    </form>
+
+  </main>
+</body>
+
+</html>

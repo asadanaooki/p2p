@@ -10,6 +10,7 @@
 
 <body>
   <main class="page">
+    <div class="success-message" th:if="${successMessage}" th:text="${successMessage}"></div>
     <a th:href="@{/setting/role/create}" class="new-button">
       作成
     </a>

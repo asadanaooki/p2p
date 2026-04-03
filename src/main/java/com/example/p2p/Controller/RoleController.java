@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.p2p.dto.RoleDetailDto;
+import com.example.p2p.enums.VisibilityScope;
 import com.example.p2p.exception.BusinessException;
 import com.example.p2p.form.RoleUpsertForm;
 import com.example.p2p.service.RoleService;
@@ -45,11 +46,15 @@ public class RoleController {
         return "role-detail";
     }
 
-    // @GetMapping("/create")
-    // public String showUnitCreateForm(@ModelAttribute("form") UnitCreateForm form) {
-    // return "unit-create";
-    // }
-    //
+     @GetMapping("/create")
+     public String showRoleCreateForm(@ModelAttribute("form") RoleUpsertForm form) {
+         form.setPrViewScope(VisibilityScope.NONE);
+         form.setPoViewScope(VisibilityScope.NONE);
+         form.setReceiptViewScope(VisibilityScope.NONE);
+         form.setInvoiceViewScope(VisibilityScope.NONE);
+         return "role-create";
+     }
+     
     @PostMapping("/create")
     public String create(@Valid @ModelAttribute("form") RoleUpsertForm form, BindingResult result,
             RedirectAttributes redirectAttributes) {
