@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class SettingController {
 
     @GetMapping
-    public String showSetting() {
+    public String showSettingList() {
         return "setting";
     }
 

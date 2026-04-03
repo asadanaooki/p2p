@@ -46,6 +46,7 @@
     <table tableName="payment_term"></table>
     <table tableName="supplier"></table>
     <table tableName="item"></table>
+    <table tableName="role"></table>
 
   </context>
 </generatorConfiguration>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" th:href="@{/css/role-detail.css}" />
+</head>
+
+<body>
+  <main class="page">
+   <div class="success-message" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <h1 class="page-title">ロール詳細</h1>
+
+    <a class="edit-button" th:href="@{/setting/role/{roleId}/edit(roleId=${roleId})}">編集</a>
+
+    <div class="role-name-block">
+      <span class="role-name-label">ロール名</span>
+      <span th:text="${role.name}"></span>
+    </div>
+
+    <table class="setting-table">
+      <thead>
+        <tr>
+          <th>対象</th>
+          <th>権限</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>設定管理</td>
+          <td th:text="${role.settingManage ? 'あり' : 'なし'}"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table class="role-table">
+      <thead>
+        <tr>
+          <th>対象</th>
+          <th>作成</th>
+          <th>承認</th>
+          <th>閲覧</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <th scope="row">購買依頼</th>
+          <td th:text="${role.prCreate ? 'あり' : 'なし'}"></td>
+          <td th:text="${role.prApprove ? 'あり' : 'なし'}"></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th scope="row" class="child-label">全て</th>
+          <td></td>
+          <td></td>
+          <td th:text="${role.prViewScope.name().equals('ALL')  ? 'あり' : 'なし'}"></td>
+        </tr>
+        <tr>
+          <th scope="row" class="child-label">自分のみ</th>
+          <td></td>
+          <td></td>
+          <td th:text="${role.prViewScope.name().equals('SELF') or 
+             role.prViewScope.name().equals('ALL') ? 'あり' : 'なし'}"></td>
+        </tr>
+
+        <tr>
+          <th scope="row">発注</th>
+          <td th:text="${role.poCreate ? 'あり' : 'なし'}"></td>
+          <td th:text="${role.poApprove ? 'あり' : 'なし'}"></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th scope="row" class="child-label">全て</th>
+          <td></td>
+          <td></td>
+          <td th:text="${role.poViewScope.name().equals('ALL')  ? 'あり' : 'なし'}"></td>
+        </tr>
+        <tr>
+          <th scope="row" class="child-label">自分のみ</th>
+          <td></td>
+          <td></td>
+          <td th:text="${role.poViewScope.name().equals('SELF') or 
+             role.prViewScope.name().equals('ALL')  ? 'あり' : 'なし'}"></td>
+        </tr>
+
+        <tr>
+          <th scope="row">受領</th>
+          <td th:text="${role.receiptCreate ? 'あり' : 'なし'}"></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th scope="row" class="child-label">全て</th>
+          <td></td>
+          <td></td>
+          <td th:text="${role.receiptViewScope.name().equals('ALL')  ? 'あり' : 'なし'}"></td>
+        </tr>
+        <tr>
+          <th scope="row" class="child-label">自分のみ</th>
+          <td></td>
+          <td></td>
+          <td th:text="${role.receiptViewScope.name().equals('SELF') or 
+             role.prViewScope.name().equals('ALL')  ? 'あり' : 'なし'}"></td>
+        </tr>
+
+        <tr>
+          <th scope="row">請求</th>
+          <td th:text="${role.invoiceCreate ? 'あり' : 'なし'}"></td>
+          <td th:text="${role.invoiceApprove ? 'あり' : 'なし'}"></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th scope="row" class="child-label">全て</th>
+          <td></td>
+          <td></td>
+          <td th:text="${role.invoiceViewScope.name().equals('ALL')  ? 'あり' : 'なし'}"></td>
+        </tr>
+        <tr>
+          <th scope="row" class="child-label">自分のみ</th>
+          <td></td>
+          <td></td>
+          <td th:text="${role.invoiceViewScope.name().equals('SELF') or 
+             role.prViewScope.name().equals('ALL')  ? 'あり' : 'なし'}"></td>
+        </tr>
+      </tbody>
+    </table>
+  </main>
+
+</body>
+
+</html>

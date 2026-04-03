@@ -47,7 +47,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public String showItem(@Valid @ModelAttribute("form") ItemSearchForm form,
+    public String showItemList(@Valid @ModelAttribute("form") ItemSearchForm form,
             BindingResult bindingResult,
             Model model,
             HttpSession session) {
