@@ -1,0 +1,58 @@
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+/* =========================
+   テーブルヘッダー
+========================= */
+.user-table thead th {
+  padding: 12px 10px;
+  border-right: 1px solid #c7d1ce;
+  background: #9fb3b2;
+  color: #1f2c30;
+  font-weight: 400;
+  font-size: 16px;
+  text-align: left;
+}
+
+.user-table thead th:last-child {
+  border-right: none;
+}
+
+/* =========================
+   テーブルボディ
+========================= */
+.user-table tbody td {
+  padding: 10px;
+  border-bottom: 1px solid #d8dfdd;
+  overflow-wrap: break-word;
+}
+
+.user-table tbody tr:hover {
+  background: #eef4f3;
+}
+
+/* =========================
+   列幅
+========================= */
+.user-table th:nth-child(1),
+.user-table td:nth-child(1) {
+  width: 22%;
+}
+
+.user-table th:nth-child(2),
+.user-table td:nth-child(2) {
+  width: 38%;
+}
+
+.user-table th:nth-child(3),
+.user-table td:nth-child(3) {
+  width: 24%;
+}
+
+.user-table th:nth-child(4),
+.user-table td:nth-child(4) {
+  width: 16%;
+}

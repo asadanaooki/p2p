@@ -5,7 +5,7 @@
   <link rel="stylesheet" th:href="@{/css/common.css}" />
   <link rel="stylesheet" th:href="@{/css/item-list.css}">
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script th:src="@{/js/item-list.js}"></script>
+  <script th:src="@{/js/common.js}"></script>
 </head>
 
 <body>
@@ -15,7 +15,7 @@
       <a th:href="@{/setting/item/create}" class="new-button">作成</a>
 
       <div class="toolbar-right">
-        <form th:action="@{/setting/item}" th:object="${form}" method="get" class="keyword-search-form">
+        <form th:action="@{/setting/item}" th:object="${searchForm}" method="get" class="keyword-search-form">
           <input type="hidden" th:field="*{kind}">
           <input type="hidden" th:field="*{priceMin}">
           <input type="hidden" th:field="*{priceMax}">
@@ -50,7 +50,7 @@
     </div>
 
     <div id="filterPanel" class="filter-panel">
-      <form th:action="@{/setting/item}" th:object="${form}" method="get" class="filter-form">
+      <form th:action="@{/setting/item}" th:object="${searchForm}" method="get" class="filter-form">
         <input type="hidden" th:field="*{keyword}">
         <input type="hidden" th:field="*{sortBy}">
         <input type="hidden" th:field="*{sortDirection}">
@@ -106,49 +106,49 @@
     </div>
 
     <div class="table-card">
-      <table class="item-table" th:if="${!#lists.isEmpty(view.items)}">
+      <table class="item-table">
         <thead>
           <tr>
             <th class="col-name">
               <button type="button" class="sort-button" data-sort-by="NAME">
                 <span>名称</span>
-                <span class="sort-icon" th:if="${form.sortBy.name() == 'NAME'}"
-                  th:text="${form.sortDirection.name() == 'ASC' ? '▲' : '▼'}"></span>
+                <span class="sort-icon" th:if="${searchForm.sortBy.name().equals('NAME')}"
+                  th:text="${searchForm.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
               </button>
             </th>
             <th class="col-kind">
               <button type="button" class="sort-button" data-sort-by="KIND">
                 <span>種別</span>
-                <span class="sort-icon" th:if="${form.sortBy.name() == 'KIND'}"
-                  th:text="${form.sortDirection.name() == 'ASC' ? '▲' : '▼'}"></span>
+                <span class="sort-icon" th:if="${searchForm.sortBy.name().equals('KIND')}"
+                  th:text="${searchForm.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
               </button>
             </th>
             <th class="col-unit">
               <button type="button" class="sort-button" data-sort-by="UNIT">
                 <span>単位</span>
-                <span class="sort-icon" th:if="${form.sortBy.name() == 'UNIT'}"
-                  th:text="${form.sortDirection.name() == 'ASC' ? '▲' : '▼'}"></span>
+                <span class="sort-icon" th:if="${searchForm.sortBy.name().equals('UNIT')}"
+                  th:text="${searchForm.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
               </button>
             </th>
             <th class="col-price">
               <button type="button" class="sort-button" data-sort-by="PRICE">
                 <span>価格</span>
-                <span class="sort-icon" th:if="${form.sortBy.name() == 'PRICE'}"
-                  th:text="${form.sortDirection.name() == 'ASC' ? '▲' : '▼'}"></span>
+                <span class="sort-icon" th:if="${searchForm.sortBy.name().equals('PRICE')}"
+                  th:text="${searchForm.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
               </button>
             </th>
             <th class="col-supplier">
               <button type="button" class="sort-button" data-sort-by="SUPPLIER">
                 <span>サプライヤー</span>
-                <span class="sort-icon" th:if="${form.sortBy.name() == 'SUPPLIER'}"
-                  th:text="${form.sortDirection.name() == 'ASC' ? '▲' : '▼'}"></span>
+                <span class="sort-icon" th:if="${searchForm.sortBy.name().equals('SUPPLIER')}"
+                  th:text="${searchForm.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
               </button>
             </th>
             <th class="col-status">
               <button type="button" class="sort-button" data-sort-by="STATUS">
                 <span>状態</span>
-                <span class="sort-icon" th:if="${form.sortBy.name() == 'STATUS'}"
-                  th:text="${form.sortDirection.name() == 'ASC' ? '▲' : '▼'}"></span>
+                <span class="sort-icon" th:if="${searchForm.sortBy.name().equals('STATUS')}"
+                  th:text="${searchForm.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
               </button>
             </th>
           </tr>
@@ -173,38 +173,38 @@
     <div class="pagination" th:if="${!#lists.isEmpty(view.pageNumberList)}">
       <a class="page-link" th:if="${view.currentPage > 1}" th:href="@{/setting/item(
           page=${view.currentPage - 1},
-          keyword=${form.keyword},
-          priceMin=${form.priceMin},
-          priceMax=${form.priceMax},
-          supplierId=${form.supplierId},
-          status=${form.status},
-          sortBy=${form.sortBy},
-          sortDirection=${form.sortDirection}
+          keyword=${searchForm.keyword},
+          priceMin=${searchForm.priceMin},
+          priceMax=${searchForm.priceMax},
+          supplierId=${searchForm.supplierId},
+          status=${searchForm.status},
+          sortBy=${searchForm.sortBy},
+          sortDirection=${searchForm.sortDirection}
         )}">
         &lt;
       </a>
       <a class="page-link" th:each="pageNo : ${view.pageNumberList}"
         th:classappend="${pageNo == view.currentPage} ? 'active' : ''" th:text="${pageNo}" th:href="@{/setting/item(
           page=${pageNo},
-          keyword=${form.keyword},
-          priceMin=${form.priceMin},
-          priceMax=${form.priceMax},
-          supplierId=${form.supplierId},
-          status=${form.status},
-          sortBy=${form.sortBy},
-          sortDirection=${form.sortDirection}
+          keyword=${searchForm.keyword},
+          priceMin=${searchForm.priceMin},
+          priceMax=${searchForm.priceMax},
+          supplierId=${searchForm.supplierId},
+          status=${searchForm.status},
+          sortBy=${searchForm.sortBy},
+          sortDirection=${searchForm.sortDirection}
         )}">
         &lt;
       </a>
       <a class="page-link" th:if="${view.currentPage < #lists.size(view.pageNumberList)}" th:href="@{/setting/item(
           page=${view.currentPage + 1},
-          keyword=${form.keyword},
-          priceMin=${form.priceMin},
-          priceMax=${form.priceMax},
-          supplierId=${form.supplierId},
-          status=${form.status},
-          sortBy=${form.sortBy},
-          sortDirection=${form.sortDirection}
+          keyword=${searchForm.keyword},
+          priceMin=${searchForm.priceMin},
+          priceMax=${searchForm.priceMax},
+          supplierId=${searchForm.supplierId},
+          status=${searchForm.status},
+          sortBy=${searchForm.sortBy},
+          sortDirection=${searchForm.sortDirection}
         )}">
         &gt;
       </a>
