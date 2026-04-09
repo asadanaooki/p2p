@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" th:href="@{/css/user-detail.css}">
+</head>
+
+<body>
+  <main class="page">
+    <div class="success-message" th:if="${successMessage}" th:text="${successMessage}"></div>
+
+    <h1 class="page-title">ユーザー詳細</h1>
+    <a class="edit-button" th:href="@{/setting/user/{userId}/edit(userId=${user.userId})}">編集</a>
+
+    <div class="detail-label">フリガナ</div>
+    <div th:text="${user.lastNameKana + ' ' + user.firstNameKana}"></div>
+
+    <div class="detail-label">氏名</div>
+    <div th:text="${user.lastName + ' ' + user.firstName}"></div>
+
+    <div class="detail-label">メールアドレス</div>
+    <div th:text="${user.email}"></div>
+
+    <div class="detail-label">ロール</div>
+    <div th:text="${user.roleName}"></div>
+
+    <div class="detail-label">状態</div>
+    <div th:text="${user.active ? '有効' : '無効'}"></div>
+  </main>
+</body>
+
+</html>

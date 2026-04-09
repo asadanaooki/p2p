@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 
 import com.example.p2p.dto.ItemListItemDto;
+import com.example.p2p.dto.UserDetailDto;
 import com.example.p2p.dto.UserListRowDto;
 import com.example.p2p.entity.Item;
 import com.example.p2p.entity.Supplier;
@@ -54,7 +55,7 @@ class UsersMapperCustomTest {
             assertThat(actual).hasSize(1);
 
             UserListRowDto first = actual.get(0);
-            assertThat(first.getUserId()).isEqualTo("be647333-294a-473d-90fa-bc9e62d8a96e");
+            assertThat(first.getUserId()).isEqualTo("c3a45378-931d-421a-923a-073d423cced6");
             assertThat(first.getLastName()).isEqualTo("山田");
             assertThat(first.getFirstName()).isEqualTo("太郎");
             assertThat(first.getEmail()).isEqualTo("siotan0926@gmail.com");
@@ -68,7 +69,7 @@ class UsersMapperCustomTest {
             UserSearchForm form = new UserSearchForm();
             List<UserListRowDto> actual = usersMapperCustom.selectUsers(form);
             UserListRowDto first = actual.get(0);
-            assertThat(first.getUserId()).isEqualTo("f15fc6b2-af6f-445e-94ef-d1a95788d165");
+            assertThat(first.getUserId()).isEqualTo("437e7705-704e-433e-a276-a0e7c61958b1");
             assertThat(first.getLastName()).isEqualTo("佐藤");
             assertThat(first.getFirstName()).isEqualTo("花子");
             assertThat(first.getLastNameKana()).isEqualTo("サトウ");
@@ -85,7 +86,7 @@ class UsersMapperCustomTest {
             @MethodSource("createFilterCaces")
             void selectUsers_filter(UserSearchForm form, int expected) {
                 Users u = new Users();
-                u.setUserId("5adac01b-123c-4ca7-b7b2-eaad5c1bdc16");
+                u.setUserId("be42560a-d061-4518-8622-1a57f5dfdf67");
                 u.setIsActive(false);
                 usersMapper.updateByPrimaryKeySelective(u);
                 form.setSize(100);
@@ -344,4 +345,15 @@ class UsersMapperCustomTest {
 
     }
 
+    @Test
+    void selectUserDetail() {
+       UserDetailDto actual = usersMapperCustom.selectUserDetail("437e7705-704e-433e-a276-a0e7c61958b1");
+       
+       assertThat(actual.getLastName()).isEqualTo("佐藤");
+       assertThat(actual.getFirstName()).isEqualTo("花子");
+       assertThat(actual.getLastNameKana()).isEqualTo("サトウ");
+       assertThat(actual.getFirstNameKana()).isEqualTo("ハナコ");
+       assertThat(actual.getEmail()).isEqualTo("sato.hanako@example.com");
+       assertThat(actual.getRoleName()).isEqualTo("マネージャー");
+    }
 }

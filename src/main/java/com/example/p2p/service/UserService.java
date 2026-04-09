@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example.p2p.dto.UserDetailDto;
 import com.example.p2p.dto.UserListRowDto;
 import com.example.p2p.form.UserSearchForm;
 import com.example.p2p.mapper.UsersMapperCustom;
@@ -16,7 +17,11 @@ public class UserService {
 
     private UsersMapperCustom usersMapperCustom;
     
-    public List<UserListRowDto> getUserList(UserSearchForm form){
+    public List<UserListRowDto> searchUsers(UserSearchForm form){
         return usersMapperCustom.selectUsers(form);
+    }
+    
+    public UserDetailDto getUserDetail(String userId) {
+        return usersMapperCustom.selectUserDetail(userId);
     }
 }

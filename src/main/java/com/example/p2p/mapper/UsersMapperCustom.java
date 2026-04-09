@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.example.p2p.dto.UserDetailDto;
 import com.example.p2p.dto.UserListRowDto;
 import com.example.p2p.form.UserSearchForm;
 
@@ -11,4 +12,6 @@ import com.example.p2p.form.UserSearchForm;
 public interface UsersMapperCustom {
     
     List<UserListRowDto> selectUsers(UserSearchForm form);
+    
+    UserDetailDto selectUserDetail(String userId);
 }

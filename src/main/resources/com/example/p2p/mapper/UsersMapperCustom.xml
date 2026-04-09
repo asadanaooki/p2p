@@ -45,4 +45,21 @@
       </choose>
     limit #{size} offset #{offset}
   </select>
+  
+  <select id="selectUserDetail" resultType="com.example.p2p.dto.UserDetailDto">
+    select
+      u.user_id,
+      u.last_name,
+      u.first_name,
+      u.last_name_kana,
+      u.first_name_kana,
+      u.email ,
+      r.name as roleName ,
+      u.is_active
+    from users u
+    join role r
+      on u.role_id = r.role_id
+    where user_id = #{userId}
+
+  </select>
 </mapper>
