@@ -10,25 +10,18 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 
-import com.example.p2p.dto.ItemListItemDto;
 import com.example.p2p.dto.UserDetailDto;
 import com.example.p2p.dto.UserListRowDto;
-import com.example.p2p.entity.Item;
-import com.example.p2p.entity.Supplier;
-import com.example.p2p.entity.SupplierExample;
 import com.example.p2p.entity.Users;
 import com.example.p2p.entity.UsersExample;
-import com.example.p2p.enums.ItemKind;
-import com.example.p2p.enums.ItemSortBy;
 import com.example.p2p.enums.SortDirection;
-import com.example.p2p.form.ItemSearchForm;
+import com.example.p2p.enums.UserSortBy;
 import com.example.p2p.form.UserSearchForm;
 
 @MybatisTest
@@ -45,7 +38,7 @@ class UsersMapperCustomTest {
     class SelectUsers {
 
         @Test
-        void selectItems_allCondition() {
+        void selectUsers_allCondition() {
             UserSearchForm form = new UserSearchForm();
             form.setRoleId("95daf9ce-b599-41e0-ae0d-f4687e718a2c");
             form.setStatus(true);
@@ -55,7 +48,7 @@ class UsersMapperCustomTest {
             assertThat(actual).hasSize(1);
 
             UserListRowDto first = actual.get(0);
-            assertThat(first.getUserId()).isEqualTo("c3a45378-931d-421a-923a-073d423cced6");
+            assertThat(first.getUserId()).isEqualTo("36a1d5d9-15b8-45d5-8ae7-607244bbe36e");
             assertThat(first.getLastName()).isEqualTo("山田");
             assertThat(first.getFirstName()).isEqualTo("太郎");
             assertThat(first.getEmail()).isEqualTo("siotan0926@gmail.com");
@@ -65,11 +58,11 @@ class UsersMapperCustomTest {
         }
 
         @Test
-        void selectItems_noCondition() {
+        void selectUsers_noCondition() {
             UserSearchForm form = new UserSearchForm();
             List<UserListRowDto> actual = usersMapperCustom.selectUsers(form);
             UserListRowDto first = actual.get(0);
-            assertThat(first.getUserId()).isEqualTo("437e7705-704e-433e-a276-a0e7c61958b1");
+            assertThat(first.getUserId()).isEqualTo("169f1e17-619f-45bf-b6dc-8faed08c404c");
             assertThat(first.getLastName()).isEqualTo("佐藤");
             assertThat(first.getFirstName()).isEqualTo("花子");
             assertThat(first.getLastNameKana()).isEqualTo("サトウ");
@@ -79,281 +72,308 @@ class UsersMapperCustomTest {
             assertThat(first.getRoleName()).isEqualTo("マネージャー");
 
         }
-        
+
         @Nested
-        class Filter{
+        class Filter {
+
             @ParameterizedTest
             @MethodSource("createFilterCaces")
             void selectUsers_filter(UserSearchForm form, int expected) {
                 Users u = new Users();
-                u.setUserId("be42560a-d061-4518-8622-1a57f5dfdf67");
+                u.setUserId("6fe99043-cbd1-49c0-96d4-c156c58a8e60");
                 u.setIsActive(false);
                 usersMapper.updateByPrimaryKeySelective(u);
                 form.setSize(100);
-                
+
                 List<UserListRowDto> actual = usersMapperCustom.selectUsers(form);
-                
+
                 assertThat(actual).hasSize(expected);
             }
-            
-            static Stream<Arguments> createFilterCaces(){
+
+            static Stream<Arguments> createFilterCaces() {
                 UserSearchForm roleForm = new UserSearchForm();
                 roleForm.setRoleId("71dc166d-5059-4fbc-8bca-71d0c5dc2526");
                 UserSearchForm statusForm = new UserSearchForm();
                 statusForm.setStatus(false);
-                
-                return Stream.of(
-                        Arguments.of(roleForm, 1),
-                        Arguments.of(statusForm, 1)
-                        );
+
+                return Stream.of(Arguments.of(roleForm, 1), Arguments.of(statusForm, 1));
             }
-            
+
         }
-        
+
         @Nested
-        class Search{
+        class Search {
+
+            @BeforeEach
+            void setup() {
+                usersMapper.deleteByExample(new UsersExample());
+
+                Users u = new Users();
+                u.setUserId("3f7c2a91-5d84-4b6f-9a21-7c8e3f1d6b42");
+                u.setLastName("dummyLastName");
+                u.setFirstName("dummyFirstName");
+                u.setFirstNameKana("dummyFirstNameKana");
+                u.setLastNameKana("dummyLastNameKana");
+                u.setEmail("dummyEmail");
+                u.setPasswordHash("");
+                u.setRoleId("6862542a-1954-4192-81e8-f18c583ade01");
+
+                usersMapper.insertSelective(u);
+            }
+
             @ParameterizedTest
-            @CsvSource(value = {"やまだ, 3", "文具, 2"})
-            void selectItems_singleWord(String keyword, int expected) {
-                ItemSearchForm form = new ItemSearchForm();
+            @ValueSource(strings = { "朝田直樹", "アサダナオ" })
+            void selectUsers_fullNameKeyword(String keyword) {
+                Users u = new Users();
+                u.setUserId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
+                u.setLastName("朝田");
+                u.setFirstName("直樹");
+                u.setFirstNameKana("ナオキ");
+                u.setLastNameKana("アサダ");
+                u.setEmail("dummyEmail2");
+                u.setPasswordHash("");
+                u.setRoleId("6862542a-1954-4192-81e8-f18c583ade01");
+                usersMapper.insertSelective(u);
+
+                UserSearchForm form = new UserSearchForm();
                 form.setKeyword(keyword);
                 form.setSize(100);
-                List<ItemListItemDto> actual = itemMapperCustom.selectItems(form);
-                
-                assertThat(actual).hasSize(expected);
+                List<UserListRowDto> actual = usersMapperCustom.selectUsers(form);
+
+                assertThat(actual).hasSize(1);
+                assertThat(actual.get(0).getUserId()).isEqualTo("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
             }
-            
-            // TODO: 正規化のテスト
+
             @Nested
             class Normalization {
-                @BeforeEach
-                void setup() {
-                    usersMapper.deleteByExample(new UsersExample());
-                    
+
+                @Test
+                void selectUsers_toLower() {
                     Users u = new Users();
-                    u.setUserId("3f7c2a91-5d84-4b6f-9a21-7c8e3f1d6b42");
-                    u.setLastName("dummyLastName");
+                    u.setUserId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
+                    u.setLastName("ASAdA");
                     u.setFirstName("dummyFirstName");
                     u.setFirstNameKana("dummyFirstNameKana");
                     u.setLastNameKana("dummyLastNameKana");
-                    u.setEmail("dummyEmail");
+                    u.setEmail("dummyEmail2");
                     u.setPasswordHash("");
                     u.setRoleId("6862542a-1954-4192-81e8-f18c583ade01");
-
                     usersMapper.insertSelective(u);
-                }
-                
-                @Test
-                void selectItems_toLower() {
-                    Supplier s = new Supplier();
-                    s.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
-                    s.setName("SUpPlieR2");
-                    supplierMapper.insertSelective(s);
-                    
-                    Item i = new Item();
-                    i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
-                    i.setName("IteM2");
-                    i.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
-                    itemMapper.insertSelective(i);
-                    
-                    ItemSearchForm form = new ItemSearchForm();
-                    form.setKeyword("tem2");
+
+                    UserSearchForm form = new UserSearchForm();
+                    form.setKeyword("asada");
                     form.setSize(100);
-                    List<ItemListItemDto> actual = itemMapperCustom.selectItems(form);
-                    
+                    List<UserListRowDto> actual = usersMapperCustom.selectUsers(form);
+
                     assertThat(actual).hasSize(1);
-                    ItemListItemDto dto = actual.get(0);
-                    assertThat(dto.getItemId()).isEqualTo("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
+                    assertThat(actual.get(0).getUserId()).isEqualTo("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                 }
-                
+
                 @Test
-                void selectItems_fullToHalf() {
-                    Supplier s = new Supplier();
-                    s.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
-                    s.setName("ｖu５カ％");
-                    supplierMapper.insertSelective(s);
-                    
-                    Item i = new Item();
-                    i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
-                    i.setName("IteM2");
-                    i.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
-                    itemMapper.insertSelective(i);
-                    
-                    ItemSearchForm form = new ItemSearchForm();
-                    form.setKeyword("vu5");
+                void selectUsers_fullToHalf() {
+                    Users u = new Users();
+                    u.setUserId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
+                    u.setLastName("dummyLastName");
+                    u.setFirstName("Ｎaoｋi７ff");
+                    u.setFirstNameKana("dummyFirstNameKana");
+                    u.setLastNameKana("dummyLastNameKana");
+                    u.setEmail("dummyEmail2");
+                    u.setPasswordHash("");
+                    u.setRoleId("6862542a-1954-4192-81e8-f18c583ade01");
+                    usersMapper.insertSelective(u);
+
+                    UserSearchForm form = new UserSearchForm();
+                    form.setKeyword("naoki7");
                     form.setSize(100);
-                    List<ItemListItemDto> actual = itemMapperCustom.selectItems(form);
-                    
+                    List<UserListRowDto> actual = usersMapperCustom.selectUsers(form);
+
                     assertThat(actual).hasSize(1);
-                    ItemListItemDto dto = actual.get(0);
-                    assertThat(dto.getItemId()).isEqualTo("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
+                    assertThat(actual.get(0).getUserId()).isEqualTo("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                 }
+
                 @Test
-                void selectItems_hiraganaToKatakana() {
-                    Supplier s = new Supplier();
-                    s.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
-                    s.setName("ｖu５カ％");
-                    supplierMapper.insertSelective(s);
-                    
-                    Item i = new Item();
-                    i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
-                    i.setName("たをブ漢");
-                    i.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
-                    itemMapper.insertSelective(i);
-                    
-                    ItemSearchForm form = new ItemSearchForm();
-                    form.setKeyword("ヲブ 漢");
+                void selectUsers_hiraganaToKatakana() {
+                    Users u = new Users();
+                    u.setUserId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
+                    u.setLastName("dummyLastName");
+                    u.setFirstName("dummyFirstName");
+                    u.setFirstNameKana("いさむ");
+                    u.setLastNameKana("dummyLastNameKana");
+                    u.setEmail("dummyEmail2");
+                    u.setPasswordHash("");
+                    u.setRoleId("6862542a-1954-4192-81e8-f18c583ade01");
+                    usersMapper.insertSelective(u);
+
+                    UserSearchForm form = new UserSearchForm();
+                    form.setKeyword("イサ");
                     form.setSize(100);
-                    List<ItemListItemDto> actual = itemMapperCustom.selectItems(form);
-                    
+                    List<UserListRowDto> actual = usersMapperCustom.selectUsers(form);
+
                     assertThat(actual).hasSize(1);
-                    ItemListItemDto dto = actual.get(0);
-                    assertThat(dto.getItemId()).isEqualTo("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
+                    assertThat(actual.get(0).getUserId()).isEqualTo("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                 }
-                
+
                 @Test
-                void selectItems_halfKatakanaToFullKatakana() {
-                    Supplier s = new Supplier();
-                    s.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
-                    s.setName("ｶあモﾃ");
-                    supplierMapper.insertSelective(s);
-                    
-                    Item i = new Item();
-                    i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
-                    i.setName("item2");
-                    i.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
-                    itemMapper.insertSelective(i);
-                    
-                    ItemSearchForm form = new ItemSearchForm();
-                    form.setKeyword("カ");
+                void selectUsers_halfKatakanaToFullKatakana() {
+                    Users u = new Users();
+                    u.setUserId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
+                    u.setLastName("dummyLastName");
+                    u.setFirstName("dummyFirstName");
+                    u.setFirstNameKana("dummyFirstNameKana");
+                    u.setLastNameKana("ｱｻﾀﾞ");
+                    u.setEmail("dummyEmail2");
+                    u.setPasswordHash("");
+                    u.setRoleId("6862542a-1954-4192-81e8-f18c583ade01");
+                    usersMapper.insertSelective(u);
+
+                    UserSearchForm form = new UserSearchForm();
+                    form.setKeyword("アサダ");
                     form.setSize(100);
-                    List<ItemListItemDto> actual = itemMapperCustom.selectItems(form);
-                    
+                    List<UserListRowDto> actual = usersMapperCustom.selectUsers(form);
+
                     assertThat(actual).hasSize(1);
-                    ItemListItemDto dto = actual.get(0);
-                    assertThat(dto.getItemId()).isEqualTo("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
+                    assertThat(actual.get(0).getUserId()).isEqualTo("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                 }
-                
+
                 @ParameterizedTest
-                @ValueSource(strings = {" ", "　", "(", ")", "[", "]"})
-                void selectItems_ignoreSymbol(String symbol) {
-                    Supplier s = new Supplier();
-                    s.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
-                    s.setName("abc" + symbol + "de");
-                    supplierMapper.insertSelective(s);
-                    
-                    Item i = new Item();
-                    i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
-                    i.setName("item2");
-                    i.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
-                    itemMapper.insertSelective(i);
-                    
-                    ItemSearchForm form = new ItemSearchForm();
-                    form.setKeyword("cd");
+                @ValueSource(strings = { " ", "　", "(", ")", "[", "]" })
+                void selectUsers_ignoreSymbol(String symbol) {
+                    Users u = new Users();
+                    u.setUserId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
+                    u.setLastName("朝田" + symbol + "アサダ");
+                    u.setFirstName("dummyFirstName");
+                    u.setFirstNameKana("dummyFirstNameKana");
+                    u.setLastNameKana("dummyLastNameKana");
+                    u.setEmail("dummyEmail2");
+                    u.setPasswordHash("");
+                    u.setRoleId("6862542a-1954-4192-81e8-f18c583ade01");
+                    usersMapper.insertSelective(u);
+
+                    UserSearchForm form = new UserSearchForm();
+                    form.setKeyword("田アサ");
                     form.setSize(100);
-                    List<ItemListItemDto> actual = itemMapperCustom.selectItems(form);
-                    
+                    List<UserListRowDto> actual = usersMapperCustom.selectUsers(form);
+
                     assertThat(actual).hasSize(1);
-                    ItemListItemDto dto = actual.get(0);
-                    assertThat(dto.getItemId()).isEqualTo("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
+                    assertThat(actual.get(0).getUserId()).isEqualTo("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                 }
-                
+
                 @Test
-                void selectItems_mixed() {
-                    Supplier s = new Supplier();
-                    s.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
-                    s.setName("sup");
-                    supplierMapper.insertSelective(s);
-                    
-                    Item i = new Item();
-                    i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
-                    i.setName("　asBDｇ( う漢８字　をカ%#ﾀ    ");
-                    i.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
-                    itemMapper.insertSelective(i);
-                    
-                    ItemSearchForm form = new ItemSearchForm();
-                    form.setKeyword("asbdgウ漢8字ヲカ%#タ");
+                void selectUsers_matchesMultiColumns() {
+                    Users u = new Users();
+                    u.setUserId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
+                    u.setLastName("朝田");
+                    u.setFirstName("直樹");
+                    u.setFirstNameKana("アサダナオキ");
+                    u.setLastNameKana("あさだなおき");
+                    u.setEmail("dummyEmail2");
+                    u.setPasswordHash("");
+                    u.setRoleId("6862542a-1954-4192-81e8-f18c583ade01");
+                    usersMapper.insertSelective(u);
+
+                    UserSearchForm form = new UserSearchForm();
+                    form.setKeyword("アサダ");
                     form.setSize(100);
-                    List<ItemListItemDto> actual = itemMapperCustom.selectItems(form);
-                    
+                    List<UserListRowDto> actual = usersMapperCustom.selectUsers(form);
+
                     assertThat(actual).hasSize(1);
-                    ItemListItemDto dto = actual.get(0);
-                    assertThat(dto.getItemId()).isEqualTo("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
+                    assertThat(actual.get(0).getUserId()).isEqualTo("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                 }
 
             }
-            
 
         }
-        
-        @Nested 
-        class Sort{
+
+        @Nested
+        class Sort {
+
+            @BeforeEach
+            void setup() {
+                usersMapper.deleteByExample(new UsersExample());
+                // Name Desc
+                Users u1 = new Users();
+                u1.setUserId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
+                u1.setLastName("渡辺");
+                u1.setFirstName("加奈子");
+                u1.setFirstNameKana("カナコ");
+                u1.setLastNameKana("ワタナベ");
+                u1.setEmail("watanabe@example.com");
+                u1.setPasswordHash("");
+                u1.setRoleId("6862542a-1954-4192-81e8-f18c583ade01");
+                usersMapper.insertSelective(u1);
+
+                // Email Asc
+                Users u2 = new Users();
+                u2.setUserId("3f8a1c72-6b54-4d19-9e2a-7c4f1b8d2a63");
+                u2.setLastName("朝田");
+                u2.setFirstName("直樹");
+                u2.setFirstNameKana("ナオキ");
+                u2.setLastNameKana("アサダ");
+                u2.setEmail("asada@example.com");
+                u2.setPasswordHash("");
+                u2.setRoleId("6862542a-1954-4192-81e8-f18c583ade01");
+                usersMapper.insertSelective(u2);
+
+                // Role Desc
+                Users u3 = new Users();
+                u3.setUserId("a7d93e10-2f6c-4b85-8a31-5e9c2d74f1ab");
+                u3.setLastName("仲野");
+                u3.setFirstName("拓夢");
+                u3.setFirstNameKana("タクム");
+                u3.setLastNameKana("ナカノ");
+                u3.setEmail("nakano@example.com");
+                u3.setPasswordHash("");
+                u3.setRoleId("95daf9ce-b599-41e0-ae0d-f4687e718a2c");
+                usersMapper.insertSelective(u3);
+
+                // Status Asc
+                Users u4 = new Users();
+                u4.setUserId("9b6f2d31-8c47-4a95-b1de-6f3a9c2d7e18");
+                u4.setLastName("松本");
+                u4.setFirstName("知也");
+                u4.setFirstNameKana("トモヤ");
+                u4.setLastNameKana("マツモト");
+                u4.setEmail("matumoto@example.com");
+                u4.setPasswordHash("");
+                u4.setRoleId("6862542a-1954-4192-81e8-f18c583ade01");
+                u4.setIsActive(false);
+                usersMapper.insertSelective(u4);
+            }
+
             @ParameterizedTest
             @MethodSource("createSortCases")
-            void selectItems_sort(ItemSortBy sortBy, SortDirection direction, String includedId) {
-                ItemSearchForm form = new ItemSearchForm();
+            void selectUsers_sort(UserSortBy sortBy, SortDirection direction, String expFirstUserId) {
+                UserSearchForm form = new UserSearchForm();
                 form.setSortBy(sortBy);
                 form.setSortDirection(direction);
-                List<ItemListItemDto> actual = itemMapperCustom.selectItems(form);
-                
+                List<UserListRowDto> actual = usersMapperCustom.selectUsers(form);
+
                 assertThat(actual).hasSize(2);
-                assertThat(actual).extracting(ItemListItemDto::getItemId)
-                .contains(includedId);
+                assertThat(actual.get(0).getUserId()).isEqualTo(expFirstUserId);
             }
-            
-            static Stream<Arguments> createSortCases(){
+
+            static Stream<Arguments> createSortCases() {
                 return Stream.of(
-                        Arguments.of(ItemSortBy.NAME, SortDirection.DESC, "1bd0d872-69b1-4999-b522-ac202c481662"),
-                        Arguments.of(ItemSortBy.KIND, SortDirection.ASC, "a5c1b32a-7b01-49d3-8fef-48e0f39dc31f"),
-                        Arguments.of(ItemSortBy.UNIT, SortDirection.DESC, "f758e462-f526-4b23-a822-8821c5c62adf"),
-                        Arguments.of(ItemSortBy.PRICE, SortDirection.ASC, "a5c1b32a-7b01-49d3-8fef-48e0f39dc31f"),
-                        Arguments.of(ItemSortBy.SUPPLIER, SortDirection.DESC, "2cc30fd9-9dae-4abe-a145-b280d9de2f38"),
-                        Arguments.of(ItemSortBy.STATUS, SortDirection.ASC, "2cc30fd9-9dae-4abe-a145-b280d9de2f38")
-                        );
+                        Arguments.of(UserSortBy.NAME, SortDirection.DESC, "6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134"),
+                        Arguments.of(UserSortBy.EMAIL, SortDirection.ASC, "3f8a1c72-6b54-4d19-9e2a-7c4f1b8d2a63"),
+                        Arguments.of(UserSortBy.ROLE, SortDirection.DESC, "a7d93e10-2f6c-4b85-8a31-5e9c2d74f1ab"),
+                        Arguments.of(UserSortBy.STATUS, SortDirection.ASC, "9b6f2d31-8c47-4a95-b1de-6f3a9c2d7e18"));
             }
-        }
-        
-        @Nested
-        class PairWise{
-            @Test
-            void selectItems_keywordAndsupplier() {
-                ItemSearchForm form = new ItemSearchForm();
-                form.setKeyword("液晶");
-                form.setSupplierId("b4d8e1f7-92ac-4c35-8f21-6a7b8c9d0e1f");
-                
-                List<ItemListItemDto> actual = itemMapperCustom.selectItems(form);
-                
-                assertThat(actual).singleElement()
-                    .extracting(ItemListItemDto::getItemId)
-                    .isEqualTo("f758e462-f526-4b23-a822-8821c5c62adf");
-            }
-            
-            @Test
-            void selectItems_kindAndStatus() {
-                ItemSearchForm form = new ItemSearchForm();
-                form.setKind(ItemKind.SERVICE);
-                form.setStatus(true);
-                
-                List<ItemListItemDto> actual = itemMapperCustom.selectItems(form);
-                
-                assertThat(actual).extracting(ItemListItemDto::getItemId)
-                .containsExactlyInAnyOrder(
-                        "d21fb363-afb3-4911-a051-fac108a06658"
-                        );
-            }
+
         }
 
     }
 
     @Test
     void selectUserDetail() {
-       UserDetailDto actual = usersMapperCustom.selectUserDetail("437e7705-704e-433e-a276-a0e7c61958b1");
-       
-       assertThat(actual.getLastName()).isEqualTo("佐藤");
-       assertThat(actual.getFirstName()).isEqualTo("花子");
-       assertThat(actual.getLastNameKana()).isEqualTo("サトウ");
-       assertThat(actual.getFirstNameKana()).isEqualTo("ハナコ");
-       assertThat(actual.getEmail()).isEqualTo("sato.hanako@example.com");
-       assertThat(actual.getRoleName()).isEqualTo("マネージャー");
+        UserDetailDto actual = usersMapperCustom.selectUserDetail("169f1e17-619f-45bf-b6dc-8faed08c404c");
+
+        assertThat(actual.getLastName()).isEqualTo("佐藤");
+        assertThat(actual.getFirstName()).isEqualTo("花子");
+        assertThat(actual.getLastNameKana()).isEqualTo("サトウ");
+        assertThat(actual.getFirstNameKana()).isEqualTo("ハナコ");
+        assertThat(actual.getEmail()).isEqualTo("sato.hanako@example.com");
+        assertThat(actual.getRoleName()).isEqualTo("マネージャー");
     }
+
 }

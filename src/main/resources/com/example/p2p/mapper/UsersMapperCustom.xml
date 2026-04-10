@@ -29,6 +29,8 @@
           or normalization(lower(u.first_name)) ~#{keywordRegex}
           or normalization(lower(u.last_name_kana)) ~#{keywordRegex}
           or normalization(lower(u.first_name_kana)) ~#{keywordRegex}
+          or normalization(lower(concat(u.last_name_kana, u.first_name_kana))) ~#{keywordRegex}
+          or normalization(lower(concat(u.last_name, u.first_name))) ~#{keywordRegex}
         )
       </if>
     </where>

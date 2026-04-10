@@ -20,4 +20,13 @@
     where role_id = #{roleId}
 
   </select>
+  
+  <select id="selectRoleOptions" resultType="com.example.p2p.dto.RoleOptionDto">
+    select
+      role_id,
+      name
+    from role
+    order by name asc;
+
+  </select>
 </mapper>

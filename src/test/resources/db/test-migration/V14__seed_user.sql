@@ -14,7 +14,7 @@ insert into users (
     'タロウ',
     'siotan0926@gmail.com',
     '$2a$08$RtfQTBKqoBSHYRXwmuV7GuTnQPaLq24x0elYL5kIStLEWOSjaQcsu',
-    '4dfefacd-59dc-413c-bd75-b86c8e230c2f',
+    '95daf9ce-b599-41e0-ae0d-f4687e718a2c',
     true
 ), (
     '佐藤',
@@ -23,7 +23,7 @@ insert into users (
     'ハナコ',
     'sato.hanako@example.com',
     '$2a$08$RtfQTBKqoBSHYRXwmuV7GuTnQPaLq24x0elYL5kIStLEWOSjaQcsu',
-    '54ec2e48-8072-4249-aa39-6cc24492f174',
+    '6862542a-1954-4192-81e8-f18c583ade01',
     true
 ), (
     '鈴木',
@@ -32,6 +32,6 @@ insert into users (
     'イチロウ',
     'suzuki.ichiro@example.com',
     '$2a$08$RtfQTBKqoBSHYRXwmuV7GuTnQPaLq24x0elYL5kIStLEWOSjaQcsu',
-    '44140a4d-66b0-46e6-b26e-567fd52bea87',
+    '71dc166d-5059-4fbc-8bca-71d0c5dc2526',
     true
 );

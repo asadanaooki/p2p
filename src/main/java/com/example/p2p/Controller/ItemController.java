@@ -41,7 +41,7 @@ public class ItemController {
 
     private ModelMapper modelMapper;
 
-    @InitBinder(value = {"form", "itemId"})
+    @InitBinder(value = {"form"})
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }

@@ -1,15 +1,17 @@
 package com.example.p2p.controller;
 
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.example.p2p.form.ItemSearchForm;
 import com.example.p2p.form.UserSearchForm;
 import com.example.p2p.service.UserService;
 
@@ -28,21 +30,27 @@ public class UserController {
 
     private static final String LAST_SEARCH_CONDITION = "lastSearchCondition";
 
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
+    }
+    
     @GetMapping
     public String showUserList(@Valid @ModelAttribute("form") UserSearchForm form,
             BindingResult bindingResult,
-            Model model, HttpSession session) {
+            Model model,
+            HttpSession session) {
         if (bindingResult.hasErrors()) {
             UserSearchForm lastCondition = (UserSearchForm) session.getAttribute(LAST_SEARCH_CONDITION);
             UserSearchForm formToSearch = lastCondition == null ? new UserSearchForm() : lastCondition;
             formToSearch = lastCondition == null ? new UserSearchForm() : lastCondition;
             model.addAttribute("view", userService.searchUsers(formToSearch));
-            return "item-list";
+            return "user-list";
         }
         session.setAttribute(LAST_SEARCH_CONDITION, form);
         model.addAttribute("view", userService.searchUsers(form));
 
-        return "item-list";
+        return "user-list";
     }
 
     @GetMapping("/{userId}")

@@ -11,8 +11,6 @@ public class NormalizationEditor extends PropertyEditorSupport {
 
     @Override
     public void setAsText(String text) throws IllegalArgumentException {
-        // 前後空白除去
-        
         // 小文字化
         text = text.toLowerCase();
         // 全角→半角(英数字のみ)
