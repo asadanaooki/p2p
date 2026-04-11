@@ -36,13 +36,13 @@ public class UserController {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
     
-    @InitBinder("searchForm")
+    @InitBinder("keyword")
     public void initSearchBinder(WebDataBinder binder) {
         binder.registerCustomEditor(String.class, new NormalizationEditor());
     }
     
     @GetMapping
-    public String showUserList(@Valid @ModelAttribute("searchForm") UserSearchForm form,
+    public String showUserList(@Valid @ModelAttribute("form") UserSearchForm form,
             BindingResult bindingResult,
             Model model,
             HttpSession session) {

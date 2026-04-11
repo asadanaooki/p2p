@@ -98,8 +98,13 @@ select {
    フィルターパネル
 ========================= */
 .filter-panel {
+  display: none;
   border-top: 1px solid #d4dddb;
   background: #dfe6e3;
+}
+
+.filter-panel.is-open {
+  display: block;
 }
 
 .filter-form {

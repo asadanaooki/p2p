@@ -117,6 +117,10 @@ select {
   background: #dfe6e3;
 }
 
+.filter-panel.is-open {
+  display: block;
+}
+
 .filter-form {
   padding: 18px 22px 20px;
 }

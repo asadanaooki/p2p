@@ -41,18 +41,18 @@ public class ItemController {
 
     private ModelMapper modelMapper;
 
-    @InitBinder(value = {"form"})
+    @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
 
-    @InitBinder("searchForm")
+    @InitBinder("keyword")
     public void initSearchBinder(WebDataBinder binder) {
         binder.registerCustomEditor(String.class, new NormalizationEditor());
     }
 
     @GetMapping
-    public String showItemList(@Valid @ModelAttribute("searchForm") ItemSearchForm form,
+    public String showItemList(@Valid @ModelAttribute("form") ItemSearchForm form,
             BindingResult bindingResult,
             Model model,
             HttpSession session) {

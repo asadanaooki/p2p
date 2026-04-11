@@ -20,8 +20,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class UserService {
 
-    private UsersMapper usersMapper;
-
     private UsersMapperCustom usersMapperCustom;
 
     private RoleMapperCustom roleMapperCustom;
