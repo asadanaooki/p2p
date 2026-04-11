@@ -12,9 +12,8 @@ import com.example.p2p.dto.ItemEditViewDto;
 import com.example.p2p.dto.ItemListItemDto;
 import com.example.p2p.dto.ItemListViewDto;
 import com.example.p2p.entity.Item;
-import com.example.p2p.entity.ItemExample;
-import com.example.p2p.form.ItemUpsertForm;
 import com.example.p2p.form.ItemSearchForm;
+import com.example.p2p.form.ItemUpsertForm;
 import com.example.p2p.mapper.ItemMapper;
 import com.example.p2p.mapper.ItemMapperCustom;
 import com.example.p2p.mapper.SupplierMapperCustom;
@@ -46,7 +45,7 @@ public class ItemService {
         dto.setSupplierOptions(supplierMapperCustom.selectSupplierOptions());
         dto.setCurrentPage(page);
         dto.setPageNumberList(
-                CommonUtil.createPageNumbers((int) itemMapper.countByExample(new ItemExample()),
+                CommonUtil.createPageNumbers(itemMapperCustom.countItems(form),
                 form.getSize(), page, 2));
         return dto;
     }

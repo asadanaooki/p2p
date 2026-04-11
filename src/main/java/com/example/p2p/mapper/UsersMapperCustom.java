@@ -13,5 +13,7 @@ public interface UsersMapperCustom {
     
     List<UserListRowDto> selectUsers(UserSearchForm form);
     
+    int countUsers(UserSearchForm form);
+    
     UserDetailDto selectUserDetail(String userId);
 }

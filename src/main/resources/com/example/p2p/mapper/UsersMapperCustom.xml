@@ -48,6 +48,30 @@
     limit #{size} offset #{offset}
   </select>
   
+  <select id="countUsers" resultType="int">
+    select count(*)
+    from users u 
+    <where>
+      <if test="roleId != null">
+        and u.role_id = #{roleId}
+      </if>
+      <if test="status != null">
+        and u.is_active = #{status}
+      </if>
+      
+      <if test="keyword != null and keyword != ''">
+        and ( 
+          normalization(lower(u.last_name)) ~ #{keywordRegex}
+          or normalization(lower(u.first_name)) ~#{keywordRegex}
+          or normalization(lower(u.last_name_kana)) ~#{keywordRegex}
+          or normalization(lower(u.first_name_kana)) ~#{keywordRegex}
+          or normalization(lower(concat(u.last_name_kana, u.first_name_kana))) ~#{keywordRegex}
+          or normalization(lower(concat(u.last_name, u.first_name))) ~#{keywordRegex}
+        )
+      </if>
+    </where>
+  </select>
+  
   <select id="selectUserDetail" resultType="com.example.p2p.dto.UserDetailDto">
     select
       u.user_id,

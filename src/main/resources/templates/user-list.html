@@ -11,17 +11,19 @@
 <body>
   <main class="page">
     <div class="success-message" th:if="${successMessage}" th:text="${successMessage}"></div>
+
     <div class="toolbar">
       <a th:href="@{/setting/role/create}" class="new-button">
         作成
       </a>
 
       <div class="toolbar-right">
-        <form th:action="@{/setting/user}" th:object="${form}" method="get" class="keyword-search-form">
+        <form th:action="@{/setting/user}" th:object="${searchForm}" method="get" class="keyword-search-form">
           <input type="hidden" th:field="*{roleId}">
           <input type="hidden" th:field="*{status}">
           <input type="hidden" th:field="*{sortBy}" id="sortBy">
           <input type="hidden" th:field="*{sortDirection}" id="sortDirection">
+
           <div class="search-box">
             <input id="keyword" type="text" th:field="*{keyword}" class="search-input" />
             <button type="submit" class="search-icon-button">
@@ -30,9 +32,8 @@
                   d="M255.108,0C119.863,0,10.204,109.66,10.204,244.904c0,135.245,109.659,244.905,244.904,244.905
                      c52.006,0,100.238-16.223,139.883-43.854l185.205,185.176c1.671,1.672,4.379,1.672,5.964,0.115l34.892-34.891 
                      c1.613-1.613,1.47-4.379-0.115-5.965L438.151,407.605c38.493-43.246,61.86-100.237,61.86-162.702 
-                      C500.012,109.66,390.353,0,255.108,0z M255.108,460.996c-119.34,0-216.092-96.752-216.092-216.092 
-                      c0-119.34,96.751-216.091,216.092-216.091s216.091,96.751,216.091,216.091C471.199,364.244,374.448,460.996,255.108,460.996z" />
-
+                     C500.012,109.66,390.353,0,255.108,0z M255.108,460.996c-119.34,0-216.092-96.752-216.092-216.092 
+                     c0-119.34,96.751-216.091,216.092-216.091s216.091,96.751,216.091,216.091C471.199,364.244,374.448,460.996,255.108,460.996z" />
               </svg>
             </button>
           </div>
@@ -50,7 +51,7 @@
     </div>
 
     <div id="filterPanel" class="filter-panel">
-      <form th:action="@{/setting/user}" th:object="${form}" method="get" class="filter-form">
+      <form th:action="@{/setting/user}" th:object="${searchForm}" method="get" class="filter-form">
         <input type="hidden" th:field="*{keyword}" />
         <input type="hidden" th:field="*{sortBy}" />
         <input type="hidden" th:field="*{sortDirection}" />
@@ -89,29 +90,29 @@
           <th>
             <button type="button" class="sort-button" data-sort-by="NAME">
               <span>名前</span>
-              <span class="sort-icon" th:if="${form.sortBy.name().equals('NAME')}"
-                th:text="${form.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
+              <span class="sort-icon" th:if="${searchForm.sortBy.name().equals('NAME')}"
+                th:text="${searchForm.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
             </button>
           </th>
           <th>
             <button type="button" class="sort-button" data-sort-by="EMAIL">
               <span>メールアドレス</span>
-              <span class="sort-icon" th:if="${form.sortBy.name().equals('EMAIL')}"
-                th:text="${form.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
+              <span class="sort-icon" th:if="${searchForm.sortBy.name().equals('EMAIL')}"
+                th:text="${searchForm.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
             </button>
           </th>
           <th>
             <button type="button" class="sort-button" data-sort-by="ROLE">
               <span>ロール</span>
-              <span class="sort-icon" th:if="${form.sortBy.name().equals('ROLE')}"
-                th:text="${form.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
+              <span class="sort-icon" th:if="${searchForm.sortBy.name().equals('ROLE')}"
+                th:text="${searchForm.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
             </button>
           </th>
           <th>
             <button type="button" class="sort-button" data-sort-by="STATUS">
               <span>状態</span>
-              <span class="sort-icon" th:if="${form.sortBy.name().equals('STATUS')}"
-                th:text="${form.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
+              <span class="sort-icon" th:if="${searchForm.sortBy.name().equals('STATUS')}"
+                th:text="${searchForm.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
             </button>
           </th>
         </tr>
@@ -131,6 +132,41 @@
         </tr>
       </tbody>
     </table>
+
+    <div class="pagination" th:if="${!#lists.isEmpty(view.pageNumberList)}">
+      <a class="page-link" th:if="${view.currentPage > 1}" th:href="@{/setting/user(
+          page=${view.currentPage - 1},
+          keyword=${searchForm.keyword},
+          roleId=${searchForm.roleId},
+          status=${searchForm.status},
+          sortBy=${searchForm.sortBy},
+          sortDirection=${searchForm.sortDirection}
+        )}">
+        &lt;
+      </a>
+
+      <a class="page-link" th:each="pageNo : ${view.pageNumberList}"
+        th:classappend="${pageNo == view.currentPage} ? 'active' : ''" th:text="${pageNo}" th:href="@{/setting/user(
+          page=${pageNo},
+          keyword=${searchForm.keyword},
+          roleId=${searchForm.roleId},
+          status=${searchForm.status},
+          sortBy=${searchForm.sortBy},
+          sortDirection=${searchForm.sortDirection}
+        )}">
+      </a>
+
+      <a class="page-link" th:if="${view.currentPage < #lists.size(view.pageNumberList)}" th:href="@{/setting/user(
+          page=${view.currentPage + 1},
+          keyword=${searchForm.keyword},
+          roleId=${searchForm.roleId},
+          status=${searchForm.status},
+          sortBy=${searchForm.sortBy},
+          sortDirection=${searchForm.sortDirection}
+        )}">
+        &gt;
+      </a>
+    </div>
 
   </main>
 </body>

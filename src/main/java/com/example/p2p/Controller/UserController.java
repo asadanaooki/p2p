@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.example.p2p.advice.NormalizationEditor;
 import com.example.p2p.form.UserSearchForm;
 import com.example.p2p.service.UserService;
 
@@ -35,8 +36,13 @@ public class UserController {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
     
+    @InitBinder("searchForm")
+    public void initSearchBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(String.class, new NormalizationEditor());
+    }
+    
     @GetMapping
-    public String showUserList(@Valid @ModelAttribute("form") UserSearchForm form,
+    public String showUserList(@Valid @ModelAttribute("searchForm") UserSearchForm form,
             BindingResult bindingResult,
             Model model,
             HttpSession session) {

@@ -33,7 +33,7 @@ public class UserService {
         dto.setUsers(users);
         dto.setRoleOptions(roleMapperCustom.selectRoleOptions());
         dto.setCurrentPage(page);
-        dto.setPageNumberList(CommonUtil.createPageNumbers((int) usersMapper.countByExample(new UsersExample()),
+        dto.setPageNumberList(CommonUtil.createPageNumbers(usersMapperCustom.countUsers(form),
                 form.getSize(), page, 2));
         return dto;
     }

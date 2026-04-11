@@ -26,7 +26,7 @@
         and i.price &lt;= #{priceMax}
       </if>
       <if test="supplierId != null">
-        and s.supplier_id = #{supplierId}
+        and i.supplier_id = #{supplierId}
       </if>
       <if test="status != null">
         and i.is_active = #{status}
@@ -53,7 +53,37 @@
         <when test="sortDirection.toString().equals('DESC')">desc</when>
       </choose>
     limit #{size} offset #{offset}
-
+  </select>
+  
+  <select id="countItems" resultType="int">
+    select count(*)
+    from item i 
+    left join supplier s
+    on i.supplier_id = s.supplier_id 
+    <where>
+      <if test="kind != null">
+        i.kind = #{kind}
+      </if>
+      <if test="priceMin != null">
+        and i.price &gt;= #{priceMin}
+      </if>
+      <if test="priceMax != null">
+        and i.price &lt;= #{priceMax}
+      </if>
+      <if test="supplierId != null">
+        and i.supplier_id = #{supplierId}
+      </if>
+      <if test="status != null">
+        and i.is_active = #{status}
+      </if>
+      
+      <if test="keyword != null and keyword != ''">
+        and ( 
+          normalization(lower(i.name)) ~ #{keywordRegex}
+          or normalization(lower(s.name)) ~#{keywordRegex}
+        )
+      </if>
+    </where>
   </select>
   
   <select id="selectItemDetail" resultType="com.example.p2p.dto.ItemDetailDto">
