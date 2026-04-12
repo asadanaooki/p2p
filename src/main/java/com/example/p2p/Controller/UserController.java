@@ -2,6 +2,8 @@ package com.example.p2p.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
@@ -38,6 +40,8 @@ public class UserController {
     private MessageSource messageSource;
 
     private static final String LAST_SEARCH_CONDITION = "lastSearchCondition";
+    
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -54,7 +58,9 @@ public class UserController {
             BindingResult bindingResult,
             Model model,
             HttpSession session) {
+        logger.debug("ユーザー一覧表示開始");
         if (bindingResult.hasErrors()) {
+            logger.warn("ユーザー一覧の入力エラー: errorCount={}", bindingResult.getErrorCount());
             UserSearchForm lastCondition = (UserSearchForm) session.getAttribute(LAST_SEARCH_CONDITION);
             UserSearchForm formToSearch = lastCondition == null ? new UserSearchForm() : lastCondition;
             formToSearch = lastCondition == null ? new UserSearchForm() : lastCondition;
@@ -64,19 +70,23 @@ public class UserController {
         session.setAttribute(LAST_SEARCH_CONDITION, form);
         model.addAttribute("view", userService.searchUsers(form));
 
+        logger.debug("ユーザー一覧表示完了");
         return "user-list";
     }
 
     @GetMapping("/{userId}")
     public String showRoleDetail(@PathVariable String userId, Model model) {
+        logger.debug("ユーザー詳細表示開始");
         model.addAttribute("userId", userId);
         model.addAttribute("user", userService.getUserDetail(userId));
 
+        logger.debug("ユーザー詳細表示完了");
         return "user-detail";
     }
 
     @GetMapping("/create")
     public String showUserCreateForm(@ModelAttribute("form") UserUpsertForm form, Model model) {
+        logger.debug("ユーザー作成画面表示");
         return "user-create";
     }
 
@@ -85,7 +95,9 @@ public class UserController {
             BindingResult result,
             Model model,
             RedirectAttributes redirectAttributes) {
+        logger.info("ユーザー作成開始");
         if (result.hasErrors()) {
+            logger.warn("ユーザー作成の入力エラー: errorCount={}", result.getErrorCount());
             return "user-create";
         }
         try {
@@ -97,6 +109,7 @@ public class UserController {
         }
         redirectAttributes.addFlashAttribute("successMessage",
                 messageSource.getMessage("common.create.success", null, null));
+        logger.info("ユーザー作成成功");
         return "redirect:/setting/user";
     }
     
