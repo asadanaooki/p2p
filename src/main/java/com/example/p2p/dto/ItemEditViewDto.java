@@ -1,7 +1,5 @@
 package com.example.p2p.dto;
 
-import java.util.List;
-
 import com.example.p2p.enums.ItemKind;
 
 import lombok.Data;
@@ -23,11 +21,5 @@ public class ItemEditViewDto {
     private String description;
 
     private boolean active;
-
-    // 単位一覧
-    private List<UnitOptionDto> unitOptions;
-
-    // サプライヤー一覧
-    private List<SupplierOptionDto> supplierOptions;
 
 }

@@ -89,7 +89,7 @@
             <label for="supplierId" class="field-label">サプライヤー</label>
             <select id="supplierId" th:field="*{supplierId}">
               <option value="">すべて</option>
-              <option th:each="s : ${view.supplierOptions}" th:value="${s.supplierId}" th:text="${s.name}"></option>
+              <option th:each="s : ${supplierOptions}" th:value="${s.supplierId}" th:text="${s.name}"></option>
             </select>
             <p class="field-error" th:if="${#fields.hasErrors('supplierId')}" th:errors="*{supplierId}"></p>
           </div>

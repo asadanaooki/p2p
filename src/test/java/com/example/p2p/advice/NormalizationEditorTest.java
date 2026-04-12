@@ -35,7 +35,7 @@ class NormalizationEditorTest {
     @ValueSource(strings = {"[", "]", "(", ")", "-", " ", "　"})
     void setAsText_symbols(String symbol) {
         editor.setAsText(symbol);
-        assertThat(editor.getAsText()).isEmpty();
+        assertThat(editor.getAsText()).isNull();
     }
     
     @Test

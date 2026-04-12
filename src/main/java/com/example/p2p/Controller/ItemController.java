@@ -78,9 +78,6 @@ public class ItemController {
 
     @GetMapping("/create")
     public String showItemCreateForm(@ModelAttribute("form") ItemUpsertForm form, Model model) {
-        Map<String, List> options = itemService.getOptions();
-        model.addAttribute("unitOptions", options.get("unitOptions"));
-        model.addAttribute("supplierOptions", options.get("supplierOptions"));
         return "item-create";
     }
 
@@ -90,9 +87,6 @@ public class ItemController {
             Model model,
             RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
-            Map<String, List> options = itemService.getOptions();
-            model.addAttribute("unitOptions", options.get("unitOptions"));
-            model.addAttribute("supplierOptions", options.get("supplierOptions"));
             return "item-create";
         }
         itemService.create(form);
@@ -108,8 +102,6 @@ public class ItemController {
             Model model) {
         ItemEditViewDto view = itemService.prepareItemEditView(itemId);
         modelMapper.map(view, form);
-        model.addAttribute("unitOptions", view.getUnitOptions());
-        model.addAttribute("supplierOptions", view.getSupplierOptions());
         model.addAttribute("itemId", itemId);
         return "item-edit";
     }
@@ -120,10 +112,7 @@ public class ItemController {
             BindingResult bindingResult, Model model,
             RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
-            Map<String, List> options = itemService.getOptions();
             model.addAttribute("itemId", itemId);
-            model.addAttribute("unitOptions", options.get("unitOptions"));
-            model.addAttribute("supplierOptions", options.get("supplierOptions"));
             return "item-edit";
         }
         itemService.update(itemId, form);
@@ -132,6 +121,14 @@ public class ItemController {
                 messageSource.getMessage("common.update.success", null, null));
 
         return "redirect:/setting/item/{itemId}";
+    }
+    
+ 
+    @ModelAttribute
+    public void addOptions(Model model){
+        Map<String, List> options = itemService.getOptions();
+        model.addAttribute("unitOptions", options.get("unitOptions"));
+        model.addAttribute("supplierOptions", options.get("supplierOptions"));
     }
 
 }

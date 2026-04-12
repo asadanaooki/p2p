@@ -42,7 +42,6 @@ public class ItemService {
         int page = form.getPage();
         List<ItemListItemDto> items = itemMapperCustom.selectItems(form);
         dto.setItems(items);
-        dto.setSupplierOptions(supplierMapperCustom.selectSupplierOptions());
         dto.setCurrentPage(page);
         dto.setPageNumberList(
                 CommonUtil.createPageNumbers(itemMapperCustom.countItems(form),
@@ -53,9 +52,6 @@ public class ItemService {
     public ItemEditViewDto prepareItemEditView(String itemId) {
        Item item = itemMapper.selectByPrimaryKey(itemId);
        ItemEditViewDto dto = modelMapper.map(item, ItemEditViewDto.class);
-       dto.setUnitOptions(unitMapperCustom.selectUnitOptions());
-       dto.setSupplierOptions(supplierMapperCustom.selectSupplierOptions());
-       
        return dto;
     }
     

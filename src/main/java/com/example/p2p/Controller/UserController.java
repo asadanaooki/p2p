@@ -1,5 +1,7 @@
 package com.example.p2p.controller;
 
+import java.util.List;
+
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
@@ -10,10 +12,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.p2p.advice.NormalizationEditor;
+import com.example.p2p.dto.RoleOptionDto;
+import com.example.p2p.exception.BusinessException;
+import com.example.p2p.form.UnitCreateForm;
 import com.example.p2p.form.UserSearchForm;
+import com.example.p2p.form.UserUpsertForm;
 import com.example.p2p.service.UserService;
 
 import jakarta.servlet.http.HttpSession;
@@ -35,14 +43,14 @@ public class UserController {
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
-    
+
     @InitBinder("keyword")
     public void initSearchBinder(WebDataBinder binder) {
         binder.registerCustomEditor(String.class, new NormalizationEditor());
     }
-    
+
     @GetMapping
-    public String showUserList(@Valid @ModelAttribute("form") UserSearchForm form,
+    public String showUserList(@Valid @ModelAttribute("form") UserSearchForm form, 
             BindingResult bindingResult,
             Model model,
             HttpSession session) {
@@ -67,30 +75,35 @@ public class UserController {
         return "user-detail";
     }
 
-    // @GetMapping("/create")
-    // public String showUnitCreateForm(@ModelAttribute("form") UnitCreateForm form) {
-    // return "unit-create";
-    // }
-    //
-    // @PostMapping("/create")
-    // public String create(@Valid @ModelAttribute("form") UnitCreateForm form,
-    // BindingResult result,
-    // RedirectAttributes redirectAttributes) {
-    // if (result.hasErrors()) {
-    // return "unit-create";
-    // }
-    // try {
-    // unitService.create(form.getName());
-    // }
-    // catch (BusinessException e) {
-    // result.rejectValue("name", "duplicate",
-    // messageSource.getMessage("common.duplicate", null, null));
-    // return "unit-create";
-    // }
-    // redirectAttributes.addFlashAttribute("successMessage",
-    // messageSource.getMessage("common.create.success", null, null));
-    // return "redirect:/setting/unit";
-    // }
+    @GetMapping("/create")
+    public String showUserCreateForm(@ModelAttribute("form") UserUpsertForm form, Model model) {
+        return "user-create";
+    }
+
+    @PostMapping("/create")
+    public String create(@Valid @ModelAttribute("form") UserUpsertForm form,
+            BindingResult result,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "user-create";
+        }
+        try {
+            userService.create(form);
+        }
+        catch (BusinessException e) {
+            result.rejectValue("email", "duplicate", messageSource.getMessage("common.duplicate", null, null));
+            return "user-create";
+        }
+        redirectAttributes.addFlashAttribute("successMessage",
+                messageSource.getMessage("common.create.success", null, null));
+        return "redirect:/setting/user";
+    }
+    
+    @ModelAttribute("roleOptions")
+    public List<RoleOptionDto> addRoleOptions() {
+        return userService.getRoleOptions();
+    }
     //
     // @GetMapping("/{unitId}")
     // public String showUnitEditForm(@PathVariable String unitId, @ModelAttribute("form")
