@@ -2,6 +2,7 @@ package com.example.p2p.controller;
 
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -20,8 +21,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.p2p.advice.NormalizationEditor;
 import com.example.p2p.dto.RoleOptionDto;
+import com.example.p2p.dto.UserDetailDto;
 import com.example.p2p.exception.BusinessException;
-import com.example.p2p.form.UnitCreateForm;
+import com.example.p2p.form.UnitEditForm;
 import com.example.p2p.form.UserSearchForm;
 import com.example.p2p.form.UserUpsertForm;
 import com.example.p2p.service.UserService;
@@ -38,6 +40,7 @@ public class UserController {
     private UserService userService;
 
     private MessageSource messageSource;
+    private ModelMapper modelMapper;
 
     private static final String LAST_SEARCH_CONDITION = "lastSearchCondition";
     
@@ -113,46 +116,46 @@ public class UserController {
         return "redirect:/setting/user";
     }
     
-    @ModelAttribute("roleOptions")
-    public List<RoleOptionDto> addRoleOptions() {
-        return userService.getRoleOptions();
+    @GetMapping("/{userId}/edit")
+    public String showUserEditForm(@PathVariable String userId,
+            @ModelAttribute("form") UserUpsertForm form,
+            Model model) {
+        logger.debug("ユーザー編集表示開始");
+        model.addAttribute("userId", userId);
+        UserDetailDto user = userService.getUserDetail(userId);
+        modelMapper.map(user, form);
+
+        logger.debug("ユーザー編集表示完了");
+        return "user-edit";
     }
-    //
-    // @GetMapping("/{unitId}")
-    // public String showUnitEditForm(@PathVariable String unitId, @ModelAttribute("form")
-    // UnitEditForm form,
-    // Model model) {
-    // UnitDetailDto unit = unitService.getUnitDetail(unitId);
-    // form.setName(unit.getName());
-    // form.setStatus(unit.isActive());
-    //
-    // model.addAttribute("unitId", unitId);
-    //
-    // return "unit-edit";
-    // }
-    //
-    // @PostMapping("/{unitId}/update")
-    // public String update(@PathVariable String unitId, @Valid @ModelAttribute("form")
-    // UnitEditForm form,
-    // BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
-    // if (bindingResult.hasErrors()) {
-    // model.addAttribute("unitId", unitId);
-    // return "unit-edit";
-    // }
-    // try {
-    // unitService.update(unitId, form);
-    // }
-    // catch (BusinessException e) {
-    // model.addAttribute("unitId", unitId);
-    // bindingResult.rejectValue("name", "duplicate",
-    // messageSource.getMessage("common.duplicate", null, null));
-    // return "unit-edit";
-    // }
-    // redirectAttributes.addFlashAttribute("successMessage",
-    // messageSource.getMessage("common.update.success", null, null));
-    // redirectAttributes.addAttribute("unitId", unitId);
-    // return "redirect:/setting/unit/{unitId}";
-    //
-    // }
+    
+     @PostMapping("/{userId}/update")
+     public String update(@PathVariable String userId, 
+             @Valid @ModelAttribute("form") UserUpsertForm form,
+     BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
+     if (bindingResult.hasErrors()) {
+     model.addAttribute("userId", userId);
+     return "user-edit";
+     }
+     try {
+     userService.update(userId, form);
+     }
+     catch (BusinessException e) {
+     model.addAttribute("userId", userId);
+     bindingResult.rejectValue("email", "duplicate",
+     messageSource.getMessage("common.duplicate", null, null));
+     return "user-edit";
+     }
+     redirectAttributes.addFlashAttribute("successMessage",
+     messageSource.getMessage("common.update.success", null, null));
+     redirectAttributes.addAttribute("userId", userId);
+     return "redirect:/setting/user/{userId}";
+    
+     }
+     
+     @ModelAttribute("roleOptions")
+     public List<RoleOptionDto> addRoleOptions() {
+         return userService.getRoleOptions();
+     }
 
 }

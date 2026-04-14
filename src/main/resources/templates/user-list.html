@@ -62,7 +62,7 @@
             <label for="roleId" class="field-label">ロール</label>
             <select id="roleId" th:field="*{roleId}">
               <option value="">すべて</option>
-              <option th:each="role : ${view.roleOptions}" th:value="${role.roleId}" th:text="${role.name}">
+              <option th:each="role : ${roleOptions}" th:value="${role.roleId}" th:text="${role.name}">
               </option>
             </select>
             <p class="field-error" th:if="${#fields.hasErrors('roleId')}" th:errors="*{roleId}"></p>
@@ -129,7 +129,7 @@
           </td>
           <td th:text="${user.email}"></td>
           <td th:text="${user.roleName}"></td>
-          <td th:text="${user.active ? '有効' : '無効'}"></td>
+          <td th:text="${user.isActive ? '有効' : '無効'}"></td>
         </tr>
       </tbody>
     </table>

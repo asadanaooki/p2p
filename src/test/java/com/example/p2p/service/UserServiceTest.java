@@ -2,6 +2,7 @@ package com.example.p2p.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.util.List;
 
@@ -10,7 +11,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.p2p.dto.UserListViewDto;
@@ -25,17 +25,14 @@ import com.example.p2p.mapper.UsersMapper;
 @Transactional
 class UserServiceTest {
 
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    UsersMapper usersMapper;
+
     @Nested
     class SearchItems {
-
-        @Autowired
-        UserService userService;
-
-        @Autowired
-        UsersMapper usersMapper;
-
-        @Autowired
-        PasswordEncoder passwordEncoder;
 
         @Nested
         class SearchUsers {
@@ -111,7 +108,6 @@ class UserServiceTest {
                 form.setLastNameKana("タカギ");
                 form.setFirstNameKana("タロウ");
                 form.setEmail("takagi@example.com");
-                form.setPassword("password123");
                 form.setRoleId("6862542a-1954-4192-81e8-f18c583ade01");
             }
 
@@ -136,16 +132,106 @@ class UserServiceTest {
                 assertThat(created.getLastNameKana()).isEqualTo("タカギ");
                 assertThat(created.getFirstNameKana()).isEqualTo("タロウ");
                 assertThat(created.getEmail()).isEqualTo("takagi@example.com");
-                assertThat(created.getPasswordHash().length()).isEqualTo(60);
+                assertThat(created.getPasswordHash()).isNull();
                 assertThat(created.getRoleId()).isEqualTo("6862542a-1954-4192-81e8-f18c583ade01");
-                assertThat(created.getIsActive()).isTrue();
+                assertThat(created.getIsActive()).isFalse();
                 assertThat(created.getCreatedAt()).isNotNull();
                 assertThat(created.getUpdatedAt()).isNotNull();
-                assertThat(passwordEncoder.matches("password123", created.getPasswordHash())).isTrue();
+                assertThat(created.getIsActive()).isFalse();
             }
 
         }
 
+    }
+
+    @Nested
+    class Update {
+
+        String userId = "169f1e17-619f-45bf-b6dc-8faed08c404c";
+
+        @Test
+        void update_duplicateEmail() {
+            UserUpsertForm form = baseForm();
+            form.setEmail("siotan0926@gmail.com");
+
+            assertThatThrownBy(() -> userService.update(userId, form)).isInstanceOf(BusinessException.class);
+        }
+
+        @Test
+        void update_sameEmail() {
+            UserUpsertForm form = baseForm();
+            form.setIsActive(false);
+
+            assertDoesNotThrow(() -> userService.update(userId, form));
+        }
+
+        @Test
+        void update_allFieldsChanged() {
+            UserUpsertForm form = baseForm();
+            form.setLastName("前田");
+            form.setFirstName("健太");
+            form.setLastNameKana("マエダ");
+            form.setFirstNameKana("ケンタ");
+            form.setEmail("maeken@example.com");
+            form.setRoleId("71dc166d-5059-4fbc-8bca-71d0c5dc2526");
+            form.setIsActive(false);
+
+            userService.update(userId, form);
+
+            Users updated = usersMapper.selectByPrimaryKey(userId);
+            assertThat(updated.getLastName()).isEqualTo("前田");
+            assertThat(updated.getFirstName()).isEqualTo("健太");
+            assertThat(updated.getLastNameKana()).isEqualTo("マエダ");
+            assertThat(updated.getFirstNameKana()).isEqualTo("ケンタ");
+            assertThat(updated.getEmail()).isEqualTo("maeken@example.com");
+            assertThat(updated.getPasswordHash()).isEqualTo("$2a$08$RtfQTBKqoBSHYRXwmuV7GuTnQPaLq24x0elYL5kIStLEWOSjaQcsu");
+            assertThat(updated.getRoleId()).isEqualTo("71dc166d-5059-4fbc-8bca-71d0c5dc2526");
+            assertThat(updated.getIsActive()).isFalse();
+
+        }
+
+        UserUpsertForm baseForm() {
+            UserUpsertForm form = new UserUpsertForm();
+            form.setLastName("佐藤");
+            form.setFirstName("花子");
+            form.setLastNameKana("サトウ");
+            form.setFirstNameKana("ハナコ");
+            form.setEmail("sato.hanako@example.com");
+            form.setRoleId("6862542a-1954-4192-81e8-f18c583ade01");
+            form.setIsActive(true);
+
+            return form;
+        }
+
+    }
+
+    @Test
+    void create() {
+        UserUpsertForm form = new UserUpsertForm();
+        form.setLastName("佐藤2");
+        form.setFirstName("花子2");
+        form.setLastNameKana("サトウ2");
+        form.setFirstNameKana("ハナコ2");
+        form.setEmail("sato.hanako2@example.com");
+        form.setRoleId("6862542a-1954-4192-81e8-f18c583ade01");
+        
+        userService.create(form);
+        
+        UsersExample ex = new UsersExample();
+        ex.createCriteria().andEmailEqualTo("sato.hanako2@example.com");
+       Users created = usersMapper.selectByExample(ex).get(0);
+       
+       assertThat(created.getUserId()).isNotBlank();
+       assertThat(created.getLastName()).isEqualTo("佐藤2");
+       assertThat(created.getFirstName()).isEqualTo("花子2");
+       assertThat(created.getLastNameKana()).isEqualTo("サトウ2");
+       assertThat(created.getFirstNameKana()).isEqualTo("ハナコ2");
+       assertThat(created.getEmail()).isEqualTo("sato.hanako2@example.com");
+       assertThat(created.getIsActive()).isFalse();
+       assertThat(created.getRoleId()).isEqualTo("6862542a-1954-4192-81e8-f18c583ade01");
+       assertThat(created.getIsActive()).isFalse();
+       assertThat(created.getCreatedAt()).isNotNull();
+       assertThat(created.getUpdatedAt()).isNotNull();
     }
 
 }

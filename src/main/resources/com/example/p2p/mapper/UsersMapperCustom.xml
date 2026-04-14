@@ -80,6 +80,7 @@
       u.last_name_kana,
       u.first_name_kana,
       u.email ,
+      r.role_id,
       r.name as roleName ,
       u.is_active
     from users u

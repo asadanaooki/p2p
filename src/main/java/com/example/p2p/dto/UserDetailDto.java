@@ -5,8 +5,6 @@ import lombok.Data;
 @Data
 public class UserDetailDto {
 
-    private String userId;
-
     private String lastName;
 
     private String firstName;
@@ -16,9 +14,11 @@ public class UserDetailDto {
     private String firstNameKana;
 
     private String email;
+    
+    private String roleId;
 
     private String roleName;
 
-    private boolean isActive;
+    private Boolean isActive;
 
 }

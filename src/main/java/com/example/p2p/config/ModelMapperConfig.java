@@ -15,7 +15,6 @@ public class ModelMapperConfig {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.typeMap(UserUpsertForm.class, Users.class).addMappings(m -> {
             m.skip(Users::setPasswordHash);
-            m.skip(Users::setIsActive);
         });
         return modelMapper;
     }

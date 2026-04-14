@@ -3,16 +3,16 @@
 
 <head>
   <link rel="stylesheet" th:href="@{/css/common.css}" />
-  <link rel="stylesheet" th:href="@{/css/user-create.css}">
+  <link rel="stylesheet" th:href="@{/css/user-edit.css}">
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script th:src="@{/js/common.js}"></script>
 </head>
 
 <body>
   <main class="page">
-    <h1 class="page-title">ユーザー作成</h1>
+    <h1 class="page-title">ユーザー編集</h1>
 
-    <form th:action="@{/setting/user/create}" method="post" th:object="${form}">
+    <form th:action="@{/setting/user/{userId}/update(userId=${userId})}" method="post" th:object="${form}">
       <div class="form-row">
         <label for="lastName" class="form-label">姓</label>
         <input type="text" id="lastName" th:field="*{lastName}" class="form-input">
@@ -52,9 +52,17 @@
         <p class="field-error" th:if="${#fields.hasErrors('roleId')}" th:errors="*{roleId}"></p>
       </div>
 
+      <div class="form-row">
+        <label for="isActive" class="form-label">状態</label>
+        <select id="isActive" th:field="*{isActive}" class="form-select">
+          <option value="true">有効</option>
+          <option value="false">無効</option>
+        </select>
+      </div>
+
       <div class="button-area">
         <button type="submit" class="save-button">保存</button>
-        <a th:href="@{/setting/user}" class="cancel-button">キャンセル</a>
+        <a th:href="@{/setting/user/{userId}(userId=${userId})}" class="cancel-button">キャンセル</a>
       </div>
     </form>
   </main>

@@ -32,8 +32,6 @@ public class UserService {
 
     private RoleMapperCustom roleMapperCustom;
 
-    private PasswordEncoder passwordEncoder;
-
     private ModelMapper modelMapper;
 
     public UserListViewDto searchUsers(UserSearchForm form) {
@@ -60,8 +58,20 @@ public class UserService {
             throw new BusinessException();
         }
         Users u = modelMapper.map(form, Users.class);
-        u.setPasswordHash(passwordEncoder.encode(form.getPassword()));
         usersMapper.insertSelective(u);
+        // TODO: メール送信
+    }
+    
+    public void update(String userId, UserUpsertForm form) {
+        UsersExample ex = new UsersExample();
+        ex.createCriteria().andEmailEqualTo(form.getEmail()).andUserIdNotEqualTo(userId);
+        // 重複チェック
+        if (usersMapper.countByExample(ex) > 0) {
+            throw new BusinessException();
+        }
+        Users u = modelMapper.map(form, Users.class);
+        u.setUserId(userId);
+        usersMapper.updateByPrimaryKeySelective(u);
     }
     
     public List<RoleOptionDto> getRoleOptions(){

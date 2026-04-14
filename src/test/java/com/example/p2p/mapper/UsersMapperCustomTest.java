@@ -300,6 +300,7 @@ class UsersMapperCustomTest {
                 u1.setEmail("watanabe@example.com");
                 u1.setPasswordHash("");
                 u1.setRoleId("6862542a-1954-4192-81e8-f18c583ade01");
+                u1.setIsActive(true);
                 usersMapper.insertSelective(u1);
 
                 // Email Asc
@@ -312,6 +313,7 @@ class UsersMapperCustomTest {
                 u2.setEmail("asada@example.com");
                 u2.setPasswordHash("");
                 u2.setRoleId("6862542a-1954-4192-81e8-f18c583ade01");
+                u2.setIsActive(true);
                 usersMapper.insertSelective(u2);
 
                 // Role Desc
@@ -324,6 +326,7 @@ class UsersMapperCustomTest {
                 u3.setEmail("nakano@example.com");
                 u3.setPasswordHash("");
                 u3.setRoleId("95daf9ce-b599-41e0-ae0d-f4687e718a2c");
+                u3.setIsActive(true);
                 usersMapper.insertSelective(u3);
 
                 // Status Asc
@@ -374,6 +377,7 @@ class UsersMapperCustomTest {
         assertThat(actual.getFirstNameKana()).isEqualTo("ハナコ");
         assertThat(actual.getEmail()).isEqualTo("sato.hanako@example.com");
         assertThat(actual.getRoleName()).isEqualTo("マネージャー");
+        assertThat(actual.getRoleId()).isEqualTo("6862542a-1954-4192-81e8-f18c583ade01");
     }
 
 }

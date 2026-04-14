@@ -130,7 +130,6 @@ class UserControllerTest {
                     .param("lastNameKana", form.getLastNameKana())
                     .param("firstNameKana", form.getFirstNameKana())
                     .param("email", form.getEmail())
-                    .param("password", form.getPassword())
                     .param("roleId", form.getRoleId()))
                 .andExpect(redirectedUrl("/setting/user"));
         }
@@ -149,7 +148,6 @@ class UserControllerTest {
                     .param("lastNameKana", form.getLastNameKana())
                     .param("firstNameKana", form.getFirstNameKana())
                     .param("email", form.getEmail())
-                    .param("password", form.getPassword())
                     .param("roleId", form.getRoleId()))
                 .andExpect(model().hasErrors())
                 .andExpect(model().attributeHasFieldErrors("form", field))
@@ -179,11 +177,6 @@ class UserControllerTest {
                     Arguments.of("email", (Consumer<UserUpsertForm>) f -> f.setEmail("　")),
                     Arguments.of("email", (Consumer<UserUpsertForm>) f -> f.setEmail(email255)),
                     Arguments.of("email", (Consumer<UserUpsertForm>) f -> f.setEmail("axc@")),
-                    // password
-                    Arguments.of("password", (Consumer<UserUpsertForm>) f -> f.setPassword(null)),
-                    Arguments.of("password", (Consumer<UserUpsertForm>) f -> f.setPassword("")),
-                    Arguments.of("password", (Consumer<UserUpsertForm>) f -> f.setPassword("abあ")),
-                    Arguments.of("password", (Consumer<UserUpsertForm>) f -> f.setPassword("a".repeat(256))),
                     // roleId
                     Arguments.of("roleId", (Consumer<UserUpsertForm>) f -> f.setRoleId(null)),
                     Arguments.of("roleId", (Consumer<UserUpsertForm>) f -> f.setRoleId("a".repeat(35))),
@@ -202,9 +195,6 @@ class UserControllerTest {
                     Arguments.of((Consumer<UserUpsertForm>) f -> f.setFirstNameKana("ナ".repeat(50))),
                     // email
                     Arguments.of((Consumer<UserUpsertForm>) f -> f.setEmail(email254)),
-                    // password
-                    Arguments.of((Consumer<UserUpsertForm>) f -> f.setPassword("a".repeat(255))),
-                    Arguments.of((Consumer<UserUpsertForm>) f -> f.setPassword("aB36_$")),
                     // roleId
                     Arguments.of((Consumer<UserUpsertForm>) f -> f.setRoleId("a".repeat(36))));
         }
@@ -216,7 +206,6 @@ class UserControllerTest {
             form.setLastNameKana("マツイ");
             form.setFirstNameKana("ヒロキ");
             form.setEmail("matui@example.com");
-            form.setPassword("abc123");
             form.setRoleId("a".repeat(36));
             return form;
 
