@@ -9,8 +9,6 @@ public class ItemListViewDto {
 
     private List<ItemListItemDto> items;
     
-    private List<SupplierOptionDto> supplierOptions;
-
     private List<Integer> pageNumberList;
     
     private int currentPage;

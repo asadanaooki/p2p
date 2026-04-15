@@ -1,53 +1,327 @@
-.page {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 32px 24px 48px;
-}
-
-.new-button {
-  display: inline-block;
-  padding: 6px 30px;
-  border: 1px solid #9fb3ad;
-  background-color: #fff;
-  color: #1aa34a;
-  font-size: 16px;
+a {
+  color: inherit;
   text-decoration: none;
-  font-weight: 500;
 }
 
-.new-button:hover {
-  background-color: #dff5e5;
+button,
+input,
+select {
+  font: inherit;
 }
 
-.unit-table {
+.page {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* =========================
+   ツールバー全体
+========================= */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
+  padding: 20px 22px 16px;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+/* =========================
+   ツールバー内ボタン
+========================= */
+.new-button {
+  min-width: 160px;
+  height: 42px;
+  padding: 0 18px;
+  border: 1px solid #9db1ae;
+  color: #13a24a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  background-color: #fff;
+}
+
+.search-icon-button {
+  width: 48px;
+  height: 42px;
+  border: 1px solid #aab9b6;
+  cursor: pointer;
+  font-size: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+}
+
+.filter-toggle-button {
+  width: 64px;
+  height: 42px;
+  border: 1px solid #aab9b6;
+  cursor: pointer;
+  font-size: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+}
+
+.filter-toggle-button:hover,
+.search-icon-button:hover {
+  background-color: #e7efec;
+}
+
+.filter-toggle-button.is-open {
+  background-color: #dfe8e5;
+}
+
+/* =========================
+   検索エリア
+========================= */
+.keyword-search-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.search-box {
+  display: flex;
+  align-items: flex-start;
+}
+
+.search-input {
+  width: 240px;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid #aab9b6;
+  border-right: none;
+  outline: none;
+  font-size: 14px;
+  background-color: #fff;
+}
+
+/* =========================
+   フィルターパネル
+========================= */
+.filter-panel {
+  display: none;
+  border-top: 1px solid #d4dddb;
+  background: #dfe6e3;
+}
+
+.filter-form {
+  padding: 18px 22px 20px;
+}
+
+.user-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 280px));
+  gap: 20px;
+  align-items: start;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field-label {
+  font-size: 14px;
+  color: #4f605d;
+}
+
+.filter-item select {
+  width: 100%;
+  padding: 6px 12px;
+  border: 1px solid #aab9b6;
+  font-size: 14px;
+  background-color: #fff;
+}
+
+.field-error {
+  margin: 0;
+  color: #d93025;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* =========================
+   フィルター操作ボタン
+========================= */
+.filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.filter-submit-button,
+.filter-reset-button {
+  min-width: 100px;
+  height: 40px;
+  padding: 0 16px;
+  border: 1px solid #9db1ae;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  background-color: #fff;
+}
+
+.filter-submit-button {
+  cursor: pointer;
+  color: #13a24a;
+}
+
+.filter-submit-button:hover,
+.filter-reset-button:hover {
+  background: #f5f8f7;
+}
+
+/* =========================
+   テーブル全体
+========================= */
+.user-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  table-layout: fixed;
 }
 
-.unit-table thead th,
-.unit-table tbody td {
-  border: 1px solid #aeb8b4;
-  padding: 16px 20px;
-  text-align: left;
+/* =========================
+   テーブルヘッダー
+========================= */
+.user-table thead th {
+  padding: 12px 10px;
+  border-right: 1px solid #c7d1ce;
+  background: #9fb3b2;
+  color: #1f2c30;
+  font-weight: 400;
   font-size: 16px;
-  font-weight: 500;
+  text-align: left;
 }
 
-.unit-table thead th {
-  background-color: #d5dfdc;
+.user-table thead th:last-child {
+  border-right: none;
 }
 
-.unit-link {
-  display: block;
+.sort-button {
   width: 100%;
-  color: #1aa34a;
-  text-decoration: none;
-  font-weight: 500;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  color: #1f2c30;
 }
 
-.unit-table tbody tr:hover td {
-  background-color: #f3f8f5;
+.sort-icon {
+  display: inline-block;
+  min-width: 12px;
+  font-size: 12px;
+}
+
+/* =========================
+   テーブルボディ
+========================= */
+.user-table tbody td {
+  padding: 10px;
+  border-bottom: 1px solid #d8dfdd;
+  overflow-wrap: break-word;
+}
+
+.user-table tbody tr {
+  cursor: pointer;
+}
+
+.user-table tbody tr:hover {
+  background: #eef4f3;
+}
+
+.user-link {
+  color: #14a648;
+}
+
+.user-link:hover {
+  text-decoration: underline;
+}
+
+.empty-message {
+  margin: 0;
+  padding: 24px 22px;
+  color: #51615f;
+}
+
+/* =========================
+   ページネーション
+========================= */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 18px 0 28px;
+}
+
+.page-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  color: #243238;
+}
+
+.page-link:hover {
+  background: #f4f8f7;
+}
+
+.page-link.active {
+  background: #dfe8e5;
+  font-weight: 700;
+}
+
+/* =========================
+   列幅
+========================= */
+.user-table th:nth-child(1),
+.user-table td:nth-child(1) {
+  width: 22%;
+}
+
+.user-table th:nth-child(2),
+.user-table td:nth-child(2) {
+  width: 38%;
+}
+
+.user-table th:nth-child(3),
+.user-table td:nth-child(3) {
+  width: 24%;
+}
+
+.user-table th:nth-child(4),
+.user-table td:nth-child(4) {
+  width: 16%;
+}
+
+/* =========================
+   SVGアイコン
+========================= */
+.filter-toggle-icon {
+  width: 25px;
+  height: 25px;
+}
+
+.search-icon {
+  width: 25px;
+  height: 25px;
 }
 
 .success-message {

@@ -21,9 +21,9 @@ import lombok.AllArgsConstructor;
 public class RoleService {
 
     private RoleMapper roleMapper;
-    
+
     private RoleMapperCustom roleMapperCustom;
-    
+
     private ModelMapper modelMapper;
 
     public List<RoleListItemDto> getRoleList() {
@@ -49,7 +49,7 @@ public class RoleService {
     public RoleDetailDto getRoleDetail(String unitId) {
         return roleMapperCustom.selectRoleDetail(unitId);
     }
-    
+
     public void update(String roleId, RoleUpsertForm form) {
         RoleExample ex = new RoleExample();
         ex.createCriteria().andNameEqualTo(form.getName()).andRoleIdNotEqualTo(roleId);

@@ -13,9 +13,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -56,6 +58,13 @@ class ItemControllerTest {
     
     @Autowired
     MockHttpServletRequest mockHttpServletRequest;
+    
+    @BeforeEach
+    void setup() {
+        Map<String, List> map = Map.of("unitOptions", List.of(new UnitOptionDto()),
+                "supplierOptions", List.of(new SupplierOptionDto()));
+        doReturn(map).when(itemService).getOptions();
+    }
     
     @Nested
     class ShowItem{
@@ -209,8 +218,6 @@ class ItemControllerTest {
         dto.setSupplierId("testSupp");
         dto.setDescription("testDesc");
         dto.setActive(true);
-        dto.setUnitOptions(List.of(new UnitOptionDto()));
-        dto.setSupplierOptions(List.of(new SupplierOptionDto(), new SupplierOptionDto()));
         doReturn(dto).when(itemService).prepareItemEditView(anyString());
         
         MvcResult res = mockMvc.perform(get("/setting/item/{itemId}/edit", "testId").with(csrf()))
@@ -234,6 +241,6 @@ class ItemControllerTest {
         assertThat(unitOptions).hasSize(1);
         
         List<SupplierOptionDto> supplierOptions = (List<SupplierOptionDto>) res.getModelAndView().getModel().get("supplierOptions");
-        assertThat(supplierOptions).hasSize(2);
+        assertThat(supplierOptions).hasSize(1);
     }
 }

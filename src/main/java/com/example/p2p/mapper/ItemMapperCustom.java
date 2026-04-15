@@ -13,5 +13,7 @@ public interface ItemMapperCustom {
 
     List<ItemListItemDto> selectItems(ItemSearchForm form);
     
+    int countItems(ItemSearchForm form);
+    
     ItemDetailDto selectItemDetail(String itemId);
 }

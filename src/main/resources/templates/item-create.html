@@ -60,14 +60,6 @@
         <p class="field-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
       </div>
 
-      <div class="form-item">
-        <label for="active">状態</label>
-        <select id="active" th:field="*{active}">
-          <option th:value="true">有効</option>
-          <option th:value="false">無効</option>
-        </select>
-      </div>
-
       <div class="form-actions">
         <button type="submit" class="save-button">保存</button>
         <a class="cancel-button" th:href="@{/setting/item}">戻る</a>

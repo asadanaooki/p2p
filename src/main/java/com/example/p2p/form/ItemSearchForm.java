@@ -1,12 +1,6 @@
 package com.example.p2p.form;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Pattern;
-
 import org.hibernate.validator.constraints.Length;
-import org.springframework.util.StringUtils;
 
 import com.example.p2p.enums.ItemKind;
 import com.example.p2p.enums.ItemSortBy;
@@ -20,11 +14,11 @@ import lombok.Data;
 
 @Data
 public class ItemSearchForm {
-    
+
     // ページング
     @Positive
     private int page = 1;
-    
+
     // 内部専用
     private int size = 2; // TODO: 仮値
 
@@ -50,7 +44,7 @@ public class ItemSearchForm {
     private ItemSortBy sortBy = ItemSortBy.NAME;
 
     private SortDirection sortDirection = SortDirection.ASC;
-    
+
     @AssertTrue(message = "{item.price.range.invalid}")
     public boolean isPriceRangeValid() {
         if (priceMin == null || priceMax == null) {
@@ -59,33 +53,12 @@ public class ItemSearchForm {
         return priceMin <= priceMax;
     }
 
-    public List<String> getKeywords() {
-        if (StringUtils.hasText(keyword)) {
-            return Arrays.asList(keyword.split("[\\p{Zs}]+"));
-        }
-        return Collections.emptyList();
-    }
-    
     public String getKeywordRegex() {
-        String[] regexEscapeTargets = { "(", ")", ".", "+", "/", "-", "[", "]" };
-        List<String> keywords = getKeywords();
-        keywords.forEach(kw -> {
-            for (String es : regexEscapeTargets) {
-                kw.replace(es, "\\" + es);
-            }
-        });
-        List<String> escapedKeywords = getKeywords().stream().map(kw -> {
-            for (String es : regexEscapeTargets) {
-                kw = kw.replace(es, "\\" + es);
-            }
-            return kw;
-        }).toList();
-
-        return "^(?=.*" + String.join(".*)(?=.*", escapedKeywords) + ".*).*$";
+        return CommonUtil.toRegex(keyword);
     }
-    
+
     public int getOffset() {
-       return CommonUtil.calculateOffset(page, size);
+        return CommonUtil.calculateOffset(page, size);
     }
 
 }

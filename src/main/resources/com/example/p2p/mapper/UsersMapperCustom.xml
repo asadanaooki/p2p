@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.p2p.mapper.UsersMapperCustom">
+  <select id="selectUsers" resultType="com.example.p2p.dto.UserListRowDto">
+    select
+      u.user_id,
+      u.last_name ,
+      u.first_name ,
+      u.last_name_kana,
+      u.first_name_kana,
+      u.email ,
+      r.role_id,
+      r.name as roleName,
+      u.is_active 
+    from users u 
+    join role r
+        on u.role_id = r.role_id
+    <where>
+      <if test="roleId != null">
+        and u.role_id = #{roleId}
+      </if>
+      <if test="status != null">
+        and u.is_active = #{status}
+      </if>
+      
+      <if test="keyword != null and keyword != ''">
+        and ( 
+          normalization(lower(u.last_name)) ~ #{keywordRegex}
+          or normalization(lower(u.first_name)) ~#{keywordRegex}
+          or normalization(lower(u.last_name_kana)) ~#{keywordRegex}
+          or normalization(lower(u.first_name_kana)) ~#{keywordRegex}
+          or normalization(lower(concat(u.last_name_kana, u.first_name_kana))) ~#{keywordRegex}
+          or normalization(lower(concat(u.last_name, u.first_name))) ~#{keywordRegex}
+        )
+      </if>
+    </where>
+    order by
+      <choose>
+        <when test="sortBy.toString().equals('NAME')">concat(u.last_name_kana, u.first_name_kana)</when>
+        <when test="sortBy.toString().equals('EMAIL')">u.email</when>
+        <when test="sortBy.toString().equals('ROLE')">r.name</when>
+        <when test="sortBy.toString().equals('STATUS')">u.is_active</when>
+      </choose>
+      <choose>
+        <when test="sortDirection.toString().equals('ASC')">asc</when>
+        <when test="sortDirection.toString().equals('DESC')">desc</when>
+      </choose>
+    limit #{size} offset #{offset}
+  </select>
+  
+  <select id="countUsers" resultType="int">
+    select count(*)
+    from users u 
+    <where>
+      <if test="roleId != null">
+        and u.role_id = #{roleId}
+      </if>
+      <if test="status != null">
+        and u.is_active = #{status}
+      </if>
+      
+      <if test="keyword != null and keyword != ''">
+        and ( 
+          normalization(lower(u.last_name)) ~ #{keywordRegex}
+          or normalization(lower(u.first_name)) ~#{keywordRegex}
+          or normalization(lower(u.last_name_kana)) ~#{keywordRegex}
+          or normalization(lower(u.first_name_kana)) ~#{keywordRegex}
+          or normalization(lower(concat(u.last_name_kana, u.first_name_kana))) ~#{keywordRegex}
+          or normalization(lower(concat(u.last_name, u.first_name))) ~#{keywordRegex}
+        )
+      </if>
+    </where>
+  </select>
+  
+  <select id="selectUserDetail" resultType="com.example.p2p.dto.UserDetailDto">
+    select
+      u.user_id,
+      u.last_name,
+      u.first_name,
+      u.last_name_kana,
+      u.first_name_kana,
+      u.email ,
+      r.role_id,
+      r.name as roleName ,
+      u.is_active
+    from users u
+    join role r
+      on u.role_id = r.role_id
+    where user_id = #{userId}
+
+  </select>
+</mapper>

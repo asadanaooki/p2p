@@ -6,7 +6,7 @@ import java.util.Collections;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.example.p2p.entity.User;
+import com.example.p2p.entity.Users;
 
 import lombok.Data;
 
@@ -19,7 +19,7 @@ public class CustomUserDetails implements UserDetails {
 
     private String email;
 
-    public CustomUserDetails(User user) {
+    public CustomUserDetails(Users user) {
         this.username = user.getUserId().toString();
         this.password = user.getPasswordHash();
         this.email = user.getEmail();

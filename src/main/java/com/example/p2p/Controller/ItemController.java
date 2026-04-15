@@ -1,6 +1,5 @@
 package com.example.p2p.controller;
 
-
 import java.util.List;
 import java.util.Map;
 
@@ -19,9 +18,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.p2p.advice.NormalizationEditor;
 import com.example.p2p.dto.ItemEditViewDto;
-import com.example.p2p.form.ItemUpsertForm;
 import com.example.p2p.form.ItemSearchForm;
+import com.example.p2p.form.ItemUpsertForm;
 import com.example.p2p.service.ItemService;
 
 import jakarta.servlet.http.HttpSession;
@@ -38,12 +38,17 @@ public class ItemController {
     private MessageSource messageSource;
 
     private static final String LAST_SEARCH_CONDITION = "lastSearchCondition";
-    
+
     private ModelMapper modelMapper;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
+    }
+
+    @InitBinder("keyword")
+    public void initSearchBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(String.class, new NormalizationEditor());
     }
 
     @GetMapping
@@ -73,21 +78,15 @@ public class ItemController {
 
     @GetMapping("/create")
     public String showItemCreateForm(@ModelAttribute("form") ItemUpsertForm form, Model model) {
-        Map<String, List> options = itemService.getOptions();
-        model.addAttribute("unitOptions", options.get("unitOptions"));
-        model.addAttribute("supplierOptions", options.get("supplierOptions"));
         return "item-create";
     }
-    
+
     @PostMapping("/create")
     public String create(@Valid @ModelAttribute("form") ItemUpsertForm form,
             BindingResult result,
             Model model,
             RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
-            Map<String, List> options = itemService.getOptions();
-            model.addAttribute("unitOptions", options.get("unitOptions"));
-            model.addAttribute("supplierOptions", options.get("supplierOptions"));
             return "item-create";
         }
         itemService.create(form);
@@ -96,30 +95,24 @@ public class ItemController {
                 messageSource.getMessage("common.create.success", null, null));
         return "redirect:/setting/item";
     }
-    
+
     @GetMapping("/{itemId}/edit")
     public String showItemEditForm(@PathVariable String itemId,
             @ModelAttribute("form") ItemUpsertForm form,
             Model model) {
         ItemEditViewDto view = itemService.prepareItemEditView(itemId);
         modelMapper.map(view, form);
-        model.addAttribute("unitOptions", view.getUnitOptions());
-        model.addAttribute("supplierOptions", view.getSupplierOptions());
         model.addAttribute("itemId", itemId);
         return "item-edit";
     }
 
     @PostMapping("/{itemId}/edit")
-    public String update(@PathVariable String itemId, 
+    public String update(@PathVariable String itemId,
             @Valid @ModelAttribute("form") ItemUpsertForm form,
-            BindingResult bindingResult, 
-            Model model, 
+            BindingResult bindingResult, Model model,
             RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
-            Map<String, List> options = itemService.getOptions();
             model.addAttribute("itemId", itemId);
-            model.addAttribute("unitOptions", options.get("unitOptions"));
-            model.addAttribute("supplierOptions", options.get("supplierOptions"));
             return "item-edit";
         }
         itemService.update(itemId, form);
@@ -128,6 +121,14 @@ public class ItemController {
                 messageSource.getMessage("common.update.success", null, null));
 
         return "redirect:/setting/item/{itemId}";
+    }
+    
+ 
+    @ModelAttribute
+    public void addOptions(Model model){
+        Map<String, List> options = itemService.getOptions();
+        model.addAttribute("unitOptions", options.get("unitOptions"));
+        model.addAttribute("supplierOptions", options.get("supplierOptions"));
     }
 
 }

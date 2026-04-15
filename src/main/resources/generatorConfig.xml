@@ -41,7 +41,9 @@
     </javaClientGenerator>
 
     <!-- コードを生成するテーブルを指定 -->
-    <table tableName="users" domainObjectName="User"></table>
+    <table tableName="users" domainObjectName="User">
+      <generatedKey column="user_id" sqlStatement="JDBC" />
+    </table>
     <table tableName="unit"></table>
     <table tableName="payment_term"></table>
     <table tableName="supplier"></table>

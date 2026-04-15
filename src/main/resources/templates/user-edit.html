@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" th:href="@{/css/user-edit.css}">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script th:src="@{/js/common.js}"></script>
+</head>
+
+<body>
+  <main class="page">
+    <h1 class="page-title">ユーザー編集</h1>
+
+    <form th:action="@{/setting/user/{userId}/update(userId=${userId})}" method="post" th:object="${form}">
+      <div class="form-row">
+        <label for="lastName" class="form-label">姓</label>
+        <input type="text" id="lastName" th:field="*{lastName}" class="form-input">
+        <p class="field-error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></p>
+      </div>
+
+      <div class="form-row">
+        <label for="firstName" class="form-label">名</label>
+        <input type="text" id="firstName" th:field="*{firstName}" class="form-input">
+        <p class="field-error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></p>
+      </div>
+
+      <div class="form-row">
+        <label for="lastNameKana" class="form-label">カナ</label>
+        <input type="text" id="lastNameKana" th:field="*{lastNameKana}" class="form-input">
+        <p class="field-error" th:if="${#fields.hasErrors('lastNameKana')}" th:errors="*{lastNameKana}"></p>
+      </div>
+
+      <div class="form-row">
+        <label for="firstNameKana" class="form-label">メイ</label>
+        <input type="text" id="firstNameKana" th:field="*{firstNameKana}" class="form-input">
+        <p class="field-error" th:if="${#fields.hasErrors('firstNameKana')}" th:errors="*{firstNameKana}"></p>
+      </div>
+
+      <div class="form-row">
+        <label for="email" class="form-label">メールアドレス</label>
+        <input type="text" id="email" th:field="*{email}" class="form-input">
+        <p class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+      </div>
+
+      <div class="form-row">
+        <label for="roleId" class="form-label">ロール</label>
+        <select id="roleId" th:field="*{roleId}" class="form-select">
+          <option value=""></option>
+          <option th:each="role : ${roleOptions}" th:value="${role.roleId}" th:text="${role.name}"></option>
+        </select>
+        <p class="field-error" th:if="${#fields.hasErrors('roleId')}" th:errors="*{roleId}"></p>
+      </div>
+
+      <div class="form-row">
+        <label for="isActive" class="form-label">状態</label>
+        <select id="isActive" th:field="*{isActive}" class="form-select">
+          <option value="true">有効</option>
+          <option value="false">無効</option>
+        </select>
+      </div>
+
+      <div class="button-area">
+        <button type="submit" class="save-button">保存</button>
+        <a th:href="@{/setting/user/{userId}(userId=${userId})}" class="cancel-button">キャンセル</a>
+      </div>
+    </form>
+  </main>
+</body>
+
+</html>

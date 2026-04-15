@@ -51,7 +51,7 @@ class ItemServiceTest {
 
         @ParameterizedTest
         @MethodSource("createPaginationCases")
-        void searchItems_exists(int page, int expItemcount,int expSupplierCount, List<Integer> pageNumbers) {
+        void searchItems_exists(int page, int expItemcount, List<Integer> pageNumbers) {
             StringBuilder sb = new StringBuilder();
             sb.append("0".repeat(8));
             sb.append("-");
@@ -85,7 +85,6 @@ class ItemServiceTest {
             ItemListViewDto actual = itemService.searchItems(form);
             
             assertThat(actual.getItems()).hasSize(expItemcount);
-            assertThat(actual.getSupplierOptions()).hasSize(expSupplierCount);
             assertThat(actual.getPageNumberList()).isEqualTo(pageNumbers);
             assertThat(actual.getCurrentPage()).isEqualTo(page);
 
@@ -94,14 +93,14 @@ class ItemServiceTest {
         static Stream<Arguments> createPaginationCases() {
             // 8ページ作成
             return Stream.of(
-                    Arguments.of(1, 7, 3, CommonUtil.createPageNumbers(50, 7, 1, 2)),
-                    Arguments.of(2, 7, 3, CommonUtil.createPageNumbers(50, 7, 2, 2)),
-                    Arguments.of(3, 7, 3, CommonUtil.createPageNumbers(50, 7, 3, 2)),
-                    Arguments.of(4, 7, 3, CommonUtil.createPageNumbers(50, 7, 4, 2)),
-                    Arguments.of(5, 7, 3, CommonUtil.createPageNumbers(50, 7, 5, 2)),
-                    Arguments.of(6, 7, 3, CommonUtil.createPageNumbers(50, 7, 6, 2)),
-                    Arguments.of(7, 7, 3, CommonUtil.createPageNumbers(50, 7, 7, 2)),
-                    Arguments.of(8, 1, 3, CommonUtil.createPageNumbers(50, 7, 8, 2)));
+                    Arguments.of(1, 7, CommonUtil.createPageNumbers(50, 7, 1, 2)),
+                    Arguments.of(2, 7, CommonUtil.createPageNumbers(50, 7, 2, 2)),
+                    Arguments.of(3, 7, CommonUtil.createPageNumbers(50, 7, 3, 2)),
+                    Arguments.of(4, 7, CommonUtil.createPageNumbers(50, 7, 4, 2)),
+                    Arguments.of(5, 7, CommonUtil.createPageNumbers(50, 7, 5, 2)),
+                    Arguments.of(6, 7, CommonUtil.createPageNumbers(50, 7, 6, 2)),
+                    Arguments.of(7, 7, CommonUtil.createPageNumbers(50, 7, 7, 2)),
+                    Arguments.of(8, 1, CommonUtil.createPageNumbers(50, 7, 8, 2)));
         }
 
         @Test
@@ -152,8 +151,6 @@ class ItemServiceTest {
        assertThat(actual.getSupplierId()).isEqualTo("a7f3c9d2-4b8e-41f1-9c6a-1d2e3f4a5b6c");
        assertThat(actual.getDescription()).isEqualTo("社内文書や見積書の印刷に使用する標準的なA4コピー用紙です。");
        assertThat(actual.isActive()).isTrue();
-       assertThat(actual.getUnitOptions().size()).isEqualTo(5);
-       assertThat(actual.getSupplierOptions().size()).isEqualTo(3);
     }
     
     @Test
