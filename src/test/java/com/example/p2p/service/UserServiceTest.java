@@ -120,7 +120,8 @@ class UserServiceTest {
 
             @Test
             void create_success() {
-                userService.create(form);
+               String userId = userService.create(form);
+               assertThat(userId).isNotBlank();
 
                 UsersExample ex = new UsersExample();
                 ex.createCriteria().andEmailEqualTo("takagi@example.com");

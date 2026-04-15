@@ -103,17 +103,20 @@ public class UserController {
             logger.warn("ユーザー作成の入力エラー: errorCount={}", result.getErrorCount());
             return "user-create";
         }
+        String userId;
         try {
-            userService.create(form);
+            userId = userService.create(form);
         }
         catch (BusinessException e) {
             result.rejectValue("email", "duplicate", messageSource.getMessage("common.duplicate", null, null));
             return "user-create";
         }
+        redirectAttributes.addFlashAttribute("created", true);
         redirectAttributes.addFlashAttribute("successMessage",
                 messageSource.getMessage("common.create.success", null, null));
+        redirectAttributes.addAttribute("userId", userId);
         logger.info("ユーザー作成成功");
-        return "redirect:/setting/user";
+        return "redirect:/setting/user/{userId}";
     }
     
     @GetMapping("/{userId}/edit")

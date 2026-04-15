@@ -3,6 +3,7 @@ package com.example.p2p.service;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,8 @@ public class UserService {
     private RoleMapperCustom roleMapperCustom;
 
     private ModelMapper modelMapper;
+    
+    private JavaMailSender mailSender;
 
     public UserListViewDto searchUsers(UserSearchForm form) {
         UserListViewDto dto = new UserListViewDto();
@@ -50,7 +53,7 @@ public class UserService {
         return usersMapperCustom.selectUserDetail(userId);
     }
 
-    public void create(UserUpsertForm form) {
+    public String create(UserUpsertForm form) {
         UsersExample ex = new UsersExample();
         ex.createCriteria().andEmailEqualTo(form.getEmail());
         // 重複チェック
@@ -59,7 +62,9 @@ public class UserService {
         }
         Users u = modelMapper.map(form, Users.class);
         usersMapper.insertSelective(u);
+        return u.getUserId();
         // TODO: メール送信
+        
     }
     
     public void update(String userId, UserUpsertForm form) {

@@ -47,6 +47,21 @@
   margin-top: 40px;
 }
 
+.edit-button,
+.invite-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 112px;
+  height: 40px;
+  padding: 0 20px;
+  border: 1px solid #a9bcc0;
+  background-color: #ffffff;
+  text-decoration: none;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
 .save-button,
 .cancel-button {
   display: inline-flex;

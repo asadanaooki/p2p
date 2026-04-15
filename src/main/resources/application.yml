@@ -11,6 +11,10 @@ spring:
       url: "jdbc:postgresql://localhost/p2p"
       username: "postgres"
       password: "softeni0926"
+  mail:
+    host: localhost
+    port: 25
+  
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
