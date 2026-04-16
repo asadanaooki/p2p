@@ -49,6 +49,7 @@
     <table tableName="supplier"></table>
     <table tableName="item"></table>
     <table tableName="role"></table>
+    <table tableName="user_invitation_token"></table>
 
   </context>
 </generatorConfiguration>
