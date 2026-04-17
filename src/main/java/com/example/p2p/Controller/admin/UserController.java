@@ -23,7 +23,6 @@ import com.example.p2p.advice.NormalizationEditor;
 import com.example.p2p.dto.RoleOptionDto;
 import com.example.p2p.dto.UserDetailDto;
 import com.example.p2p.exception.BusinessException;
-import com.example.p2p.form.UnitEditForm;
 import com.example.p2p.form.UserSearchForm;
 import com.example.p2p.form.UserUpsertForm;
 import com.example.p2p.service.admin.UserService;
@@ -31,6 +30,7 @@ import com.example.p2p.service.admin.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/setting/user")
@@ -40,10 +40,11 @@ public class UserController {
     private UserService userService;
 
     private MessageSource messageSource;
+
     private ModelMapper modelMapper;
 
     private static final String LAST_SEARCH_CONDITION = "lastSearchCondition";
-    
+
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @InitBinder
@@ -57,10 +58,8 @@ public class UserController {
     }
 
     @GetMapping
-    public String showUserList(@Valid @ModelAttribute("form") UserSearchForm form, 
-            BindingResult bindingResult,
-            Model model,
-            HttpSession session) {
+    public String showUserList(@Valid @ModelAttribute("form") UserSearchForm form, BindingResult bindingResult,
+            Model model, HttpSession session) {
         logger.debug("ユーザー一覧表示開始");
         if (bindingResult.hasErrors()) {
             logger.warn("ユーザー一覧の入力エラー: errorCount={}", bindingResult.getErrorCount());
@@ -94,9 +93,7 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public String create(@Valid @ModelAttribute("form") UserUpsertForm form,
-            BindingResult result,
-            Model model,
+    public String create(@Valid @ModelAttribute("form") UserUpsertForm form, BindingResult result, Model model,
             RedirectAttributes redirectAttributes) {
         logger.info("ユーザー作成開始");
         if (result.hasErrors()) {
@@ -109,19 +106,18 @@ public class UserController {
         }
         catch (BusinessException e) {
             result.rejectValue("email", "duplicate", messageSource.getMessage("common.duplicate", null, null));
+            logger.warn("ユーザー作成重複エラー");
             return "user-create";
         }
-        redirectAttributes.addFlashAttribute("created", true);
         redirectAttributes.addFlashAttribute("successMessage",
                 messageSource.getMessage("common.create.success", null, null));
         redirectAttributes.addAttribute("userId", userId);
         logger.info("ユーザー作成成功");
         return "redirect:/setting/user/{userId}";
     }
-    
+
     @GetMapping("/{userId}/edit")
-    public String showUserEditForm(@PathVariable String userId,
-            @ModelAttribute("form") UserUpsertForm form,
+    public String showUserEditForm(@PathVariable String userId, @ModelAttribute("form") UserUpsertForm form,
             Model model) {
         logger.debug("ユーザー編集表示開始");
         model.addAttribute("userId", userId);
@@ -131,34 +127,49 @@ public class UserController {
         logger.debug("ユーザー編集表示完了");
         return "user-edit";
     }
-    
-     @PostMapping("/{userId}/update")
-     public String update(@PathVariable String userId, 
-             @Valid @ModelAttribute("form") UserUpsertForm form,
-     BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
-     if (bindingResult.hasErrors()) {
-     model.addAttribute("userId", userId);
-     return "user-edit";
-     }
-     try {
-     userService.update(userId, form);
-     }
-     catch (BusinessException e) {
-     model.addAttribute("userId", userId);
-     bindingResult.rejectValue("email", "duplicate",
-     messageSource.getMessage("common.duplicate", null, null));
-     return "user-edit";
-     }
-     redirectAttributes.addFlashAttribute("successMessage",
-     messageSource.getMessage("common.update.success", null, null));
-     redirectAttributes.addAttribute("userId", userId);
-     return "redirect:/setting/user/{userId}";
-    
-     }
-     
-     @ModelAttribute("roleOptions")
-     public List<RoleOptionDto> addRoleOptions() {
-         return userService.getRoleOptions();
-     }
+
+    @PostMapping("/{userId}/update")
+    public String update(@PathVariable String userId, @Valid @ModelAttribute("form") UserUpsertForm form,
+            BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
+        logger.info("ユーザー編集開始");
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("userId", userId);
+            logger.warn("ユーザー編集の入力エラー");
+            return "user-edit";
+        }
+        try {
+            userService.update(userId, form);
+        }
+        catch (BusinessException e) {
+            model.addAttribute("userId", userId);
+            bindingResult.rejectValue("email", "duplicate", messageSource.getMessage("common.duplicate", null, null));
+            logger.warn("メール編集の重複エラー");
+            return "user-edit";
+        }
+        redirectAttributes.addFlashAttribute("successMessage",
+                messageSource.getMessage("common.update.success", null, null));
+        redirectAttributes.addAttribute("userId", userId);
+        logger.info("ユーザー編集完了");
+        return "redirect:/setting/user/{userId}";
+
+    }
+
+    @PostMapping("/{userId}/invite")
+    public String invite(@PathVariable String userId, RedirectAttributes redirectAttributes) {
+        logger.info("ユーザー招待開始");
+        userService.invite(userId);
+
+        redirectAttributes.addFlashAttribute("successMessage",
+                messageSource.getMessage("user.invite.success", null, null));
+        redirectAttributes.addAttribute("userId", userId);
+        logger.info("ユーザー招待完了");
+        return "redirect:/setting/user/{userId}";
+    }
+
+    @ModelAttribute("roleOptions")
+    public List<RoleOptionDto> addRoleOptions() {
+        logger.debug("ロール一覧取得開始");
+        return userService.getRoleOptions();
+    }
 
 }

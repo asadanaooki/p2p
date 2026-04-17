@@ -20,10 +20,11 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.ibatis.javassist.expr.NewArray;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -35,6 +36,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.p2p.dto.UserDetailDto;
 import com.example.p2p.dto.UserListViewDto;
 import com.example.p2p.entity.UserInvitationToken;
 import com.example.p2p.entity.UserInvitationTokenExample;
@@ -343,4 +345,27 @@ class UserServiceTest {
 
     }
 
+    @ParameterizedTest
+    @CsvSource(value = {"testPass123, true, false", "null, false, true"}, nullValues = "null")
+    void getUserDetail_canInvite(String password, boolean isActive, boolean expected) {
+        usersMapper.deleteByExample(new UsersExample());
+        String userId = "169f1e17-619f-45bf-b6dc-8faed08c404c";
+        Users u = new Users();
+        u.setUserId(userId);
+        u.setLastName("a");
+        u.setFirstName("a");
+        u.setLastNameKana("ア");
+        u.setFirstNameKana("イ");
+        u.setEmail("example@example.com");
+        u.setPasswordHash(password);
+        u.setRoleId("6862542a-1954-4192-81e8-f18c583ade01");
+        u.setIsActive(isActive);
+        usersMapper.insertSelective(u);
+        
+        UsersExample ex = new UsersExample();
+        ex.createCriteria().andUserIdEqualTo(userId).andPasswordHashIsNull().andIsActiveEqualTo(false);
+        
+       UserDetailDto actual = userService.getUserDetail(userId);
+       assertThat(actual.isCanInvite()).isEqualTo(expected);
+    }
 }

@@ -1,16 +1,22 @@
 package com.example.p2p.util;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class CommonUtil {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    public static List<Integer> createPageNumbers(
-            int totalItemCount,
-            int pageSize,
-            int currentPage,
+public class CommonUtil {
+    
+    private static final Logger logger = LoggerFactory.getLogger(CommonUtil.class);
+
+    public static List<Integer> createPageNumbers(int totalItemCount, int pageSize, int currentPage,
             int sidePageCount) {
         if (totalItemCount == 0) {
             return Collections.EMPTY_LIST;
@@ -32,9 +38,9 @@ public class CommonUtil {
 
         return IntStream.rangeClosed(start, end).boxed().toList();
     }
-    
+
     public static String toRegex(String keyword) {
-        String[] regexEscapeTargets = {".", "+", "/", "-"};
+        String[] regexEscapeTargets = { ".", "+", "/", "-" };
         List<String> escapedKeywords = Arrays.asList(keyword.split("[\\p{Zs}]+")).stream().map(kw -> {
             for (String es : regexEscapeTargets) {
                 kw = kw.replace(es, "\\" + es);
@@ -44,9 +50,22 @@ public class CommonUtil {
 
         return "^(?=.*" + String.join(".*)(?=.*", escapedKeywords) + ".*).*$";
     }
-    
+
     public static int calculateOffset(int page, int size) {
         return (page - 1) * size;
+    }
+
+    public static String hashToken(String token) {
+        MessageDigest sha256 = null;
+        try {
+            sha256 = MessageDigest.getInstance("SHA-256");
+        }
+        catch (NoSuchAlgorithmException e) {
+             logger.error("トークンのハッシュ化に失敗しました");
+            throw new RuntimeException(e);
+        }
+        HexFormat hex = HexFormat.of();
+        return hex.formatHex(sha256.digest(token.getBytes(StandardCharsets.UTF_8)));
     }
 
 }

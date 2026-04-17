@@ -30,12 +30,6 @@ public class UserUpsertForm {
     @Email
     @Length(max = 254)
     private String email;
-    
-    // TODO: 別画面へ移行
-//    @NotBlank
-//    @Length(max = 255)
-//    @Pattern(regexp = "^[!-~]+$")
-//    private String password;
 
     @NotNull
     @Length(min = 36, max = 36)
