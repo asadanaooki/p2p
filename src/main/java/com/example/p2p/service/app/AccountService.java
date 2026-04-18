@@ -9,12 +9,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.p2p.dto.InitialPasswordSetupViewDto;
 import com.example.p2p.entity.UserInvitationToken;
 import com.example.p2p.entity.UserInvitationTokenExample;
 import com.example.p2p.entity.Users;
 import com.example.p2p.exception.BusinessException;
 import com.example.p2p.form.InitialPasswordSetupForm;
 import com.example.p2p.mapper.UserInvitationTokenMapper;
+import com.example.p2p.mapper.UserInvitationTokenMapperCustom;
 import com.example.p2p.mapper.UsersMapper;
 import com.example.p2p.util.CommonUtil;
 
@@ -29,6 +31,8 @@ public class AccountService {
     private UsersMapper usersMapper;
 
     private UserInvitationTokenMapper userInvitationTokenMapper;
+    
+    private UserInvitationTokenMapperCustom userInvitationTokenMapperCustom;
 
     private PasswordEncoder passwordEncoder;
 
@@ -38,8 +42,7 @@ public class AccountService {
         // トークンをハッシュ化
         String tokenHash = CommonUtil.hashToken(form.getToken());
 
-        // ハッシュ化トークンで該当のデータ取得
-        // 見つからない場合は業務エラー
+        // ハッシュ化トークンに一致するデータを取得
         UserInvitationTokenExample ex = new UserInvitationTokenExample();
         ex.createCriteria().andTokenHashEqualTo(tokenHash);
         List<UserInvitationToken> invitationTokens = userInvitationTokenMapper.selectByExample(ex);
@@ -49,14 +52,13 @@ public class AccountService {
         }
         
         // 有効期限チェック
-        // 期限切れの場合は業務エラー
         UserInvitationToken invitationToken = invitationTokens.get(0);
         if (LocalDateTime.now().isAfter(invitationToken.getExpiresAt())) {
             logger.warn("有効期限切れ");
             throw new BusinessException();
         }
 
-        // 紐づくユーザーIDから、ユーザーのPWとステータスを更新
+        // 紐づくユーザーのPWとステータスを更新
         String userId = invitationToken.getUserId();
         Users user = new Users();
         user.setUserId(userId);
@@ -65,9 +67,15 @@ public class AccountService {
         usersMapper.updateByPrimaryKeySelective(user);
 
         // トークン削除
-        userInvitationTokenMapper.deleteByPrimaryKey(userId);
+       // userInvitationTokenMapper.deleteByPrimaryKey(userId);
 
         logger.info("招待受諾完了");
+    }
+    
+    public InitialPasswordSetupViewDto getInvitedUserInfo(String token) {
+        logger.debug("招待ユーザー情報取得開始");
+        String tokenHash = CommonUtil.hashToken(token);
+        return userInvitationTokenMapperCustom.selectUserNameAndEmail(tokenHash);
     }
 
 }
