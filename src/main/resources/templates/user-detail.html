@@ -12,8 +12,11 @@
 
     <h1 class="page-title">ユーザー詳細</h1>
     <div class="button-area">
+    <form th:action="@{/setting/user/{userId}/invite(userId=${userId})}" th:if="${user.canInvite}" method="post">
+      <button type="submit" class="invite-button">招待</button>
+    </form>
+      
       <a class="edit-button" th:href="@{/setting/user/{userId}/edit(userId=${userId})}">編集</a>
-      <a class="invite-button" th:if="${created}" th:href="@{/setting/user/{userId}/edit(userId=${userId})}">招待</a>
     </div>
 
     <div class="detail-label">フリガナ</div>

@@ -20,5 +20,7 @@ public class UserDetailDto {
     private String roleName;
 
     private Boolean isActive;
+    
+    private boolean canInvite;
 
 }
