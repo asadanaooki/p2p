@@ -78,7 +78,7 @@ class ItemControllerTest {
             .andExpect(request().sessionAttribute("lastSearchCondition", notNullValue()))
             .andExpect(model().attributeExists("view"))
             .andExpect(model().attributeHasNoErrors("form"))
-            .andExpect(view().name("item-list"));
+            .andExpect(view().name("admin/item-list"));
         }
         
         @ParameterizedTest
@@ -92,7 +92,7 @@ class ItemControllerTest {
             .andExpect(request().sessionAttribute("lastSearchCondition", nullValue()))
             .andExpect(model().attributeExists("view"))
             .andExpect(model().attributeHasErrors("form"))
-            .andExpect(view().name("item-list"));
+            .andExpect(view().name("admin/item-list"));
         }
         
         static Stream<Arguments> createOkCases() {
@@ -128,7 +128,7 @@ class ItemControllerTest {
             .perform(get("/setting/item").with(csrf()))
             .andExpect(request().sessionAttribute("lastSearchCondition", notNullValue()))
             .andExpect(model().attributeExists("view"))
-            .andExpect(view().name("item-list"));
+            .andExpect(view().name("admin/item-list"));
         }
         
         @Test
@@ -136,7 +136,7 @@ class ItemControllerTest {
             ArgumentCaptor<ItemSearchForm> cap = ArgumentCaptor.forClass(ItemSearchForm.class);
             doReturn(new ItemListViewDto()).when(itemService).searchItems(cap.capture());
             ItemSearchForm form = new ItemSearchForm();
-            form.setKeyword("test");
+            form.setKeyword("app/test");
             form.setPage(3);
             form.setKind(ItemKind.GOODS);
             mockHttpServletRequest.getSession().setAttribute("lastSearchCondition", form);
@@ -146,7 +146,7 @@ class ItemControllerTest {
                     .sessionAttr("lastSearchCondition", form)
                     .param("priceMin", "-1"))
             .andExpect(model().attributeExists("view"))
-            .andExpect(view().name("item-list"));
+            .andExpect(view().name("admin/item-list"));
             
             ItemSearchForm captured = cap.getValue();
             assertThat(captured.getPage()).isEqualTo(3);
@@ -156,7 +156,7 @@ class ItemControllerTest {
             assertThat(captured.getPriceMax()).isNull();
             assertThat(captured.getSupplierId()).isNull();
             assertThat(captured.getStatus()).isNull();
-            assertThat(captured.getKeyword()).isEqualTo("test");
+            assertThat(captured.getKeyword()).isEqualTo("app/test");
             assertThat(captured.getSortBy()).isEqualTo(ItemSortBy.NAME);
             assertThat(captured.getSortDirection()).isEqualTo(SortDirection.ASC);
         }
@@ -170,7 +170,7 @@ class ItemControllerTest {
             .perform(get("/setting/item").with(csrf())
                     .param("priceMin", "-1"))
             .andExpect(model().attributeExists("view"))
-            .andExpect(view().name("item-list"));
+            .andExpect(view().name("admin/item-list"));
             
             ItemSearchForm captured = cap.getValue();
             assertThat(captured.getPage()).isOne();
@@ -195,7 +195,7 @@ class ItemControllerTest {
                         .param("priceMax", "100"))
                 .andExpect(model().attributeExists("view"))
                 .andExpect(model().attributeHasErrors("form"))
-                .andExpect(view().name("item-list"))
+                .andExpect(view().name("admin/item-list"))
                 .andReturn();
 
             BindingResult br = (BindingResult) res.getModelAndView()
@@ -211,7 +211,7 @@ class ItemControllerTest {
     @Test
     void showItemEditForm() throws Exception {
         ItemEditViewDto dto = new ItemEditViewDto();
-        dto.setName("test");
+        dto.setName("app/test");
         dto.setKind(ItemKind.GOODS);
         dto.setUnitId("testUnitId");
         dto.setPrice(300);
@@ -222,11 +222,11 @@ class ItemControllerTest {
         
         MvcResult res = mockMvc.perform(get("/setting/item/{itemId}/edit", "testId").with(csrf()))
             .andExpect(model().attribute("itemId", "testId"))
-            .andExpect(view().name("item-edit"))
+            .andExpect(view().name("admin/item-edit"))
             .andReturn();
         
         ItemUpsertForm form = (ItemUpsertForm) res.getModelAndView().getModel().get("form");
-        assertThat(form.getName()).isEqualTo("test");
+        assertThat(form.getName()).isEqualTo("app/test");
         assertThat(form.getKind()).isEqualTo(ItemKind.GOODS);
         assertThat(form.getUnitId()).isEqualTo("testUnitId");
         assertThat(form.getPrice()).isEqualTo(300);

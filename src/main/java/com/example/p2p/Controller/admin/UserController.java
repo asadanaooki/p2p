@@ -67,13 +67,13 @@ public class UserController {
             UserSearchForm formToSearch = lastCondition == null ? new UserSearchForm() : lastCondition;
             formToSearch = lastCondition == null ? new UserSearchForm() : lastCondition;
             model.addAttribute("view", userService.searchUsers(formToSearch));
-            return "user-list";
+            return "admin/user-list";
         }
         session.setAttribute(LAST_SEARCH_CONDITION, form);
         model.addAttribute("view", userService.searchUsers(form));
 
         logger.debug("ユーザー一覧表示完了");
-        return "user-list";
+        return "admin/user-list";
     }
 
     @GetMapping("/{userId}")
@@ -83,13 +83,13 @@ public class UserController {
         model.addAttribute("user", userService.getUserDetail(userId));
 
         logger.debug("ユーザー詳細表示完了");
-        return "user-detail";
+        return "admin/user-detail";
     }
 
     @GetMapping("/create")
     public String showUserCreateForm(@ModelAttribute("form") UserUpsertForm form, Model model) {
         logger.debug("ユーザー作成画面表示");
-        return "user-create";
+        return "admin/user-create";
     }
 
     @PostMapping("/create")
@@ -98,7 +98,7 @@ public class UserController {
         logger.info("ユーザー作成開始");
         if (result.hasErrors()) {
             logger.warn("ユーザー作成の入力エラー: errorCount={}", result.getErrorCount());
-            return "user-create";
+            return "admin/user-create";
         }
         String userId;
         try {
@@ -107,7 +107,7 @@ public class UserController {
         catch (BusinessException e) {
             result.rejectValue("email", "duplicate", messageSource.getMessage("common.duplicate", null, null));
             logger.warn("ユーザー作成重複エラー");
-            return "user-create";
+            return "admin/user-create";
         }
         redirectAttributes.addFlashAttribute("successMessage",
                 messageSource.getMessage("common.create.success", null, null));
@@ -125,7 +125,7 @@ public class UserController {
         modelMapper.map(user, form);
 
         logger.debug("ユーザー編集表示完了");
-        return "user-edit";
+        return "admin/user-edit";
     }
 
     @PostMapping("/{userId}/update")
@@ -135,7 +135,7 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("userId", userId);
             logger.warn("ユーザー編集の入力エラー");
-            return "user-edit";
+            return "admin/user-edit";
         }
         try {
             userService.update(userId, form);
@@ -144,7 +144,7 @@ public class UserController {
             model.addAttribute("userId", userId);
             bindingResult.rejectValue("email", "duplicate", messageSource.getMessage("common.duplicate", null, null));
             logger.warn("メール編集の重複エラー");
-            return "user-edit";
+            return "admin/user-edit";
         }
         redirectAttributes.addFlashAttribute("successMessage",
                 messageSource.getMessage("common.update.success", null, null));

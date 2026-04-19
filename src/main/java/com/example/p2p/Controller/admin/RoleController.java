@@ -35,7 +35,7 @@ public class RoleController {
     @GetMapping
     public String showRoleList(Model model) {
         model.addAttribute("roleList", roleService.getRoleList());
-        return "role-list";
+        return "admin/role-list";
     }
 
     @GetMapping("/{roleId}")
@@ -43,7 +43,7 @@ public class RoleController {
         model.addAttribute("roleId", roleId);
         model.addAttribute("role", roleService.getRoleDetail(roleId));
 
-        return "role-detail";
+        return "admin/role-detail";
     }
 
      @GetMapping("/create")
@@ -52,14 +52,14 @@ public class RoleController {
          form.setPoViewScope(VisibilityScope.NONE);
          form.setReceiptViewScope(VisibilityScope.NONE);
          form.setInvoiceViewScope(VisibilityScope.NONE);
-         return "role-create";
+         return "admin/role-create";
      }
      
     @PostMapping("/create")
     public String create(@Valid @ModelAttribute("form") RoleUpsertForm form, BindingResult result,
             RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
-            return "role-create";
+            return "admin/role-create";
         }
         try {
             roleService.create(form);
@@ -67,7 +67,7 @@ public class RoleController {
         catch (BusinessException e) {
             result.rejectValue("name", "duplicate",
                     messageSource.getMessage("common.duplicate", null, null));
-            return "role-create";
+            return "admin/role-create";
         }
         redirectAttributes.addFlashAttribute("successMessage",
                 messageSource.getMessage("common.create.success", null, null));
@@ -82,7 +82,7 @@ public class RoleController {
         modelMapper.map(role, form);
         model.addAttribute("roleId", roleId);
 
-        return "role-edit";
+        return "admin/role-edit";
     }
     
     @PostMapping("/{roleId}/update")
@@ -93,7 +93,7 @@ public class RoleController {
             RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("roleId", roleId);
-            return "role-edit";
+            return "admin/role-edit";
         }
         try {
             roleService.update(roleId, form);
@@ -102,7 +102,7 @@ public class RoleController {
             model.addAttribute("roleId", roleId);
             bindingResult.rejectValue("name", "duplicate",
                     messageSource.getMessage("common.duplicate", null, null));
-            return "role-edit";
+            return "admin/role-edit";
         }
         redirectAttributes.addFlashAttribute("successMessage",
                 messageSource.getMessage("common.update.success", null, null));

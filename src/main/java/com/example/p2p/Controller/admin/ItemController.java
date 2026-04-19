@@ -61,24 +61,24 @@ public class ItemController {
             ItemSearchForm formToSearch = lastCondition == null ? new ItemSearchForm() : lastCondition;
             formToSearch = lastCondition == null ? new ItemSearchForm() : lastCondition;
             model.addAttribute("view", itemService.searchItems(formToSearch));
-            return "item-list";
+            return "admin/item-list";
         }
         session.setAttribute(LAST_SEARCH_CONDITION, form);
         model.addAttribute("view", itemService.searchItems(form));
 
-        return "item-list";
+        return "admin/item-list";
     }
 
     @GetMapping("/{itemId}")
     public String showItemDetail(@PathVariable String itemId, Model model) {
         model.addAttribute("itemId", itemId);
         model.addAttribute("detail", itemService.getItemDetail(itemId));
-        return "item-detail";
+        return "admin/item-detail";
     }
 
     @GetMapping("/create")
     public String showItemCreateForm(@ModelAttribute("form") ItemUpsertForm form, Model model) {
-        return "item-create";
+        return "admin/item-create";
     }
 
     @PostMapping("/create")
@@ -87,7 +87,7 @@ public class ItemController {
             Model model,
             RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
-            return "item-create";
+            return "admin/item-create";
         }
         itemService.create(form);
 
@@ -103,7 +103,7 @@ public class ItemController {
         ItemEditViewDto view = itemService.prepareItemEditView(itemId);
         modelMapper.map(view, form);
         model.addAttribute("itemId", itemId);
-        return "item-edit";
+        return "admin/item-edit";
     }
 
     @PostMapping("/{itemId}/edit")
@@ -113,7 +113,7 @@ public class ItemController {
             RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("itemId", itemId);
-            return "item-edit";
+            return "admin/item-edit";
         }
         itemService.update(itemId, form);
         redirectAttributes.addAttribute("itemId", itemId);
