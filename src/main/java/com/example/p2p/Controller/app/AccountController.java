@@ -43,7 +43,7 @@ public class AccountController {
         form.setToken(token);
 
         logger.debug("初回パスワード設定画面表示完了");
-        return "initial-password-setup";
+        return "app/initial-password-setup";
     }
 
     @PostMapping("/initial-password-setup")
@@ -51,7 +51,7 @@ public class AccountController {
             Model model, HttpServletRequest request, RedirectAttributes redirectAttributes) throws ServletException {
         if (result.hasErrors()) {
             model.addAttribute("user", accountService.getInvitedUserInfo(form.getToken()));
-            return "initial-password-setup";
+            return "app/initial-password-setup";
         }
         String email;
         try {
@@ -60,7 +60,7 @@ public class AccountController {
         catch (BusinessException e) {
             model.addAttribute("user", accountService.getInvitedUserInfo(form.getToken()));
             result.reject("account.invitation.invalid");
-            return "initial-password-setup";
+            return "app/initial-password-setup";
         }
         // 自動ログイン
         request.login(email, form.getPassword());

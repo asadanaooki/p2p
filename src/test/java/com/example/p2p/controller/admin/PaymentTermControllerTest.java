@@ -67,7 +67,7 @@ class PaymentTermControllerTest {
                     .param("days", String.valueOf(days))
                     .param("dueDateType", type.toString()))
                 .andExpect(model().attributeHasErrors("form"))
-                .andExpect(view().name("payment-term-create"));
+                .andExpect(view().name("admin/payment-term-create"));
         }
 
         static Stream<Arguments> createOkCases() {
@@ -77,10 +77,10 @@ class PaymentTermControllerTest {
                     Arguments.of("あ".repeat(50), 20, DueDateType.NET_DAYS),
 
                     // days
-                    Arguments.of("test", 1, DueDateType.NET_DAYS),
+                    Arguments.of("app/test", 1, DueDateType.NET_DAYS),
                     // assertTrue
-                    Arguments.of("test", 5, DueDateType.NET_DAYS),
-                    Arguments.of("test", 31, DueDateType.NEXT_MONTH_DAY));
+                    Arguments.of("app/test", 5, DueDateType.NET_DAYS),
+                    Arguments.of("app/test", 31, DueDateType.NEXT_MONTH_DAY));
         }
 
         static Stream<Arguments> createNgCases() {
@@ -89,10 +89,10 @@ class PaymentTermControllerTest {
                     Arguments.of("", 20, DueDateType.NET_DAYS), 
                     Arguments.of("あ".repeat(51), 20, DueDateType.NET_DAYS),
                     // days
-                    Arguments.of("test", null, DueDateType.NET_DAYS),
-                    Arguments.of("test", 0, DueDateType.NET_DAYS),
+                    Arguments.of("app/test", null, DueDateType.NET_DAYS),
+                    Arguments.of("app/test", 0, DueDateType.NET_DAYS),
                     // assertTrue
-                    Arguments.of("test", 32, DueDateType.THIS_MONTH_DAY));
+                    Arguments.of("app/test", 32, DueDateType.THIS_MONTH_DAY));
         }
         
         @Test
@@ -101,7 +101,7 @@ class PaymentTermControllerTest {
 
             MvcResult res = mockMvc
                 .perform(post("/setting/payment-term/create").with(csrf())
-                    .param("name", "test")
+                    .param("name", "app/test")
                     .param("days", "30")
                     .param("dueDateType", "THIS_MONTH_DAY"))
                 .andExpect(status().is3xxRedirection())
@@ -117,10 +117,10 @@ class PaymentTermControllerTest {
 
             MvcResult res = mockMvc
                 .perform(post("/setting/payment-term/create").with(csrf())
-                    .param("name", "test")
+                    .param("name", "app/test")
                     .param("days", "30")
                     .param("dueDateType", "THIS_MONTH_DAY"))
-                .andExpect(view().name("payment-term-create"))
+                .andExpect(view().name("admin/payment-term-create"))
                 .andReturn();
             Map<String, Object> model = res.getModelAndView().getModel();
             BindingResult br = (BindingResult) model.get(BindingResult.MODEL_KEY_PREFIX + "form");
@@ -159,7 +159,7 @@ class PaymentTermControllerTest {
                     .param("dueDateType", type.toString())
                     .param("active", String.valueOf(active)))
                 .andExpect(model().attributeHasErrors("form"))
-                .andExpect(view().name("payment-term-edit"));
+                .andExpect(view().name("admin/payment-term-edit"));
         }
 
         static Stream<Arguments> createOkCases() {
@@ -169,10 +169,10 @@ class PaymentTermControllerTest {
                     Arguments.of("あ".repeat(50), 20, DueDateType.NET_DAYS, true),
 
                     // days
-                    Arguments.of("test", 1, DueDateType.NET_DAYS, true),
+                    Arguments.of("app/test", 1, DueDateType.NET_DAYS, true),
                     // assertTrue
-                    Arguments.of("test", 5, DueDateType.NET_DAYS, true),
-                    Arguments.of("test", 31, DueDateType.NEXT_MONTH_DAY, true));
+                    Arguments.of("app/test", 5, DueDateType.NET_DAYS, true),
+                    Arguments.of("app/test", 31, DueDateType.NEXT_MONTH_DAY, true));
         }
 
         static Stream<Arguments> createNgCases() {
@@ -182,9 +182,9 @@ class PaymentTermControllerTest {
                     Arguments.of("", 20, DueDateType.NET_DAYS, true),
                     Arguments.of("あ".repeat(51), 20, DueDateType.NET_DAYS, true),
                     // days
-                    Arguments.of("test", 0, DueDateType.NET_DAYS, true),
+                    Arguments.of("app/test", 0, DueDateType.NET_DAYS, true),
                     // assertTrue
-                    Arguments.of("test", 32, DueDateType.THIS_MONTH_DAY, true));
+                    Arguments.of("app/test", 32, DueDateType.THIS_MONTH_DAY, true));
         }
 
         @Test
@@ -193,7 +193,7 @@ class PaymentTermControllerTest {
 
             MvcResult res = mockMvc
                 .perform(post("/setting/payment-term/{paymentTermId}/update", "testId").with(csrf())
-                    .param("name", "test")
+                    .param("name", "app/test")
                     .param("days", "30")
                     .param("dueDateType", "THIS_MONTH_DAY")
                     .param("active", "true"))
@@ -210,11 +210,11 @@ class PaymentTermControllerTest {
 
             MvcResult res = mockMvc
                 .perform(post("/setting/payment-term/{paymentTermId}/update", "testId").with(csrf())
-                    .param("name", "test")
+                    .param("name", "app/test")
                     .param("days", "30")
                     .param("dueDateType", "THIS_MONTH_DAY")
                     .param("active", "true"))
-                .andExpect(view().name("payment-term-edit"))
+                .andExpect(view().name("admin/payment-term-edit"))
                 .andReturn();
             Map<String, Object> model = res.getModelAndView().getModel();
             BindingResult br = (BindingResult) model.get(BindingResult.MODEL_KEY_PREFIX + "form");

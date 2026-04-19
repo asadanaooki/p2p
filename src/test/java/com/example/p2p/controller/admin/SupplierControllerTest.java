@@ -53,7 +53,7 @@ class SupplierControllerTest {
     @Test
     void showSupplierEditForm() throws Exception {
         SupplierDetailDto dto = new SupplierDetailDto();
-        dto.setSupplierName("test");
+        dto.setSupplierName("app/test");
         dto.setEmail("test@example.com");
         dto.setPhoneNumber("0743712224");
         dto.setPostalCode("6312214");
@@ -67,14 +67,14 @@ class SupplierControllerTest {
         doReturn(dto).when(supplierService).getSupplierDetail(anyString());
         doReturn(List.of(new PaymentTermOptionDto())).when(supplierService).getPaymentTermOptions();
 
-        MvcResult res = mockMvc.perform(get("/setting/supplier/{supplierId}/edit", "test").with(csrf()))
-            .andExpect(view().name("supplier-edit"))
+        MvcResult res = mockMvc.perform(get("/setting/supplier/{supplierId}/edit", "app/test").with(csrf()))
+            .andExpect(view().name("admin/supplier-edit"))
             .andReturn();
 
         Map<String, Object> map = res.getModelAndView().getModel();
         SupplierEditForm form = (SupplierEditForm) map.get("form");
 
-        assertThat(form.getName()).isEqualTo("test");
+        assertThat(form.getName()).isEqualTo("app/test");
         assertThat(form.getEmail()).isEqualTo("test@example.com");
         assertThat(form.getPhoneNumber()).isEqualTo("0743712224");
         assertThat(form.getPostalCode()).isEqualTo("6312214");
@@ -86,7 +86,7 @@ class SupplierControllerTest {
         assertThat(form.isStatus()).isFalse();
 
         assertThat((List) map.get("paymentTerms")).isNotEmpty();
-        assertThat(map.get("supplierId")).isEqualTo("test");
+        assertThat(map.get("supplierId")).isEqualTo("app/test");
     }
 
     @Nested
@@ -97,7 +97,7 @@ class SupplierControllerTest {
             doNothing().when(supplierService).update(anyString(), any());
 
             MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
-            params.add("name", "test");
+            params.add("name", "app/test");
             params.add("email", "");
             params.add("phoneNumber", "123");
             params.add("postalCode", "0123456");
@@ -109,9 +109,9 @@ class SupplierControllerTest {
             params.add("status", "true");
 
             MvcResult res = mockMvc
-                .perform(post("/setting/supplier/{supplierId}/update", "test").with(csrf()).params(params))
+                .perform(post("/setting/supplier/{supplierId}/update", "app/test").with(csrf()).params(params))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/setting/supplier/" + "test"))
+                .andExpect(redirectedUrl("/setting/supplier/" + "app/test"))
                 .andReturn();
 
             assertThat(res.getFlashMap().get("successMessage")).isEqualTo("編集完了しました");
@@ -120,23 +120,23 @@ class SupplierControllerTest {
         @ParameterizedTest
         @MethodSource("createOkCases")
         void create_parameter_ok(MultiValueMap<String, String> param) throws Exception {
-            mockMvc.perform(post("/setting/supplier/{supplierId}/update", "test").with(csrf()).params(param))
+            mockMvc.perform(post("/setting/supplier/{supplierId}/update", "app/test").with(csrf()).params(param))
                 .andExpect(status().is3xxRedirection());
         }
 
         @ParameterizedTest
         @MethodSource("createNgCases")
         void create_parameter_ng(MultiValueMap<String, String> param) throws Exception {
-            mockMvc.perform(post("/setting/supplier/{supplierId}/update", "test").with(csrf()).params(param))
+            mockMvc.perform(post("/setting/supplier/{supplierId}/update", "app/test").with(csrf()).params(param))
                 .andExpect(model().attributeHasErrors("form"))
                 .andExpect(model().attributeExists("supplierId"))
-                .andExpect(view().name("supplier-edit"));
+                .andExpect(view().name("admin/supplier-edit"));
         }
 
         static Stream<Arguments> createOkCases() {
             // name
             MultiValueMap<String, String> okmap1 = baseParam();
-            okmap1.set("name", "test");
+            okmap1.set("name", "app/test");
             // email
             MultiValueMap<String, String> okmap2 = baseParam();
             okmap2.set("email", "test@gmail.com");
@@ -187,7 +187,7 @@ class SupplierControllerTest {
             doNothing().when(supplierService).create(any());
 
             MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
-            params.add("name", "test");
+            params.add("name", "app/test");
             params.add("email", "trest@example.com");
             params.add("phoneNumber", "123");
             params.add("postalCode", "0123456");
@@ -198,7 +198,7 @@ class SupplierControllerTest {
             params.add("paymentTermId", "a".repeat(36));
 
             MvcResult res = mockMvc
-                .perform(post("/setting/supplier/create", "test").with(csrf()).params(params))
+                .perform(post("/setting/supplier/create", "app/test").with(csrf()).params(params))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/setting/supplier"))
                 .andReturn();
@@ -209,7 +209,7 @@ class SupplierControllerTest {
         @ParameterizedTest
         @MethodSource("createOkCases")
         void create_parameter_ok(MultiValueMap<String, String> param) throws Exception {
-            mockMvc.perform(post("/setting/supplier/create", "test").with(csrf()).params(param))
+            mockMvc.perform(post("/setting/supplier/create", "app/test").with(csrf()).params(param))
                 .andExpect(status().is3xxRedirection());
         }
 
@@ -219,13 +219,13 @@ class SupplierControllerTest {
             mockMvc.perform(post("/setting/supplier/create").with(csrf()).params(param))
                 .andExpect(model().attributeHasErrors("form"))
                 .andExpect(model().attributeExists("paymentTerms"))
-                .andExpect(view().name("supplier-create"));
+                .andExpect(view().name("admin/supplier-create"));
         }
 
         static Stream<Arguments> createOkCases() {
             // name
             MultiValueMap<String, String> okmap1 = baseParam();
-            okmap1.set("name", "test");
+            okmap1.set("name", "app/test");
             // email
             MultiValueMap<String, String> okmap2 = baseParam();
             okmap2.set("email", "test@gmail.com");

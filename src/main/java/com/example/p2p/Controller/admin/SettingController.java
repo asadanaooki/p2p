@@ -10,7 +10,7 @@ public class SettingController {
 
     @GetMapping
     public String showSettingList() {
-        return "setting";
+        return "admin/setting";
     }
 
 }

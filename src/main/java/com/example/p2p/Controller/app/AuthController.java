@@ -8,12 +8,12 @@ public class AuthController {
 
     @GetMapping("/login")
     public String showLogin() {
-        return "login";
+        return "app/login";
     }
 
     @GetMapping("/test")
     public String test() {
-        return "test";
+        return "app/test";
     }
 
 }
