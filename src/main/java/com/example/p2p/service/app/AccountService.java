@@ -31,13 +31,13 @@ public class AccountService {
     private UsersMapper usersMapper;
 
     private UserInvitationTokenMapper userInvitationTokenMapper;
-    
+
     private UserInvitationTokenMapperCustom userInvitationTokenMapperCustom;
 
     private PasswordEncoder passwordEncoder;
 
     @Transactional
-    public void acceptInvitation(InitialPasswordSetupForm form) {
+    public String acceptInvitation(InitialPasswordSetupForm form) {
         logger.info("招待受諾開始");
         // トークンをハッシュ化
         String tokenHash = CommonUtil.hashToken(form.getToken());
@@ -50,7 +50,7 @@ public class AccountService {
             logger.warn("該当トークンなし");
             throw new BusinessException();
         }
-        
+
         // 有効期限チェック
         UserInvitationToken invitationToken = invitationTokens.get(0);
         if (LocalDateTime.now().isAfter(invitationToken.getExpiresAt())) {
@@ -59,19 +59,18 @@ public class AccountService {
         }
 
         // 紐づくユーザーのPWとステータスを更新
-        String userId = invitationToken.getUserId();
-        Users user = new Users();
-        user.setUserId(userId);
+        Users user = usersMapper.selectByPrimaryKey(invitationToken.getUserId());
         user.setPasswordHash(passwordEncoder.encode(form.getPassword()));
         user.setIsActive(true);
-        usersMapper.updateByPrimaryKeySelective(user);
+        usersMapper.updateByPrimaryKey(user);
 
         // トークン削除
-       // userInvitationTokenMapper.deleteByPrimaryKey(userId);
+        userInvitationTokenMapper.deleteByPrimaryKey(user.getUserId());
 
         logger.info("招待受諾完了");
+        return user.getEmail();
     }
-    
+
     public InitialPasswordSetupViewDto getInvitedUserInfo(String token) {
         logger.debug("招待ユーザー情報取得開始");
         String tokenHash = CommonUtil.hashToken(token);

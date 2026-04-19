@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 @Data
+@ComparePassword(message = "{error.password.mismatch}")
 public class InitialPasswordSetupForm {
 
     @NotBlank
@@ -22,7 +23,6 @@ public class InitialPasswordSetupForm {
     @NotBlank
     @Length(min = 8, max = 60, message = "{error.length.range}")
     @Pattern(regexp = "^[!-~]+$", message = "{error.halfwidth.alnum.symbol}")
-    @ComparePassword(message = "{error.password.mismatch}")
     private String confirmPassword;
 
 }

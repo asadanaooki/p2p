@@ -9,6 +9,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mockStatic;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -72,12 +73,25 @@ class AccountServiceTest {
             LocalDateTime fixed = LocalDateTime.of(2025, 4, 18, 0, 0);
             try (MockedStatic<LocalDateTime> mock = mockStatic(LocalDateTime.class, CALLS_REAL_METHODS)) {
                 mock.when(() -> LocalDateTime.now()).thenReturn(fixed);
-                accountService.acceptInvitation(form);
+               String email = accountService.acceptInvitation(form);
+               
+               assertThat(email).isEqualTo("sato.hanako@example.com");
             }
             Users updated = usersMapper.selectByPrimaryKey(userId);
             assertThat(passwordEncoder.matches("testPass", updated.getPasswordHash())).isTrue();
             assertThat(updated.getIsActive()).isTrue();
             assertThat(userInvitationTokenMapper.selectByPrimaryKey(userId)).isNull();
+            
+            assertThat(updated.getLastName()).isEqualTo("佐藤");
+            assertThat(updated.getFirstName()).isEqualTo("花子");
+            assertThat(updated.getLastNameKana()).isEqualTo("サトウ");
+            assertThat(updated.getFirstNameKana()).isEqualTo("ハナコ");
+            assertThat(updated.getEmail()).isEqualTo("sato.hanako@example.com");
+            assertThat(updated.getRoleId()).isEqualTo("6862542a-1954-4192-81e8-f18c583ade01");
+            assertThat(updated.getCreatedAt().truncatedTo(ChronoUnit.MILLIS))
+                    .isEqualTo(LocalDateTime.of(2026, 4, 9, 21, 19, 56, 117_000_000));
+            assertThat(updated.getUpdatedAt())
+                    .isAfter(LocalDateTime.of(2026, 4, 18, 15, 3, 39, 32_000_000));
 
         }
 

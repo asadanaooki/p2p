@@ -10,8 +10,8 @@ import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 @Documented
-@Constraint(validatedBy = RolePermissionCombinationValidator.class)
-@Target({ElementType.TYPE, ElementType.FIELD})
+@Constraint(validatedBy = ComparePasswordValidator.class)
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ComparePassword {
 
