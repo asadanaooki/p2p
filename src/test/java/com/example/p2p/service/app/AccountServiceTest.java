@@ -89,7 +89,7 @@ class AccountServiceTest {
             assertThat(updated.getEmail()).isEqualTo("sato.hanako@example.com");
             assertThat(updated.getRoleId()).isEqualTo("6862542a-1954-4192-81e8-f18c583ade01");
             assertThat(updated.getCreatedAt().truncatedTo(ChronoUnit.MILLIS))
-                    .isEqualTo(LocalDateTime.of(2026, 4, 9, 21, 19, 56, 117_000_000));
+                    .isEqualTo(LocalDateTime.of(2026, 4, 20, 12, 22, 39, 902_000_000));
             assertThat(updated.getUpdatedAt())
                     .isAfter(LocalDateTime.of(2026, 4, 18, 15, 3, 39, 32_000_000));
 

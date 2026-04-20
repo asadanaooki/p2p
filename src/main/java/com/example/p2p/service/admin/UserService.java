@@ -1,12 +1,8 @@
 package com.example.p2p.service.admin;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Base64;
-import java.util.HexFormat;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -74,6 +70,8 @@ public class UserService {
 
     public UserDetailDto getUserDetail(String userId) {
         logger.debug("ユーザー詳細取得開始");
+        
+       var a = usersMapper.selectByExample(new UsersExample());
 
         UserDetailDto userDetail = usersMapperCustom.selectUserDetail(userId);
         UsersExample ex = new UsersExample();

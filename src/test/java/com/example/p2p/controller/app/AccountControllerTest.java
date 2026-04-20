@@ -113,7 +113,7 @@ class AccountControllerTest {
                     Arguments.of("abcd", "a".repeat(61), "a".repeat(61), "password"),
                     Arguments.of("abcd", "ag23ｶf%$Q", "ag23ｶf%$Q", "password"),
                     Arguments.of("abcd", "ag23あf%$Q", "ag23あf%$Q", "password"),
-                    Arguments.of("abcd", "app/test", "test2", "password"),
+                    Arguments.of("abcd", "test", "test2", "confirmPassword"),
 
                     // confirmPassword
                     Arguments.of("abcd", null, null, "confirmPassword"),

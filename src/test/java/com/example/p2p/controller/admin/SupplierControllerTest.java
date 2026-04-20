@@ -67,7 +67,7 @@ class SupplierControllerTest {
         doReturn(dto).when(supplierService).getSupplierDetail(anyString());
         doReturn(List.of(new PaymentTermOptionDto())).when(supplierService).getPaymentTermOptions();
 
-        MvcResult res = mockMvc.perform(get("/setting/supplier/{supplierId}/edit", "app/test").with(csrf()))
+        MvcResult res = mockMvc.perform(get("/setting/supplier/{supplierId}/edit", "test").with(csrf()))
             .andExpect(view().name("admin/supplier-edit"))
             .andReturn();
 
@@ -86,7 +86,7 @@ class SupplierControllerTest {
         assertThat(form.isStatus()).isFalse();
 
         assertThat((List) map.get("paymentTerms")).isNotEmpty();
-        assertThat(map.get("supplierId")).isEqualTo("app/test");
+        assertThat(map.get("supplierId")).isEqualTo("test");
     }
 
     @Nested
@@ -109,9 +109,9 @@ class SupplierControllerTest {
             params.add("status", "true");
 
             MvcResult res = mockMvc
-                .perform(post("/setting/supplier/{supplierId}/update", "app/test").with(csrf()).params(params))
+                .perform(post("/setting/supplier/{supplierId}/update", "test").with(csrf()).params(params))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/setting/supplier/" + "app/test"))
+                .andExpect(redirectedUrl("/admin/setting/supplier/" + "test"))
                 .andReturn();
 
             assertThat(res.getFlashMap().get("successMessage")).isEqualTo("編集完了しました");
@@ -120,14 +120,14 @@ class SupplierControllerTest {
         @ParameterizedTest
         @MethodSource("createOkCases")
         void create_parameter_ok(MultiValueMap<String, String> param) throws Exception {
-            mockMvc.perform(post("/setting/supplier/{supplierId}/update", "app/test").with(csrf()).params(param))
+            mockMvc.perform(post("/setting/supplier/{supplierId}/update", "test").with(csrf()).params(param))
                 .andExpect(status().is3xxRedirection());
         }
 
         @ParameterizedTest
         @MethodSource("createNgCases")
         void create_parameter_ng(MultiValueMap<String, String> param) throws Exception {
-            mockMvc.perform(post("/setting/supplier/{supplierId}/update", "app/test").with(csrf()).params(param))
+            mockMvc.perform(post("/setting/supplier/{supplierId}/update", "test").with(csrf()).params(param))
                 .andExpect(model().attributeHasErrors("form"))
                 .andExpect(model().attributeExists("supplierId"))
                 .andExpect(view().name("admin/supplier-edit"));

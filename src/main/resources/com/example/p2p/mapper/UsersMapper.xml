@@ -169,6 +169,9 @@
     -->
     insert into users
     <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        user_id,
+      </if>
       <if test="lastName != null">
         last_name,
       </if>
@@ -201,6 +204,9 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        #{userId,jdbcType=CHAR},
+      </if>
       <if test="lastName != null">
         #{lastName,jdbcType=VARCHAR},
       </if>
