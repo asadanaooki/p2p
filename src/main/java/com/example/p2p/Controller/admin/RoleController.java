@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.example.p2p.dto.RoleDetailDto;
+import com.example.p2p.dto.admin.RoleDetailDto;
 import com.example.p2p.enums.VisibilityScope;
 import com.example.p2p.exception.BusinessException;
-import com.example.p2p.form.RoleUpsertForm;
+import com.example.p2p.form.admin.RoleUpsertForm;
 import com.example.p2p.service.admin.RoleService;
 
 import jakarta.validation.Valid;

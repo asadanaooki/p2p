@@ -18,7 +18,7 @@ import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 
-import com.example.p2p.dto.ItemListItemDto;
+import com.example.p2p.dto.admin.ItemListItemDto;
 import com.example.p2p.entity.Item;
 import com.example.p2p.entity.ItemExample;
 import com.example.p2p.entity.Supplier;
@@ -26,7 +26,7 @@ import com.example.p2p.entity.SupplierExample;
 import com.example.p2p.enums.ItemKind;
 import com.example.p2p.enums.ItemSortBy;
 import com.example.p2p.enums.SortDirection;
-import com.example.p2p.form.ItemSearchForm;
+import com.example.p2p.form.admin.ItemSearchForm;
 
 @MybatisTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

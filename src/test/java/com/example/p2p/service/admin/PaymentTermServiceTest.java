@@ -13,8 +13,8 @@ import com.example.p2p.entity.PaymentTerm;
 import com.example.p2p.entity.PaymentTermExample;
 import com.example.p2p.enums.DueDateType;
 import com.example.p2p.exception.BusinessException;
-import com.example.p2p.form.PaymentTermCreateForm;
-import com.example.p2p.form.PaymentTermEditForm;
+import com.example.p2p.form.admin.PaymentTermCreateForm;
+import com.example.p2p.form.admin.PaymentTermEditForm;
 import com.example.p2p.mapper.PaymentTermMapper;
 import com.example.p2p.service.admin.PaymentTermService;
 

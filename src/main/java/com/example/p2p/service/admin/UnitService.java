@@ -4,12 +4,12 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.example.p2p.dto.UnitDetailDto;
-import com.example.p2p.dto.UnitListItemDto;
+import com.example.p2p.dto.admin.UnitDetailDto;
+import com.example.p2p.dto.admin.UnitListItemDto;
 import com.example.p2p.entity.Unit;
 import com.example.p2p.entity.UnitExample;
 import com.example.p2p.exception.BusinessException;
-import com.example.p2p.form.UnitEditForm;
+import com.example.p2p.form.admin.UnitEditForm;
 import com.example.p2p.mapper.UnitMapper;
 
 import lombok.AllArgsConstructor;

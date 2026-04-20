@@ -20,11 +20,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.p2p.advice.NormalizationEditor;
-import com.example.p2p.dto.RoleOptionDto;
-import com.example.p2p.dto.UserDetailDto;
+import com.example.p2p.dto.admin.RoleOptionDto;
+import com.example.p2p.dto.admin.UserDetailDto;
 import com.example.p2p.exception.BusinessException;
-import com.example.p2p.form.UserSearchForm;
-import com.example.p2p.form.UserUpsertForm;
+import com.example.p2p.form.admin.UserSearchForm;
+import com.example.p2p.form.admin.UserUpsertForm;
 import com.example.p2p.service.admin.UserService;
 
 import jakarta.servlet.http.HttpSession;

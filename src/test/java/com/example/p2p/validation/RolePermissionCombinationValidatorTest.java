@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.MessageSource;
 
 import com.example.p2p.enums.VisibilityScope;
-import com.example.p2p.form.RoleUpsertForm;
+import com.example.p2p.form.admin.RoleUpsertForm;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;

@@ -36,15 +36,15 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.p2p.dto.UserDetailDto;
-import com.example.p2p.dto.UserListViewDto;
+import com.example.p2p.dto.admin.UserDetailDto;
+import com.example.p2p.dto.admin.UserListViewDto;
 import com.example.p2p.entity.UserInvitationToken;
 import com.example.p2p.entity.UserInvitationTokenExample;
 import com.example.p2p.entity.Users;
 import com.example.p2p.entity.UsersExample;
 import com.example.p2p.exception.BusinessException;
-import com.example.p2p.form.UserSearchForm;
-import com.example.p2p.form.UserUpsertForm;
+import com.example.p2p.form.admin.UserSearchForm;
+import com.example.p2p.form.admin.UserUpsertForm;
 import com.example.p2p.mapper.UserInvitationTokenMapper;
 import com.example.p2p.mapper.UsersMapper;
 

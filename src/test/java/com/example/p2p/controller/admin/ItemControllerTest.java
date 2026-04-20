@@ -34,16 +34,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.validation.BindingResult;
 
-import com.example.p2p.dto.ItemEditViewDto;
-import com.example.p2p.dto.ItemListViewDto;
-import com.example.p2p.dto.SupplierOptionDto;
-import com.example.p2p.dto.UnitOptionDto;
+import com.example.p2p.dto.admin.ItemEditViewDto;
+import com.example.p2p.dto.admin.ItemListViewDto;
+import com.example.p2p.dto.admin.SupplierOptionDto;
+import com.example.p2p.dto.admin.UnitOptionDto;
 import com.example.p2p.enums.ItemKind;
 import com.example.p2p.enums.ItemSortBy;
 import com.example.p2p.enums.SortDirection;
-import com.example.p2p.form.ItemUpsertForm;
+import com.example.p2p.form.admin.ItemSearchForm;
+import com.example.p2p.form.admin.ItemUpsertForm;
 import com.example.p2p.service.admin.ItemService;
-import com.example.p2p.form.ItemSearchForm;
 
 @SpringBootTest
 @AutoConfigureMockMvc

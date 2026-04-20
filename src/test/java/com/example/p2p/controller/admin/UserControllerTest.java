@@ -29,11 +29,11 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.example.p2p.dto.UserListViewDto;
+import com.example.p2p.dto.admin.UserListViewDto;
 import com.example.p2p.enums.SortDirection;
 import com.example.p2p.enums.UserSortBy;
-import com.example.p2p.form.UserSearchForm;
-import com.example.p2p.form.UserUpsertForm;
+import com.example.p2p.form.admin.UserSearchForm;
+import com.example.p2p.form.admin.UserUpsertForm;
 import com.example.p2p.service.admin.UserService;
 
 @SpringBootTest

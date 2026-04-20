@@ -22,7 +22,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.example.p2p.dto.InitialPasswordSetupViewDto;
+import com.example.p2p.dto.app.InitialPasswordSetupViewDto;
 import com.example.p2p.service.app.AccountService;
 
 @SpringBootTest

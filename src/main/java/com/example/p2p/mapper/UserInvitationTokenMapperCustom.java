@@ -2,7 +2,7 @@ package com.example.p2p.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.example.p2p.dto.InitialPasswordSetupViewDto;
+import com.example.p2p.dto.app.InitialPasswordSetupViewDto;
 
 @Mapper
 public interface UserInvitationTokenMapperCustom {

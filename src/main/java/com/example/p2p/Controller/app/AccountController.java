@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.example.p2p.dto.UserProfileDto;
+import com.example.p2p.dto.app.UserProfileDto;
 import com.example.p2p.exception.BusinessException;
-import com.example.p2p.form.InitialPasswordSetupForm;
-import com.example.p2p.form.ProfileEditForm;
+import com.example.p2p.form.app.InitialPasswordSetupForm;
+import com.example.p2p.form.app.ProfileEditForm;
 import com.example.p2p.service.app.AccountService;
 
 import jakarta.servlet.ServletException;

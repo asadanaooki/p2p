@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.example.p2p.dto.PaymentTermDetailDto;
+import com.example.p2p.dto.admin.PaymentTermDetailDto;
 import com.example.p2p.exception.BusinessException;
-import com.example.p2p.form.PaymentTermCreateForm;
-import com.example.p2p.form.PaymentTermEditForm;
+import com.example.p2p.form.admin.PaymentTermCreateForm;
+import com.example.p2p.form.admin.PaymentTermEditForm;
 import com.example.p2p.service.admin.PaymentTermService;
 
 import jakarta.validation.Valid;

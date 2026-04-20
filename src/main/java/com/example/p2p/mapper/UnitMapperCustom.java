@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.example.p2p.dto.UnitOptionDto;
+import com.example.p2p.dto.admin.UnitOptionDto;
 
 @Mapper
 public interface UnitMapperCustom {

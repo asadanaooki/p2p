@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.example.p2p.entity.Users;
-import com.example.p2p.form.UserUpsertForm;
+import com.example.p2p.form.admin.UserUpsertForm;
 
 @Configuration
 public class ModelMapperConfig {

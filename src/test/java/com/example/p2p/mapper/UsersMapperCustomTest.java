@@ -16,13 +16,13 @@ import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 
-import com.example.p2p.dto.UserDetailDto;
-import com.example.p2p.dto.UserListRowDto;
+import com.example.p2p.dto.admin.UserDetailDto;
+import com.example.p2p.dto.admin.UserListRowDto;
 import com.example.p2p.entity.Users;
 import com.example.p2p.entity.UsersExample;
 import com.example.p2p.enums.SortDirection;
 import com.example.p2p.enums.UserSortBy;
-import com.example.p2p.form.UserSearchForm;
+import com.example.p2p.form.admin.UserSearchForm;
 
 @MybatisTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
