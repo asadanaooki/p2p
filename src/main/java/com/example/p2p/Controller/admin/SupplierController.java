@@ -45,20 +45,20 @@ public class SupplierController {
         model.addAttribute("status", status);
         model.addAttribute("keyword", keyword);
         model.addAttribute("list", supplierService.getSuppliers(status, keyword));
-        return "supplier-list";
+        return "admin/supplier-list";
     }
 
     @GetMapping("/{supplierId}")
     public String showSupplierDetail(@PathVariable String supplierId, Model model) {
         model.addAttribute("supplierId", supplierId);
         model.addAttribute("supplier", supplierService.getSupplierDetail(supplierId));
-        return "supplier-detail";
+        return "admin/supplier-detail";
     }
 
      @GetMapping("/create")
      public String showSupplierCreateForm(@ModelAttribute("form") SupplierCreateForm form, Model model) {
          model.addAttribute("paymentTerms", supplierService.getPaymentTermOptions());
-         return "supplier-create";
+         return "admin/supplier-create";
      }
 
      @PostMapping("/create")
@@ -68,7 +68,7 @@ public class SupplierController {
              RedirectAttributes redirectAttributes) {
          if (result.hasErrors()) {
              model.addAttribute("paymentTerms", supplierService.getPaymentTermOptions());
-             return "supplier-create";
+             return "admin/supplier-create";
          }
          supplierService.create(form);
          
@@ -97,7 +97,7 @@ public class SupplierController {
 
         model.addAttribute("supplierId", supplierId);
 
-        return "supplier-edit";
+        return "admin/supplier-edit";
     }
 
     @PostMapping("/{supplierId}/update")
@@ -109,14 +109,14 @@ public class SupplierController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("paymentTerms", supplierService.getPaymentTermOptions());
             model.addAttribute("supplierId", supplierId);
-            return "supplier-edit";
+            return "admin/supplier-edit";
         }
         supplierService.update(supplierId, form);
         redirectAttributes.addFlashAttribute("successMessage",
                 messageSource.getMessage("common.update.success", null, null));
         redirectAttributes.addAttribute("supplierId", supplierId);
         
-        return "redirect:/setting/supplier/{supplierId}";
+        return "redirect:/admin/setting/supplier/{supplierId}";
     }
 
 }

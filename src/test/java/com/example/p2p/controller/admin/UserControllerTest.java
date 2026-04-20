@@ -57,7 +57,7 @@ class UserControllerTest {
             mockMvc.perform(get("/setting/user").with(csrf()))
                 .andExpect(request().sessionAttribute("lastSearchCondition", notNullValue()))
                 .andExpect(model().attributeExists("view"))
-                .andExpect(view().name("user-list"));
+                .andExpect(view().name("admin/user-list"));
         }
 
         @Test
@@ -65,7 +65,7 @@ class UserControllerTest {
             ArgumentCaptor<UserSearchForm> cap = ArgumentCaptor.forClass(UserSearchForm.class);
             doReturn(new UserListViewDto()).when(userService).searchUsers(cap.capture());
             UserSearchForm form = new UserSearchForm();
-            form.setKeyword("test");
+            form.setKeyword("app/test");
             form.setPage(3);
 
             mockMvc
@@ -73,14 +73,14 @@ class UserControllerTest {
                     .sessionAttr("lastSearchCondition", form)
                     .param("roleId", "a".repeat(37)))
                 .andExpect(model().attributeExists("view"))
-                .andExpect(view().name("user-list"));
+                .andExpect(view().name("admin/user-list"));
 
             UserSearchForm captured = cap.getValue();
             assertThat(captured.getPage()).isEqualTo(3);
             assertThat(captured.getSize()).isEqualTo(2);
             assertThat(captured.getRoleId()).isNull();
             assertThat(captured.getStatus()).isNull();
-            assertThat(captured.getKeyword()).isEqualTo("test");
+            assertThat(captured.getKeyword()).isEqualTo("app/test");
             assertThat(captured.getSortBy()).isEqualTo(UserSortBy.NAME);
             assertThat(captured.getSortDirection()).isEqualTo(SortDirection.ASC);
         }
@@ -92,7 +92,7 @@ class UserControllerTest {
 
             mockMvc.perform(get("/setting/user").with(csrf()).param("roleId", "a".repeat(37)))
                 .andExpect(model().attributeExists("view"))
-                .andExpect(view().name("user-list"));
+                .andExpect(view().name("admin/user-list"));
 
             UserSearchForm captured = cap.getValue();
             assertThat(captured.getPage()).isEqualTo(1);
@@ -149,7 +149,7 @@ class UserControllerTest {
                     .param("roleId", form.getRoleId()))
                 .andExpect(model().hasErrors())
                 .andExpect(model().attributeHasFieldErrors("form", field))
-                .andExpect(view().name("user-create"));
+                .andExpect(view().name("admin/user-create"));
         }
 
         static Stream<Arguments> createNewNgCaces() {

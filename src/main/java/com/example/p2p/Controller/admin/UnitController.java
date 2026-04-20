@@ -34,19 +34,19 @@ public class UnitController {
     public String showUnitList(Model model, @RequestParam(required = false) Boolean status) {
         model.addAttribute("status", status);
         model.addAttribute("unitList", unitService.getUnitList(status));
-        return "unit-list";
+        return "admin/unit-list";
     }
 
     @GetMapping("/create")
     public String showUnitCreateForm(@ModelAttribute("form") UnitCreateForm form) {
-        return "unit-create";
+        return "admin/unit-create";
     }
 
     @PostMapping("/create")
     public String create(@Valid @ModelAttribute("form") UnitCreateForm form, BindingResult result,
             RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
-            return "unit-create";
+            return "admin/unit-create";
         }
         try {
             unitService.create(form.getName());
@@ -54,7 +54,7 @@ public class UnitController {
         catch (BusinessException e) {
             result.rejectValue("name", "duplicate",
                     messageSource.getMessage("common.duplicate", null, null));
-            return "unit-create";
+            return "admin/unit-create";
         }
         redirectAttributes.addFlashAttribute("successMessage",
                 messageSource.getMessage("common.create.success", null, null));
@@ -70,7 +70,7 @@ public class UnitController {
 
         model.addAttribute("unitId", unitId);
 
-        return "unit-edit";
+        return "admin/unit-edit";
     }
 
     @PostMapping("/{unitId}/update")
@@ -78,7 +78,7 @@ public class UnitController {
             BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("unitId", unitId);
-            return "unit-edit";
+            return "admin/unit-edit";
         }
         try {
             unitService.update(unitId, form);
@@ -87,7 +87,7 @@ public class UnitController {
             model.addAttribute("unitId", unitId);
             bindingResult.rejectValue("name", "duplicate",
                     messageSource.getMessage("common.duplicate", null, null));
-            return "unit-edit";
+            return "admin/unit-edit";
         }
         redirectAttributes.addFlashAttribute("successMessage",
                 messageSource.getMessage("common.update.success", null, null));

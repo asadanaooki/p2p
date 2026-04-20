@@ -32,7 +32,7 @@ public class PaymentTermController {
     @GetMapping
     public String showPaymentTermList(Model model) {
         model.addAttribute("list", paymentTermService.getPaymentTerms());
-        return "payment-term-list";
+        return "admin/payment-term-list";
     }
 
     @GetMapping("/{paymentTermId}")
@@ -45,19 +45,19 @@ public class PaymentTermController {
         form.setActive(pt.isActive());
         model.addAttribute("paymentTermId", paymentTermId);
         
-        return "payment-term-edit";
+        return "admin/payment-term-edit";
     }
     
     @GetMapping("/create")
     public String showPaymentTermCreateForm(@ModelAttribute("form") PaymentTermCreateForm form) {
-        return "payment-term-create";
+        return "admin/payment-term-create";
     }
 
     @PostMapping("/create")
     public String create(@Valid @ModelAttribute("form") PaymentTermCreateForm form, BindingResult result,
             RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
-            return "payment-term-create";
+            return "admin/payment-term-create";
         }
         try {
             paymentTermService.create(form);
@@ -65,7 +65,7 @@ public class PaymentTermController {
         catch (BusinessException e) {
             result.rejectValue("name", "duplicate",
                     messageSource.getMessage("common.duplicate", null, null));
-            return "payment-term-create";
+            return "admin/payment-term-create";
         }
         redirectAttributes.addFlashAttribute("successMessage",
                 messageSource.getMessage("common.create.success", null, null));
@@ -77,7 +77,7 @@ public class PaymentTermController {
             BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("paymentTermId", paymentTermId);
-            return "payment-term-edit";
+            return "admin/payment-term-edit";
         }
         try {
             paymentTermService.update(paymentTermId, form);
@@ -85,7 +85,7 @@ public class PaymentTermController {
         catch (BusinessException e) {
             model.addAttribute("paymentTermId", paymentTermId);
             bindingResult.rejectValue("name", "duplicate", messageSource.getMessage("common.duplicate", null, null));
-            return "payment-term-edit";
+            return "admin/payment-term-edit";
         }
         redirectAttributes.addFlashAttribute("successMessage",
                 messageSource.getMessage("common.update.success", null, null));

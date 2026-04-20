@@ -86,7 +86,7 @@
     from users u
     join role r
       on u.role_id = r.role_id
-    where user_id = #{userId}
+    where u.user_id = #{userId}
 
   </select>
 </mapper>

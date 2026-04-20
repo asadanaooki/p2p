@@ -349,9 +349,7 @@ class UserServiceTest {
     @CsvSource(value = {"testPass123, true, false", "null, false, true"}, nullValues = "null")
     void getUserDetail_canInvite(String password, boolean isActive, boolean expected) {
         usersMapper.deleteByExample(new UsersExample());
-        String userId = "169f1e17-619f-45bf-b6dc-8faed08c404c";
         Users u = new Users();
-        u.setUserId(userId);
         u.setLastName("a");
         u.setFirstName("a");
         u.setLastNameKana("ア");
@@ -362,10 +360,7 @@ class UserServiceTest {
         u.setIsActive(isActive);
         usersMapper.insertSelective(u);
         
-        UsersExample ex = new UsersExample();
-        ex.createCriteria().andUserIdEqualTo(userId).andPasswordHashIsNull().andIsActiveEqualTo(false);
-        
-       UserDetailDto actual = userService.getUserDetail(userId);
+       UserDetailDto actual = userService.getUserDetail(u.getUserId());
        assertThat(actual.isCanInvite()).isEqualTo(expected);
     }
 }

@@ -45,7 +45,7 @@ class UnitControllerTest {
         void create_success() throws Exception {
             doNothing().when(unitService).create(anyString());
 
-            MvcResult res = mockMvc.perform(post("/setting/unit/create").with(csrf()).param("name", "test"))
+            MvcResult res = mockMvc.perform(post("/setting/unit/create").with(csrf()).param("name", "app/test"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/setting/unit"))
                 .andReturn();
@@ -57,8 +57,8 @@ class UnitControllerTest {
         void create_duplicate() throws Exception {
             doThrow(BusinessException.class).when(unitService).create(anyString());
 
-            MvcResult res = mockMvc.perform(post("/setting/unit/create").with(csrf()).param("name", "test"))
-                .andExpect(view().name("unit-create"))
+            MvcResult res = mockMvc.perform(post("/setting/unit/create").with(csrf()).param("name", "app/test"))
+                .andExpect(view().name("admin/unit-create"))
                 .andReturn();
             Map<String, Object> model = res.getModelAndView().getModel();
             BindingResult br = (BindingResult) model.get(BindingResult.MODEL_KEY_PREFIX + "form");
@@ -79,7 +79,7 @@ class UnitControllerTest {
             doNothing().when(unitService).update(anyString(),any());
 
             MvcResult res = mockMvc.perform(post("/setting/unit/{unitId}/update", "testId")
-                    .with(csrf()).param("name", "test").param("status", "false"))
+                    .with(csrf()).param("name", "app/test").param("status", "false"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/setting/unit/testId"))
                 .andReturn();
@@ -92,8 +92,8 @@ class UnitControllerTest {
             doThrow(BusinessException.class).when(unitService).update(anyString(), any());
 
             MvcResult res = mockMvc.perform(post("/setting/unit/{unitId}/update", "testId")
-                    .with(csrf()).param("name", "test").param("status", "false"))
-                .andExpect(view().name("unit-edit"))
+                    .with(csrf()).param("name", "app/test").param("status", "false"))
+                .andExpect(view().name("admin/unit-edit"))
                 .andReturn();
             Map<String, Object> model = res.getModelAndView().getModel();
             BindingResult br = (BindingResult) model.get(BindingResult.MODEL_KEY_PREFIX + "form");

@@ -47,7 +47,7 @@ class AccountControllerTest {
             mockMvc.perform(post("/account/initial-password-setup").with(csrf()).param("token", ""))
                 .andExpect(model().attributeExists("user"))
                 .andExpect(model().attributeHasErrors("form"))
-                .andExpect(view().name("initial-password-setup"));
+                .andExpect(view().name("app/initial-password-setup"));
         }
 
         @Test
@@ -86,7 +86,7 @@ class AccountControllerTest {
                     .param("password", password)
                     .param("confirmPassword", confirmPassword))
                 .andExpect(model().attributeHasFieldErrors("form", expField))
-                .andExpect(view().name("initial-password-setup"));
+                .andExpect(view().name("app/initial-password-setup"));
         }
 
         static Stream<Arguments> createOkCases() {
@@ -113,7 +113,7 @@ class AccountControllerTest {
                     Arguments.of("abcd", "a".repeat(61), "a".repeat(61), "password"),
                     Arguments.of("abcd", "ag23ｶf%$Q", "ag23ｶf%$Q", "password"),
                     Arguments.of("abcd", "ag23あf%$Q", "ag23あf%$Q", "password"),
-                    Arguments.of("abcd", "test", "test2", "password"),
+                    Arguments.of("abcd", "test", "test2", "confirmPassword"),
 
                     // confirmPassword
                     Arguments.of("abcd", null, null, "confirmPassword"),
@@ -122,7 +122,7 @@ class AccountControllerTest {
                     Arguments.of("abcd", "a".repeat(61), "a".repeat(61), "confirmPassword"),
                     Arguments.of("abcd", "ag23ｶf%$Q", "ag23ｶf%$Q", "confirmPassword"),
                     Arguments.of("abcd", "ag23あf%$Q", "ag23あf%$Q", "confirmPassword"),
-                    Arguments.of("abcd", "test", "test2", "confirmPassword"));
+                    Arguments.of("abcd", "app/test", "test2", "confirmPassword"));
         }
 
     }
