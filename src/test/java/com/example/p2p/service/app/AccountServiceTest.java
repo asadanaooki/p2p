@@ -27,6 +27,7 @@ import com.example.p2p.entity.UserInvitationTokenExample;
 import com.example.p2p.entity.Users;
 import com.example.p2p.exception.BusinessException;
 import com.example.p2p.form.InitialPasswordSetupForm;
+import com.example.p2p.form.ProfileEditForm;
 import com.example.p2p.mapper.UserInvitationTokenMapper;
 import com.example.p2p.mapper.UsersMapper;
 
@@ -128,4 +129,26 @@ class AccountServiceTest {
 
     }
 
+    @Test
+    void updateProfile() {
+        String userId = "169f1e17-619f-45bf-b6dc-8faed08c404c";
+        ProfileEditForm form = new ProfileEditForm();
+        form.setLastName("森田");
+        form.setFirstName("雄大");
+        form.setLastNameKana("モリタ");
+        form.setFirstNameKana("ユウダイ");
+        
+        accountService.updateProfile(userId, form);
+        
+       Users updated = usersMapper.selectByPrimaryKey(userId);
+       
+       assertThat(updated.getLastName()).isEqualTo("森田");
+       assertThat(updated.getFirstName()).isEqualTo("雄大");
+       assertThat(updated.getLastNameKana()).isEqualTo("モリタ");
+       assertThat(updated.getFirstNameKana()).isEqualTo("ユウダイ");
+       assertThat(updated.getEmail()).isEqualTo("sato.hanako@example.com");
+       assertThat(updated.getPasswordHash()).isEqualTo("$2a$08$RtfQTBKqoBSHYRXwmuV7GuTnQPaLq24x0elYL5kIStLEWOSjaQcsu");
+       assertThat(updated.getRoleId()).isEqualTo("6862542a-1954-4192-81e8-f18c583ade01");
+       assertThat(updated.getIsActive()).isTrue();
+    }
 }

@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.example.p2p.dto.UserDetailDto;
 import com.example.p2p.dto.UserListRowDto;
+import com.example.p2p.dto.UserProfileDto;
 import com.example.p2p.form.UserSearchForm;
 
 @Mapper
@@ -16,4 +17,6 @@ public interface UsersMapperCustom {
     int countUsers(UserSearchForm form);
     
     UserDetailDto selectUserDetail(String userId);
+    
+    UserProfileDto selectUserProfile(String userId);
 }
