@@ -89,4 +89,15 @@
     where u.user_id = #{userId}
 
   </select>
+  
+  <select id="selectUserProfile" resultType="com.example.p2p.dto.UserProfileDto">
+    select
+      last_name,
+      first_name,
+      last_name_kana,
+      first_name_kana
+    from users
+    where user_id = #{userId}
+
+  </select>
 </mapper>

@@ -71,8 +71,6 @@ public class UserService {
     public UserDetailDto getUserDetail(String userId) {
         logger.debug("ユーザー詳細取得開始");
         
-       var a = usersMapper.selectByExample(new UsersExample());
-
         UserDetailDto userDetail = usersMapperCustom.selectUserDetail(userId);
         UsersExample ex = new UsersExample();
         ex.createCriteria().andUserIdEqualTo(userId).andPasswordHashIsNull().andIsActiveEqualTo(false);

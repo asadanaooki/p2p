@@ -1,9 +1,10 @@
 package com.example.p2p.controller.app;
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.p2p.dto.UserProfileDto;
 import com.example.p2p.exception.BusinessException;
 import com.example.p2p.form.InitialPasswordSetupForm;
+import com.example.p2p.form.ProfileEditForm;
 import com.example.p2p.service.app.AccountService;
 
 import jakarta.servlet.ServletException;
@@ -27,6 +30,8 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/account")
 @AllArgsConstructor
 public class AccountController {
+
+    private ModelMapper modelMapper;
 
     private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
@@ -49,7 +54,9 @@ public class AccountController {
     @PostMapping("/initial-password-setup")
     public String accept(@Valid @ModelAttribute("form") InitialPasswordSetupForm form, BindingResult result,
             Model model, HttpServletRequest request, RedirectAttributes redirectAttributes) throws ServletException {
+        logger.info("初回パスワード設定開始");
         if (result.hasErrors()) {
+            logger.warn("初回パスワード設定バリデーションエラー");
             model.addAttribute("user", accountService.getInvitedUserInfo(form.getToken()));
             return "app/initial-password-setup";
         }
@@ -58,6 +65,7 @@ public class AccountController {
             email = accountService.acceptInvitation(form);
         }
         catch (BusinessException e) {
+            logger.warn("初回パスワード設定業務エラー");
             model.addAttribute("user", accountService.getInvitedUserInfo(form.getToken()));
             result.reject("account.invitation.invalid");
             return "app/initial-password-setup";
@@ -65,8 +73,41 @@ public class AccountController {
         // 自動ログイン
         request.login(email, form.getPassword());
         
+        logger.info("初回パスワード設定成功");
         // TODO: 仮値
         return "redirect:/test";
+    }
+
+    @GetMapping("/profile")
+    public String showProfileEditForm(@AuthenticationPrincipal(expression = "username") String userId,
+            @ModelAttribute("form") ProfileEditForm form) {
+        logger.debug("プロフィール編集画面表示開始");
+        UserProfileDto dto = accountService.getUserProfile(userId);
+        modelMapper.map(dto, form);
+
+        logger.debug("プロフィール編集画面表示完了");
+        return "app/profile-edit";
+    }
+    
+    @PostMapping("/profile")
+    public String updateProfile(@AuthenticationPrincipal(expression = "username") String userId,
+            @Valid @ModelAttribute("form") ProfileEditForm form,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes) {
+        logger.info("プロフィール更新開始");
+        
+        if (bindingResult.hasErrors()) {
+            logger.warn("プロフィール更新バリデーションエラー");
+            
+            return "app/profile-edit";
+        }
+        accountService.updateProfile(userId, form);
+        redirectAttributes.addFlashAttribute("successMessage",
+                messageSource.getMessage("common.update.success", null, null));
+
+        logger.info("プロフィール更新完了");
+        
+        return "redirect:/account/profile";
     }
 
 }
