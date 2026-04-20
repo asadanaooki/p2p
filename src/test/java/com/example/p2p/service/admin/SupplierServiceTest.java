@@ -14,11 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.p2p.dto.SupplierListItemDto;
+import com.example.p2p.dto.admin.SupplierListItemDto;
 import com.example.p2p.entity.Supplier;
 import com.example.p2p.entity.SupplierExample;
-import com.example.p2p.form.SupplierCreateForm;
-import com.example.p2p.form.SupplierEditForm;
+import com.example.p2p.form.admin.SupplierCreateForm;
+import com.example.p2p.form.admin.SupplierEditForm;
 import com.example.p2p.mapper.SupplierMapper;
 import com.example.p2p.service.admin.SupplierService;
 

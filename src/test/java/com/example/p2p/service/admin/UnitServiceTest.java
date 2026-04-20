@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.p2p.entity.Unit;
 import com.example.p2p.entity.UnitExample;
 import com.example.p2p.exception.BusinessException;
-import com.example.p2p.form.UnitEditForm;
+import com.example.p2p.form.admin.UnitEditForm;
 import com.example.p2p.mapper.UnitMapper;
 import com.example.p2p.service.admin.UnitService;
 

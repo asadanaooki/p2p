@@ -33,10 +33,10 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import com.example.p2p.dto.PaymentTermOptionDto;
-import com.example.p2p.dto.SupplierDetailDto;
+import com.example.p2p.dto.admin.PaymentTermOptionDto;
+import com.example.p2p.dto.admin.SupplierDetailDto;
 import com.example.p2p.enums.DueDateType;
-import com.example.p2p.form.SupplierEditForm;
+import com.example.p2p.form.admin.SupplierEditForm;
 import com.example.p2p.service.admin.SupplierService;
 
 @SpringBootTest

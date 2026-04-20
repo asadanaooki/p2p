@@ -4,7 +4,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
 import com.example.p2p.enums.VisibilityScope;
-import com.example.p2p.form.RoleUpsertForm;
+import com.example.p2p.form.admin.RoleUpsertForm;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

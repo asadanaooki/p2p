@@ -2,7 +2,7 @@ package com.example.p2p.validation;
 
 import org.springframework.stereotype.Component;
 
-import com.example.p2p.form.InitialPasswordSetupForm;
+import com.example.p2p.form.app.InitialPasswordSetupForm;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

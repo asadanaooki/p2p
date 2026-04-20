@@ -10,14 +10,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.p2p.dto.InitialPasswordSetupViewDto;
-import com.example.p2p.dto.UserProfileDto;
+import com.example.p2p.dto.app.InitialPasswordSetupViewDto;
+import com.example.p2p.dto.app.UserProfileDto;
 import com.example.p2p.entity.UserInvitationToken;
 import com.example.p2p.entity.UserInvitationTokenExample;
 import com.example.p2p.entity.Users;
 import com.example.p2p.exception.BusinessException;
-import com.example.p2p.form.InitialPasswordSetupForm;
-import com.example.p2p.form.ProfileEditForm;
+import com.example.p2p.form.app.InitialPasswordSetupForm;
+import com.example.p2p.form.app.ProfileEditForm;
 import com.example.p2p.mapper.UserInvitationTokenMapper;
 import com.example.p2p.mapper.UserInvitationTokenMapperCustom;
 import com.example.p2p.mapper.UsersMapper;

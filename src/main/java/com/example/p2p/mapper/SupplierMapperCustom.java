@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.example.p2p.dto.SupplierDetailDto;
-import com.example.p2p.dto.SupplierOptionDto;
+import com.example.p2p.dto.admin.SupplierDetailDto;
+import com.example.p2p.dto.admin.SupplierOptionDto;
 import com.example.p2p.entity.Supplier;
 
 @Mapper

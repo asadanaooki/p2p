@@ -4,10 +4,10 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.example.p2p.dto.UserDetailDto;
-import com.example.p2p.dto.UserListRowDto;
-import com.example.p2p.dto.UserProfileDto;
-import com.example.p2p.form.UserSearchForm;
+import com.example.p2p.dto.admin.UserDetailDto;
+import com.example.p2p.dto.admin.UserListRowDto;
+import com.example.p2p.dto.app.UserProfileDto;
+import com.example.p2p.form.admin.UserSearchForm;
 
 @Mapper
 public interface UsersMapperCustom {

@@ -5,12 +5,12 @@ import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import com.example.p2p.dto.RoleDetailDto;
-import com.example.p2p.dto.RoleListItemDto;
+import com.example.p2p.dto.admin.RoleDetailDto;
+import com.example.p2p.dto.admin.RoleListItemDto;
 import com.example.p2p.entity.Role;
 import com.example.p2p.entity.RoleExample;
 import com.example.p2p.exception.BusinessException;
-import com.example.p2p.form.RoleUpsertForm;
+import com.example.p2p.form.admin.RoleUpsertForm;
 import com.example.p2p.mapper.RoleMapper;
 import com.example.p2p.mapper.RoleMapperCustom;
 

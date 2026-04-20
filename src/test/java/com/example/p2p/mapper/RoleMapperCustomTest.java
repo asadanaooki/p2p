@@ -7,7 +7,7 @@ import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 
-import com.example.p2p.dto.RoleDetailDto;
+import com.example.p2p.dto.admin.RoleDetailDto;
 import com.example.p2p.enums.VisibilityScope;
 
 @MybatisTest

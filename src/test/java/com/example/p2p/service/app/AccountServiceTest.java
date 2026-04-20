@@ -26,8 +26,8 @@ import com.example.p2p.entity.UserInvitationToken;
 import com.example.p2p.entity.UserInvitationTokenExample;
 import com.example.p2p.entity.Users;
 import com.example.p2p.exception.BusinessException;
-import com.example.p2p.form.InitialPasswordSetupForm;
-import com.example.p2p.form.ProfileEditForm;
+import com.example.p2p.form.app.InitialPasswordSetupForm;
+import com.example.p2p.form.app.ProfileEditForm;
 import com.example.p2p.mapper.UserInvitationTokenMapper;
 import com.example.p2p.mapper.UsersMapper;
 

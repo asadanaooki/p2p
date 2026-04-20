@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.example.p2p.dto.UnitDetailDto;
+import com.example.p2p.dto.admin.UnitDetailDto;
 import com.example.p2p.exception.BusinessException;
-import com.example.p2p.form.UnitCreateForm;
-import com.example.p2p.form.UnitEditForm;
+import com.example.p2p.form.admin.UnitCreateForm;
+import com.example.p2p.form.admin.UnitEditForm;
 import com.example.p2p.service.admin.UnitService;
 
 import jakarta.validation.Valid;

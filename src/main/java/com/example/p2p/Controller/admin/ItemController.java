@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.p2p.advice.NormalizationEditor;
-import com.example.p2p.dto.ItemEditViewDto;
-import com.example.p2p.form.ItemSearchForm;
-import com.example.p2p.form.ItemUpsertForm;
+import com.example.p2p.dto.admin.ItemEditViewDto;
+import com.example.p2p.form.admin.ItemSearchForm;
+import com.example.p2p.form.admin.ItemUpsertForm;
 import com.example.p2p.service.admin.ItemService;
 
 import jakarta.servlet.http.HttpSession;

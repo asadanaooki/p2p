@@ -16,13 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.p2p.dto.ItemEditViewDto;
-import com.example.p2p.dto.ItemListViewDto;
+import com.example.p2p.dto.admin.ItemEditViewDto;
+import com.example.p2p.dto.admin.ItemListViewDto;
 import com.example.p2p.entity.Item;
 import com.example.p2p.entity.ItemExample;
 import com.example.p2p.enums.ItemKind;
-import com.example.p2p.form.ItemSearchForm;
-import com.example.p2p.form.ItemUpsertForm;
+import com.example.p2p.form.admin.ItemSearchForm;
+import com.example.p2p.form.admin.ItemUpsertForm;
 import com.example.p2p.mapper.ItemMapper;
 import com.example.p2p.mapper.ItemMapperCustom;
 import com.example.p2p.service.admin.ItemService;
