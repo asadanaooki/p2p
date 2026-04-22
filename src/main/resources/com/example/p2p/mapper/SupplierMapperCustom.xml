@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.p2p.mapper.SupplierMapperCustom">
-  <select id="selectSupplierDetail" resultType="com.example.p2p.dto.SupplierDetailDto">
+  <select id="selectSupplierDetail" resultType="com.example.p2p.dto.admin.SupplierDetailDto">
     select
       s.name as supplier_name,
       s.email,
@@ -39,7 +39,7 @@
     where supplier_id = #{supplierId}
   </update>
   
-  <select id="selectSupplierOptions" resultType="com.example.p2p.dto.SupplierOptionDto">
+  <select id="selectSupplierOptions" resultType="com.example.p2p.dto.admin.SupplierOptionDto">
     select
       supplier_id,
       name

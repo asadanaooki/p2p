@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.p2p.mapper.PurchaseRequestMapperCustom">
+  <select id="selectPurchaseRequests" resultType="com.example.p2p.dto.app.PurchaseRequestListRowDto">
+    select 
+      pr.pr_id,
+      pr.display_number,
+      s.name as supplier,
+      CONCAT_WS(' ', u.last_name, u.first_name) as requester,
+      pr.due_date,
+      pr.total_amount,
+      pr.status
+    from purchase_request pr
+    join supplier s
+      on pr.supplier_id = s.supplier_id
+    join users u
+      on pr.requester_user_id = u.user_id
+    <where>
+      <if test="supplierId != null">
+        s.supplier_id = #{supplierId}
+      </if>
+      <if test="dueDateFrom != null">
+        and pr.due_date &gt;= #{dueDateFrom}
+      </if>
+      <if test="dueDateTo != null">
+        and pr.due_date &lt;= #{dueDateTo}
+      </if>
+      <if test="status != null">
+        and pr.status = #{status}
+      </if>
+      
+      <if test="keyword != null and keyword != ''">
+        and ( 
+          pr.display_number::varchar ~ #{keywordRegex}
+          or normalization(lower(concat(u.last_name, u.first_name))) ~#{keywordRegex}
+          or normalization(lower(concat(u.last_name_kana, u.first_name_kana))) ~#{keywordRegex}
+        )
+      </if>
+    </where>
+    order by
+      <choose>
+        <when test="sortBy.toString().equals('NUMBER')">pr.display_number</when>
+        <when test="sortBy.toString().equals('SUPPLIER')">s.name</when>
+        <when test="sortBy.toString().equals('REQUESTER')">concat(u.last_name_kana, u.first_name_kana)</when>
+        <when test="sortBy.toString().equals('DUE_DATE')">pr.due_date
+          <choose>
+            <when test="sortDirection.toString().equals('ASC')">asc nulls first</when>
+            <when test="sortDirection.toString().equals('DESC')">desc nulls last</when>
+          </choose>
+        </when>
+        
+        <when test="sortBy.toString().equals('TOTAL')">pr.total_amount</when>
+        <when test="sortBy.toString().equals('STATUS')">
+        case pr.status
+          when 'PENDING' then 1
+          when 'APPROVED' then 2
+          when 'REJECTED' then 3
+          when 'COMPLETED' then 4
+        end
+        </when>
+      </choose>
+      <if test="!sortBy.toString().equals('DUE_DATE')">
+        <choose>
+          <when test="sortDirection.toString().equals('ASC')">asc</when>
+          <when test="sortDirection.toString().equals('DESC')">desc</when>
+        </choose>
+      </if>
+    limit #{size} offset #{offset}
+  </select>
+  
+  <select id="countPurchaseRequests" resultType="int">
+    select count(*)
+    from purchase_request pr
+    join supplier s
+      on pr.supplier_id = s.supplier_id
+    join users u
+      on pr.requester_user_id = u.user_id
+    <where>
+      <if test="supplierId != null">
+        s.supplier_id = #{supplierId}
+      </if>
+      <if test="dueDateFrom != null">
+        and pr.due_date &gt;= #{dueDateFrom}
+      </if>
+      <if test="dueDateTo != null">
+        and pr.due_date &lt;= #{dueDateTo}
+      </if>
+      <if test="status != null">
+        and pr.status = #{status}
+      </if>
+      
+      <if test="keyword != null and keyword != ''">
+        and ( 
+          pr.display_number ~ #{keywordRegex}
+          or normalization(lower(concat(u.last_name, u.first_name))) ~#{keywordRegex}
+        )
+      </if>
+    </where>
+  </select>
+</mapper>
