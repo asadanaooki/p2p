@@ -91,8 +91,9 @@
       
       <if test="keyword != null and keyword != ''">
         and ( 
-          pr.display_number ~ #{keywordRegex}
+          pr.display_number::varchar ~ #{keywordRegex}
           or normalization(lower(concat(u.last_name, u.first_name))) ~#{keywordRegex}
+          or normalization(lower(concat(u.last_name_kana, u.first_name_kana))) ~#{keywordRegex}
         )
       </if>
     </where>
