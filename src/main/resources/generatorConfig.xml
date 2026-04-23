@@ -50,6 +50,7 @@
     <table tableName="item"></table>
     <table tableName="role"></table>
     <table tableName="user_invitation_token"></table>
+    <table tableName="purchase_request"></table>
 
   </context>
 </generatorConfiguration>

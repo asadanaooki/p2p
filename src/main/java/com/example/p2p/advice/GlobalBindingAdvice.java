@@ -12,4 +12,9 @@ public class GlobalBindingAdvice {
         binder.registerCustomEditor(String.class, new StringStripEditor());
     }
 
+    @InitBinder
+    public void initSearchBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(String.class, "keyword" ,new NormalizationEditor());
+    }
+
 }

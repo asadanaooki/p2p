@@ -46,10 +46,10 @@ public class ItemController {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
 
-    @InitBinder("keyword")
-    public void initSearchBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(String.class, new NormalizationEditor());
-    }
+//    @InitBinder("keyword")
+//    public void initSearchBinder(WebDataBinder binder) {
+//        binder.registerCustomEditor(String.class, new NormalizationEditor());
+//    }
 
     @GetMapping
     public String showItemList(@Valid @ModelAttribute("form") ItemSearchForm form,
