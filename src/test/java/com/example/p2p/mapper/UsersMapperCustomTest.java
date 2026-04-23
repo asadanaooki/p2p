@@ -18,6 +18,7 @@ import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabas
 
 import com.example.p2p.dto.admin.UserDetailDto;
 import com.example.p2p.dto.admin.UserListRowDto;
+import com.example.p2p.entity.PurchaseRequestExample;
 import com.example.p2p.entity.Users;
 import com.example.p2p.entity.UsersExample;
 import com.example.p2p.enums.SortDirection;
@@ -33,6 +34,9 @@ class UsersMapperCustomTest {
 
     @Autowired
     UsersMapper usersMapper;
+    
+    @Autowired
+    PurchaseRequestMapper purchaseRequestMapper;
 
     @Nested
     class SelectUsers {
@@ -106,6 +110,7 @@ class UsersMapperCustomTest {
 
             @BeforeEach
             void setup() {
+                purchaseRequestMapper.deleteByExample(new PurchaseRequestExample());
                 usersMapper.deleteByExample(new UsersExample());
 
                 Users u = new Users();
@@ -289,6 +294,7 @@ class UsersMapperCustomTest {
 
             @BeforeEach
             void setup() {
+                purchaseRequestMapper.deleteByExample(new PurchaseRequestExample());
                 usersMapper.deleteByExample(new UsersExample());
                 // Name Desc
                 Users u1 = new Users();

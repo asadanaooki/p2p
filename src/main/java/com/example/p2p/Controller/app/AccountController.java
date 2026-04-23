@@ -1,5 +1,6 @@
 package com.example.p2p.controller.app;
 
+import org.hibernate.validator.constraints.Length;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,9 @@ import com.example.p2p.service.app.AccountService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 
 @Controller
@@ -109,5 +113,46 @@ public class AccountController {
         
         return "redirect:/account/profile";
     }
+    
+    @GetMapping("/email-change/request")
+    public String showEmailChangeForm(@AuthenticationPrincipal(expression = "email") String email, Model model) {
+        logger.debug("メール変更画面表示開始");
+
+        model.addAttribute("email", email);
+        
+        logger.debug("メール変更画面表示完了");
+        return "app/email-change-request";
+    }
+    
+    @PostMapping("/email-change/request")
+    public String requestEmailChange(@AuthenticationPrincipal(expression = "username") String userId,
+           @ModelAttribute("newEmail") @RequestParam @NotBlank @Length(max = 254) @Email String newEmail,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes) {
+        logger.info("メール変更申請開始");
+        
+        if (bindingResult.hasErrors()) {
+            logger.warn("メール変更申請バリデーションエラー");
+            
+            return "app/email-change-request";
+        }
+       // accountService.updateProfile(userId, form);
+        redirectAttributes.addFlashAttribute("successMessage",
+                messageSource.getMessage("account.email.change.mail.sent", null, null));
+
+        logger.info("メール変更申請完了");
+        
+        return "redirect:/account/email-change-sent";
+    }
+    
+//    @GetMapping("/email-change/sent")
+//    public String showEmailChangeSent() {
+//        logger.debug("メール変更画面表示開始");
+//
+//        model.addAttribute("message", email);
+//        
+//        logger.debug("メール変更画面表示完了");
+//        return "app/email-change-sent";
+//    }
 
 }

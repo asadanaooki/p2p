@@ -3,7 +3,9 @@ package com.example.p2p.util;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HexFormat;
 import java.util.List;
@@ -53,6 +55,15 @@ public class CommonUtil {
 
     public static int calculateOffset(int page, int size) {
         return (page - 1) * size;
+    }
+    
+    public static String generateToken() {
+        SecureRandom secureRandom = new SecureRandom();
+        byte[] randomBytes = new byte[32];
+        secureRandom.nextBytes(randomBytes);
+        String token = Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
+
+        return token;
     }
 
     public static String hashToken(String token) {

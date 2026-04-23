@@ -1,8 +1,6 @@
 package com.example.p2p.service.admin;
 
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -13,6 +11,8 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.p2p.component.EmailSender;
+import com.example.p2p.component.EmailSender.EmailMessage;
 import com.example.p2p.dto.admin.RoleOptionDto;
 import com.example.p2p.dto.admin.UserDetailDto;
 import com.example.p2p.dto.admin.UserListRowDto;
@@ -30,7 +30,6 @@ import com.example.p2p.mapper.UsersMapperCustom;
 import com.example.p2p.util.CommonUtil;
 
 import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -45,11 +44,11 @@ public class UserService {
 
     private ModelMapper modelMapper;
 
-    private JavaMailSender mailSender;
-
     private UserInvitationTokenMapper userInvitationTokenMapper;
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
+    private EmailSender emailSender;
 
     public UserListViewDto searchUsers(UserSearchForm form) {
         logger.debug("ユーザー検索開始");
@@ -70,7 +69,7 @@ public class UserService {
 
     public UserDetailDto getUserDetail(String userId) {
         logger.debug("ユーザー詳細取得開始");
-        
+
         UserDetailDto userDetail = usersMapperCustom.selectUserDetail(userId);
         UsersExample ex = new UsersExample();
         ex.createCriteria().andUserIdEqualTo(userId).andPasswordHashIsNull().andIsActiveEqualTo(false);
@@ -93,9 +92,11 @@ public class UserService {
 
         Users u = modelMapper.map(form, Users.class);
         usersMapper.insertSelective(u);
+        
+        Users created = usersMapper.selectByExample(ex).get(0);
 
         logger.info("ユーザー作成処理成功");
-        return u.getUserId();
+        return created.getUserId();
     }
 
     public void update(String userId, UserUpsertForm form) {
@@ -122,7 +123,7 @@ public class UserService {
 
         Users user = usersMapper.selectByPrimaryKey(userId);
         userInvitationTokenMapper.deleteByPrimaryKey(userId);
-        String token = generateToken();
+        String token = CommonUtil.generateToken();
         saveInvitationToken(userId, token);
         sendMail(user.getEmail(), token);
 
@@ -136,18 +137,6 @@ public class UserService {
 
         logger.debug("ロール選択肢取得完了");
         return roleOptions;
-    }
-
-    private String generateToken() {
-        logger.debug("招待トークン生成開始");
-
-        SecureRandom secureRandom = new SecureRandom();
-        byte[] randomBytes = new byte[32];
-        secureRandom.nextBytes(randomBytes);
-        String token = Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
-
-        logger.debug("招待トークン生成完了");
-        return token;
     }
 
     private void saveInvitationToken(String userId, String token) {
@@ -165,31 +154,19 @@ public class UserService {
     }
 
     private void sendMail(String email, String token) {
-        logger.info("招待メール送信開始");
-
-        MimeMessage message = mailSender.createMimeMessage();
-
+        // TODO: URL仮
         String url = "http://localhost:8080/account/initial-password-setup?token=" + token;
         String body = """
                 <p>初期パスワード設定のご案内です。</p>
                 <p><a href="%s">こちら</a>をクリックしてください。</p>
                 """.formatted(url);
+        EmailMessage message = new EmailMessage();
+        message.setTo(email);
+        message.setSubject("パスワード初回設定");
+        message.setBody(body);
+        message.setHtml(true);
 
-        try {
-            MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
-            helper.setFrom("temp@example.com");
-            helper.setTo(email);
-            helper.setText(body, true);
-            helper.setSubject("パスワード初回設定");
-
-            mailSender.send(message);
-
-            logger.info("招待メール送信成功");
-        }
-        catch (MessagingException e) {
-            logger.error("招待メール送信失敗", e);
-            throw new RuntimeException(e);
-        }
+        emailSender.send(message);
     }
 
 }

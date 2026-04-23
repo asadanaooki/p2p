@@ -6,18 +6,24 @@ import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.p2p.component.EmailSender;
+import com.example.p2p.component.EmailSender.EmailMessage;
 import com.example.p2p.dto.app.InitialPasswordSetupViewDto;
 import com.example.p2p.dto.app.UserProfileDto;
+import com.example.p2p.entity.EmailChangeRequest;
 import com.example.p2p.entity.UserInvitationToken;
 import com.example.p2p.entity.UserInvitationTokenExample;
 import com.example.p2p.entity.Users;
+import com.example.p2p.entity.UsersExample;
 import com.example.p2p.exception.BusinessException;
 import com.example.p2p.form.app.InitialPasswordSetupForm;
 import com.example.p2p.form.app.ProfileEditForm;
+import com.example.p2p.mapper.EmailChangeRequestMapper;
 import com.example.p2p.mapper.UserInvitationTokenMapper;
 import com.example.p2p.mapper.UserInvitationTokenMapperCustom;
 import com.example.p2p.mapper.UsersMapper;
@@ -33,7 +39,7 @@ public class AccountService {
     private static final Logger logger = LoggerFactory.getLogger(AccountService.class);
 
     private UsersMapper usersMapper;
-    
+
     private UsersMapperCustom usersMapperCustom;
 
     private UserInvitationTokenMapper userInvitationTokenMapper;
@@ -43,6 +49,10 @@ public class AccountService {
     private PasswordEncoder passwordEncoder;
 
     private ModelMapper modelMapper;
+
+    private EmailChangeRequestMapper emailChangeRequestMapper;
+
+    private EmailSender emailSender;
 
     @Transactional
     public String acceptInvitation(InitialPasswordSetupForm form) {
@@ -84,7 +94,7 @@ public class AccountService {
         String tokenHash = CommonUtil.hashToken(token);
         return userInvitationTokenMapperCustom.selectUserNameAndEmail(tokenHash);
     }
-    
+
     public UserProfileDto getUserProfile(String userId) {
         logger.debug("プロフィール情報取得開始");
         return usersMapperCustom.selectUserProfile(userId);
@@ -96,6 +106,51 @@ public class AccountService {
         user.setUserId(userId);
         usersMapper.updateByPrimaryKeySelective(user);
         logger.info("プロフィール編集完了");
+    }
+
+    @Transactional
+    public void requestEmailChange(String userId, String newEmail) {
+        logger.info("メール変更申請開始");
+
+        // 重複チェック
+        UsersExample ex = new UsersExample();
+        ex.createCriteria().andEmailEqualTo(newEmail);
+        if (usersMapper.countByExample(ex) > 0) {
+            logger.warn("メール変更申請時の重複エラー");
+            throw new BusinessException();
+        }
+
+        String token = CommonUtil.generateToken();
+        // 申請登録
+        emailChangeRequestMapper.deleteByPrimaryKey(userId);
+        EmailChangeRequest request = new EmailChangeRequest();
+        request.setUserId(userId);
+        request.setTokenHash(CommonUtil.hashToken(token));
+        request.setNewEmail(newEmail);
+        request.setExpiresAt(LocalDateTime.now().plusDays(1));
+        emailChangeRequestMapper.insertSelective(request);
+
+        // メール送信
+        // TODO: URL仮
+        String url = "http://localhost:8080/account/email-change/confirm?token=" + token;
+        String body = """
+                <div>
+                  メールアドレス変更のお申し込みを受け付けました。<br>
+                  以下のリンクをクリックして、メールアドレスの変更を完了してください。<br><br>
+                  メールアドレス変更確認URL<br>
+                  <a href="%1$s">%1$s</a>
+                </div>
+                """.formatted(url);
+
+        EmailMessage message = new EmailMessage();
+        message.setTo(newEmail);
+        message.setSubject("メールアドレス変更の確認");
+        message.setBody(body);
+        message.setHtml(true);
+
+        emailSender.send(message);
+
+        logger.info("メール変更申請完了");
     }
 
 }
