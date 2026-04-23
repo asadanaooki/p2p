@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <link rel="stylesheet" th:href="@{/css/app/email-change.css}" />
+</head>
+
+<body>
+  <main class="page">
+    <h1 class="page-title">メールアドレス変更</h1>
+
+    <form th:action="@{/account/email-change/request}" th:object="${form}" method="post">
+      <div class="form-group">
+        <div class="form-label">現在のメールアドレス</div>
+        <div class="form-value" th:text="${email}"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="lastNameKana">フリガナ（姓）</label>
+        <input type="text" id="lastNameKana" th:field="*{lastNameKana}" class="form-input" th:errorclass="input-error">
+        <div class="error-message" th:if="${#fields.hasErrors('lastNameKana')}" th:errors="*{lastNameKana}"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="firstName">名</label>
+        <input type="text" id="firstName" th:field="*{firstName}" class="form-input" th:errorclass="input-error">
+        <div class="error-message" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="firstNameKana">フリガナ（名）</label>
+        <input type="text" id="firstNameKana" th:field="*{firstNameKana}" class="form-input"
+          th:errorclass="input-error">
+        <div class="error-message" th:if="${#fields.hasErrors('firstNameKana')}" th:errors="*{firstNameKana}"></div>
+      </div>
+
+      <div class="button-area">
+        <button type="submit" class="save-button">保存</button>
+        <a th:href="@{/account/profile}" class="cancel-button">キャンセル</a>
+      </div>
+    </form>
+  </main>
+
+</body>
+
+</html>

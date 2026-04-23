@@ -136,7 +136,7 @@ public class AccountController {
             
             return "app/email-change-request";
         }
-       // accountService.updateProfile(userId, form);
+        accountService.requestEmailChange(userId, newEmail);
         redirectAttributes.addFlashAttribute("successMessage",
                 messageSource.getMessage("account.email.change.mail.sent", null, null));
 
