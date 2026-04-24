@@ -66,6 +66,9 @@ class AccountServiceTest {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @Autowired
+    EmailChangeRequestMapper emailChangeRequestMapper;
+
     @Nested
     class AcceptInvitation {
 
@@ -173,9 +176,6 @@ class AccountServiceTest {
     @Nested
     class RequestEmailChange {
 
-        @Autowired
-        EmailChangeRequestMapper emailChangeRequestMapper;
-
         @MockitoSpyBean
         JavaMailSender mailSender;
 
@@ -221,11 +221,11 @@ class AccountServiceTest {
                     "email-change/confirm?token=AQE");
 
         }
-        
+
         @Test
         void requestEmailChange_duplicate() {
             assertThatThrownBy(() -> accountService.requestEmailChange(userId, "siotan0926@gmail.com"))
-            .isInstanceOf(BusinessException.class);
+                .isInstanceOf(BusinessException.class);
         }
 
         @Test
@@ -233,7 +233,8 @@ class AccountServiceTest {
         void requestEmailChange_error() {
             try (MockedConstruction<MimeMessageHelper> mocked = mockConstruction(MimeMessageHelper.class,
                     (mock, ctx) -> doThrow(MessagingException.class).when(mock).setFrom(anyString()))) {
-                assertThrows(RuntimeException.class, () -> accountService.requestEmailChange(userId, "test@example.com"));
+                assertThrows(RuntimeException.class,
+                        () -> accountService.requestEmailChange(userId, "test@example.com"));
             }
 
             assertThat(emailChangeRequestMapper.selectByPrimaryKey(userId)).isNull();
@@ -255,6 +256,61 @@ class AccountServiceTest {
             assertThat(actual.getTokenHash()).isNotEqualTo("a".repeat(64));
 
             verify(mailSender).send(any(MimeMessage.class));
+        }
+
+    }
+
+    @Nested
+    class ConfirmEmailChange {
+
+        String userId = "169f1e17-619f-45bf-b6dc-8faed08c404c";
+
+        String token = "testtoken";
+
+        @BeforeEach
+        void setup() {
+            EmailChangeRequest request = new EmailChangeRequest();
+            request.setUserId(userId);
+            // testtoken
+            request.setTokenHash("ada63e98fe50eccb55036d88eda4b2c3709f53c2b65bc0335797067e9a2a5d8b");
+            request.setNewEmail("sample123@example.com");
+            request.setExpiresAt(LocalDateTime.of(2300, 1, 1, 0, 0));
+            emailChangeRequestMapper.insertSelective(request);
+        }
+
+        @Test
+        void confirmEmailChange_notFound() {
+            emailChangeRequestMapper.deleteByPrimaryKey(userId);
+
+            assertThatThrownBy(() -> accountService.confirmEmailChange(token)).isInstanceOf(BusinessException.class);
+        }
+
+        @Test
+        void confirmEmailChange_expired() {
+            EmailChangeRequest request = new EmailChangeRequest();
+            request.setUserId(userId);
+            request.setExpiresAt(LocalDateTime.now().minusHours(3));
+            emailChangeRequestMapper.updateByPrimaryKeySelective(request);
+
+            assertThatThrownBy(() -> accountService.confirmEmailChange(token)).isInstanceOf(BusinessException.class);
+        }
+
+        @Test
+        void confirmEmailChange_success() {
+            accountService.confirmEmailChange(token);
+
+            assertThat(emailChangeRequestMapper.selectByPrimaryKey(userId)).isNull();
+
+            Users user = usersMapper.selectByPrimaryKey(userId);
+            assertThat(user.getLastName()).isEqualTo("佐藤");
+            assertThat(user.getFirstName()).isEqualTo("花子");
+            assertThat(user.getLastNameKana()).isEqualTo("サトウ");
+            assertThat(user.getFirstNameKana()).isEqualTo("ハナコ");
+            assertThat(user.getEmail()).isEqualTo("sample123@example.com");
+            assertThat(user.getPasswordHash())
+                .isEqualTo("$2a$08$RtfQTBKqoBSHYRXwmuV7GuTnQPaLq24x0elYL5kIStLEWOSjaQcsu");
+            assertThat(user.getRoleId()).isEqualTo("6862542a-1954-4192-81e8-f18c583ade01");
+            assertThat(user.getIsActive()).isTrue();
         }
 
     }

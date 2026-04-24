@@ -16,6 +16,7 @@ import com.example.p2p.component.EmailSender.EmailMessage;
 import com.example.p2p.dto.app.InitialPasswordSetupViewDto;
 import com.example.p2p.dto.app.UserProfileDto;
 import com.example.p2p.entity.EmailChangeRequest;
+import com.example.p2p.entity.EmailChangeRequestExample;
 import com.example.p2p.entity.UserInvitationToken;
 import com.example.p2p.entity.UserInvitationTokenExample;
 import com.example.p2p.entity.Users;
@@ -64,6 +65,7 @@ public class AccountService {
         UserInvitationTokenExample ex = new UserInvitationTokenExample();
         ex.createCriteria().andTokenHashEqualTo(tokenHash);
         List<UserInvitationToken> invitationTokens = userInvitationTokenMapper.selectByExample(ex);
+        // 存在チェック
         if (invitationTokens.isEmpty()) {
             logger.warn("該当トークンなし");
             throw new BusinessException();
@@ -151,6 +153,37 @@ public class AccountService {
         emailSender.send(message);
 
         logger.info("メール変更申請完了");
+    }
+    
+    @Transactional
+    public void confirmEmailChange(String token) {
+        logger.info("メール変更完了処理開始");
+        
+        String tokenHash = CommonUtil.hashToken(token);
+        EmailChangeRequestExample ex = new EmailChangeRequestExample();
+        ex.createCriteria().andTokenHashEqualTo(tokenHash);
+        List<EmailChangeRequest> requests = emailChangeRequestMapper.selectByExample(ex);
+        // 存在チェック
+        if (requests.isEmpty()) {
+            logger.warn("該当メール変更申請なし");
+            throw new BusinessException();
+        }
+        
+        EmailChangeRequest request = requests.get(0);
+        // 有効期限チェック
+        if (LocalDateTime.now().isAfter(request.getExpiresAt())) {
+            logger.warn("有効期限切れ");
+            throw new BusinessException();
+        }
+        // メールアドレス更新
+        Users user = new Users();
+        user.setUserId(request.getUserId());
+        user.setEmail(request.getNewEmail());
+        usersMapper.updateByPrimaryKeySelective(user);
+        
+        emailChangeRequestMapper.deleteByPrimaryKey(request.getUserId());
+        
+        logger.info("メール変更完了処理完了");
     }
 
 }

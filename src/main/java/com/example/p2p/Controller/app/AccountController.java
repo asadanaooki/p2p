@@ -25,6 +25,7 @@ import com.example.p2p.service.app.AccountService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 
 @Controller
@@ -45,7 +46,9 @@ public class AccountController {
     public String getMethodName() {
         return "/app/test";
     }
-
+    
+    
+    /* パスワード初回設定 */
     @GetMapping("/initial-password-setup")
     public String showInitialPasswordSetupForm(@RequestParam String token,
             @ModelAttribute("form") InitialPasswordSetupForm form, Model model) {
@@ -85,6 +88,7 @@ public class AccountController {
         return "redirect:/test";
     }
 
+    /* プロフィール編集 */
     @GetMapping("/profile")
     public String showProfileEditForm(@AuthenticationPrincipal(expression = "username") String userId,
             @ModelAttribute("form") ProfileEditForm form) {
@@ -116,6 +120,7 @@ public class AccountController {
         return "redirect:/account/profile";
     }
 
+    /* メールアドレス変更 */
     @GetMapping("/email-change/request")
     public String showEmailChangeForm(@AuthenticationPrincipal(expression = "email") String email,
             @ModelAttribute("form") EmailChangeForm form, Model model) {
@@ -149,8 +154,20 @@ public class AccountController {
 
     @GetMapping("/email-change/sent")
     public String showEmailChangeSent() {
-        logger.debug("確認メール送信完了画面表示開始");
+        logger.debug("メールアドレス変更確認メール送信完了画面表示開始");
+        
         return "app/email-change-sent";
+    }
+    
+    @GetMapping("/email-change/confirm")
+    public String confirmEmailChange(@RequestParam @NotBlank String token) {
+        logger.info("メール変更確定開始");
+        
+       // accountService.confirmEmailChange(token);
+        
+        logger.info("メール変更確定完了");
+        
+        return "/app/email-change-complete";
     }
 
 }
