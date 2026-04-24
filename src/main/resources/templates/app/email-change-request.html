@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" th:href="@{/css/app/email-change-request.css}" />
+</head>
+
+<body>
+  <main class="page">
+    <h1 class="page-title">メールアドレス変更</h1>
+
+    <form th:action="@{/account/email-change/request}" th:object="${form}" method="post">
+      <div class="form-group">
+        <div class="form-label">現在のメールアドレス</div>
+        <div th:text="${email}"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="newEmail">新しいメールアドレス</label>
+        <input type="text" id="newEmail" th:field="*{newEmail}" class="form-input" th:errorclass="input-error">
+        <div class="error-message" th:if="${#fields.hasErrors('newEmail')}" th:errors="*{newEmail}"></div>
+      </div>
+
+      <div class="button-area">
+        <button type="submit" class="submit-button">確認メール送信</button>
+        <a th:href="@{/account}" class="cancel-button">キャンセル</a>
+      </div>
+    </form>
+  </main>
+
+</body>
+
+</html>
