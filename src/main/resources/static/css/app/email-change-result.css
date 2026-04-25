@@ -1,0 +1,14 @@
+.page {
+  padding: 30px;
+}
+
+.page-title {
+  margin: 0 0 36px;
+  font-size: 22px;
+  font-weight: 400;
+}
+
+.message-text {
+  margin: 0;
+  margin-left: 12px;
+}

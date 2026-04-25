@@ -38,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.p2p.dto.admin.UserDetailDto;
 import com.example.p2p.dto.admin.UserListViewDto;
+import com.example.p2p.entity.PurchaseRequestExample;
 import com.example.p2p.entity.UserInvitationToken;
 import com.example.p2p.entity.UserInvitationTokenExample;
 import com.example.p2p.entity.Users;
@@ -45,6 +46,7 @@ import com.example.p2p.entity.UsersExample;
 import com.example.p2p.exception.BusinessException;
 import com.example.p2p.form.admin.UserSearchForm;
 import com.example.p2p.form.admin.UserUpsertForm;
+import com.example.p2p.mapper.PurchaseRequestMapper;
 import com.example.p2p.mapper.UserInvitationTokenMapper;
 import com.example.p2p.mapper.UsersMapper;
 
@@ -60,6 +62,9 @@ class UserServiceTest {
 
     @Autowired
     UsersMapper usersMapper;
+    
+    @Autowired
+    PurchaseRequestMapper purchaseRequestMapper;
 
     @Nested
     class SearchItems {
@@ -69,6 +74,7 @@ class UserServiceTest {
 
             @BeforeEach
             void setup() {
+                purchaseRequestMapper.deleteByExample(new PurchaseRequestExample());
                 usersMapper.deleteByExample(new UsersExample());
             }
 
@@ -247,7 +253,7 @@ class UserServiceTest {
         form.setEmail("sato.hanako2@example.com");
         form.setRoleId("6862542a-1954-4192-81e8-f18c583ade01");
 
-        userService.create(form);
+       String email = userService.create(form);
 
         UsersExample ex = new UsersExample();
         ex.createCriteria().andEmailEqualTo("sato.hanako2@example.com");
@@ -348,6 +354,7 @@ class UserServiceTest {
     @ParameterizedTest
     @CsvSource(value = {"testPass123, true, false", "null, false, true"}, nullValues = "null")
     void getUserDetail_canInvite(String password, boolean isActive, boolean expected) {
+        purchaseRequestMapper.deleteByExample(new PurchaseRequestExample());
         usersMapper.deleteByExample(new UsersExample());
         Users u = new Users();
         u.setLastName("a");
@@ -360,7 +367,11 @@ class UserServiceTest {
         u.setIsActive(isActive);
         usersMapper.insertSelective(u);
         
-       UserDetailDto actual = userService.getUserDetail(u.getUserId());
+        UsersExample ex = new UsersExample();
+        ex.createCriteria().andEmailEqualTo("example@example.com");
+        Users inserted = usersMapper.selectByExample(ex).get(0);
+        
+       UserDetailDto actual = userService.getUserDetail(inserted.getUserId());
        assertThat(actual.isCanInvite()).isEqualTo(expected);
     }
 }

@@ -21,6 +21,7 @@ import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabas
 import com.example.p2p.dto.admin.ItemListItemDto;
 import com.example.p2p.entity.Item;
 import com.example.p2p.entity.ItemExample;
+import com.example.p2p.entity.PurchaseRequestExample;
 import com.example.p2p.entity.Supplier;
 import com.example.p2p.entity.SupplierExample;
 import com.example.p2p.enums.ItemKind;
@@ -40,6 +41,9 @@ class ItemMapperCustomTest {
 
     @Autowired
     SupplierMapper supplierMapper;
+    
+    @Autowired
+    PurchaseRequestMapper purchaseRequestMapper;
 
     @Nested
     class SelectItems {
@@ -185,6 +189,7 @@ class ItemMapperCustomTest {
             class Normalization {
                 @BeforeEach
                 void setup() {
+                    purchaseRequestMapper.deleteByExample(new PurchaseRequestExample());
                     itemMapper.deleteByExample(new ItemExample());
                     supplierMapper.deleteByExample(new SupplierExample());
                     

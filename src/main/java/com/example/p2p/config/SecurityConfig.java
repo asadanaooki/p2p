@@ -16,7 +16,7 @@ public class SecurityConfig {
          .formLogin(form -> form
          .loginPage("/login")
          .loginProcessingUrl("/login")
-         .defaultSuccessUrl("/test", true)
+         .defaultSuccessUrl("/test", false)
          .failureHandler((req, res, exp) -> {
          String u = req.getParameter("username");
          req.getSession().setAttribute("LAST_LOGIN_USERNAME", u);
@@ -26,6 +26,7 @@ public class SecurityConfig {
          .authorizeHttpRequests(auth -> auth
          .requestMatchers("/login",
                  "/account/initial-password-setup",
+                 "/account/email-change/confirm",
                  "/css/**",
                  "/js/**"
                  ).permitAll()
