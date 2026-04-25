@@ -11,6 +11,10 @@
     <h1 class="page-title">メールアドレス変更</h1>
 
     <form th:action="@{/account/email-change/request}" th:object="${form}" method="post">
+      <div class="error-message" th:if="${#fields.hasGlobalErrors()}">
+        <p th:each="err : ${#fields.globalErrors()}" th:text="${err}"></p>
+      </div>
+
       <div class="form-group">
         <div class="form-label">現在のメールアドレス</div>
         <div th:text="${email}"></div>

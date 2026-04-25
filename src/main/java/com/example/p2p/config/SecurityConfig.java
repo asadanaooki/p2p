@@ -26,7 +26,7 @@ public class SecurityConfig {
          .authorizeHttpRequests(auth -> auth
          .requestMatchers("/login",
                  "/account/initial-password-setup",
-                 "/account//email-change/confirm",
+                 "/account/email-change/confirm",
                  "/css/**",
                  "/js/**"
                  ).permitAll()
