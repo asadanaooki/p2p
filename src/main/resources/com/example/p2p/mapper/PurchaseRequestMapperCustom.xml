@@ -98,4 +98,19 @@
       </if>
     </where>
   </select>
+  
+  <select id="selectPurchaseRequestDetailHeader" resultType="com.example.p2p.dto.app.PurchaseRequestDetailDto">
+    select 
+      pr.display_number,
+      CONCAT_WS(' ', u.last_name, u.first_name) as requester,
+      pr.due_date,
+      pr.total_amount,
+      pr.status,
+      pr.note,
+      pr.created_at
+    from purchase_request pr
+    join users u
+      on pr.requester_user_id = u.user_id
+    where pr.pr_id = #{prId}
+  </select>
 </mapper>

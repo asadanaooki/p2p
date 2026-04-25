@@ -50,6 +50,7 @@
     <table tableName="user_invitation_token"></table>
     <table tableName="purchase_request"></table>
     <table tableName="email_change_request"></table>
+    <table tableName="purchase_request_detail"></table>
 
   </context>
 </generatorConfiguration>
