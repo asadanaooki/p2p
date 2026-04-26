@@ -107,7 +107,7 @@
       pr.total_amount,
       pr.status,
       pr.note,
-      pr.created_at
+      CAST(pr.created_at AS DATE) as created_at
     from purchase_request pr
     join users u
       on pr.requester_user_id = u.user_id

@@ -6,9 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.example.p2p.dto.app.PurchaseRequestDetailDto;
 import com.example.p2p.dto.app.PurchaseRequestListRowDto;
 import com.example.p2p.dto.app.PurchaseRequestListViewDto;
 import com.example.p2p.form.app.PurchaseRequestSearchForm;
+import com.example.p2p.mapper.PurchaseRequestDetailMapperCustom;
 import com.example.p2p.mapper.PurchaseRequestMapperCustom;
 import com.example.p2p.mapper.SupplierMapperCustom;
 import com.example.p2p.util.CommonUtil;
@@ -24,6 +26,8 @@ public class PurchaseRequestService {
     private PurchaseRequestMapperCustom purchaseRequestMapperCustom;
 
     private SupplierMapperCustom supplierMapperCustom;
+    
+    private PurchaseRequestDetailMapperCustom purchaseRequestDetailMapperCustom;
 
     public PurchaseRequestListViewDto searchPurchaseRequests(PurchaseRequestSearchForm form) {
         logger.debug("PR一覧取得開始");
@@ -38,6 +42,12 @@ public class PurchaseRequestService {
                 form.getSize(), page, 2));
 
         logger.debug("PR一覧取得完了");
+        return dto;
+    }
+    
+    public PurchaseRequestDetailDto getPurchaseRequestDetail(String prId) {
+        PurchaseRequestDetailDto dto = purchaseRequestMapperCustom.selectPurchaseRequestDetailHeader(prId);
+        dto.setDetails(purchaseRequestDetailMapperCustom.selectPurchaseRequestDetailLines(prId));
         return dto;
     }
 

@@ -24,7 +24,7 @@ public class PurchaseRequestDetailDto {
 
     private String note;
 
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     // 明細
     private List<PurchaseRequestDetailLineDto> details;

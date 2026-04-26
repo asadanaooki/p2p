@@ -10,7 +10,7 @@
       quantity,
       snap_unit_price as unit_price,
       subtotal
-    from purchase_request
+    from purchase_request_detail
     where pr_id = #{prId}
   </select>
 </mapper>
