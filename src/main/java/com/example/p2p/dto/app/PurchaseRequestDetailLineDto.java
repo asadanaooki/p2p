@@ -19,6 +19,6 @@ public class PurchaseRequestDetailLineDto {
 
     private Integer unitPrice;
 
-    private Integer subtotal;
+    private Integer subtotalExcludingTax;
 
 }

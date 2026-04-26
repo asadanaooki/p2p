@@ -145,7 +145,7 @@
             <td class="col-due-date" th:text="${pr.dueDate == null ? '' : #temporals.format(pr.dueDate, 'yyyy/M/d')}">
             </td>
 
-            <td class="col-total-amount" th:text="${#numbers.formatInteger(pr.totalAmount, 1, 'COMMA')}"></td>
+            <td class="col-total-amount" th:text="${#numbers.formatInteger(pr.totalAmountExcludingTax, 1, 'COMMA')}"></td>
 
             <td class="col-status" th:text="${pr.status.label}"></td>
           </tr>

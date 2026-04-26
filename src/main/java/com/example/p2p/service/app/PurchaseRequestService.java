@@ -12,7 +12,6 @@ import com.example.p2p.dto.app.PurchaseRequestListViewDto;
 import com.example.p2p.form.app.PurchaseRequestSearchForm;
 import com.example.p2p.mapper.PurchaseRequestDetailMapperCustom;
 import com.example.p2p.mapper.PurchaseRequestMapperCustom;
-import com.example.p2p.mapper.SupplierMapperCustom;
 import com.example.p2p.util.CommonUtil;
 
 import lombok.AllArgsConstructor;
@@ -24,8 +23,6 @@ public class PurchaseRequestService {
     private static final Logger logger = LoggerFactory.getLogger(PurchaseRequestService.class);
 
     private PurchaseRequestMapperCustom purchaseRequestMapperCustom;
-
-    private SupplierMapperCustom supplierMapperCustom;
     
     private PurchaseRequestDetailMapperCustom purchaseRequestDetailMapperCustom;
 
@@ -36,7 +33,6 @@ public class PurchaseRequestService {
         PurchaseRequestListViewDto dto = new PurchaseRequestListViewDto();
         List<PurchaseRequestListRowDto> prs = purchaseRequestMapperCustom.selectPurchaseRequests(form);
         dto.setPurchaseRequests(prs);
-        dto.setSupplierOptions(supplierMapperCustom.selectSupplierOptions());
         dto.setCurrentPage(page);
         dto.setPageNumberList(CommonUtil.createPageNumbers(purchaseRequestMapperCustom.countPurchaseRequests(form),
                 form.getSize(), page, 2));

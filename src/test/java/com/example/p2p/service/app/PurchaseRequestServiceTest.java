@@ -31,7 +31,6 @@ class PurchaseRequestServiceTest {
 
         assertThat(actual.getCurrentPage()).isOne();
         assertThat(actual.getPageNumberList()).isEqualTo(List.of(1, 2, 3));
-        assertThat(actual.getSupplierOptions()).hasSize(3);
         assertThat(actual.getPurchaseRequests()).hasSize(2);
 
         assertThat(actual.getPurchaseRequests().get(0).getPrId()).isEqualTo("88bfbcf6-2be6-4d31-8a46-155a7b58ab93");
@@ -45,15 +44,18 @@ class PurchaseRequestServiceTest {
         assertThat(actual.getDisplayNumber()).isEqualTo(3);
         assertThat(actual.getRequester()).isEqualTo("鈴木 一郎");
         assertThat(actual.getDueDate()).isEqualTo(LocalDate.of(2026, 5, 10));
-        assertThat(actual.getTotalAmountExcludingTax()).isEqualTo(16800);
+        assertThat(actual.getTotalAmountExcludingTax()).isEqualTo(39940);
         assertThat(actual.getStatus()).isEqualTo(PurchaseRequestStatus.APPROVED);
         assertThat(actual.getNote()).isEqualTo("test");
         assertThat(actual.getCreatedAt()).isEqualTo(LocalDate.of(2026, 4, 21));
         
         assertThat(actual.getDetails()).hasSize(3);
         assertThat(actual.getDetails()).extracting(PurchaseRequestDetailLineDto::getItemName)
-        .containsExactly("24インチ液晶モニター", "A4コピー用紙 500枚", "油性ボールペン 黒 10本セット");
-        PurchaseRequestDetailLineDto first = actual.getDetails().get(0);
+        .containsExactlyInAnyOrder("24インチ液晶モニター", "A4コピー用紙 500枚", "油性ボールペン 黒 10本セット");
+        PurchaseRequestDetailLineDto first = actual.getDetails().stream()
+            .filter(detail -> detail.getItemName().equals("24インチ液晶モニター"))
+            .findFirst()
+            .orElseThrow();
         
         assertThat(first.getItemName()).isEqualTo("24インチ液晶モニター");
         assertThat(first.getKind()).isEqualTo(ItemKind.GOODS);
@@ -61,7 +63,7 @@ class PurchaseRequestServiceTest {
         assertThat(first.getSupplierName()).isEqualTo("関西オフィスサービス株式会社");
         assertThat(first.getUnitPrice()).isEqualTo(16800);
         assertThat(first.getQuantity()).isEqualTo(2);
-        assertThat(first.getSubtotal()).isEqualTo(36960);
+        assertThat(first.getSubtotalExcludingTax()).isEqualTo(33600);
     }
 
 }

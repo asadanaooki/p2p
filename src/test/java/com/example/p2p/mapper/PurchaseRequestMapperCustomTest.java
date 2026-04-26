@@ -40,7 +40,6 @@ class PurchaseRequestMapperCustomTest {
         @Test
         void selectPurchaseRequests_allCondition() {
             PurchaseRequestSearchForm form = new PurchaseRequestSearchForm();
-            form.setSupplierId("a7f3c9d2-4b8e-41f1-9c6a-1d2e3f4a5b6c");
             form.setDueDateFrom(LocalDate.of(2026, 3, 20));
             form.setDueDateTo(LocalDate.of(2026, 4, 27));
             form.setStatus(PurchaseRequestStatus.COMPLETED);
