@@ -9,7 +9,7 @@ insert into purchase_request_detail (
     snap_supplier_name,
     quantity,
     snap_unit_price,
-    subtotal
+    subtotal_excluding_tax
 ) values
 -- PR1: モノ明細1つ
 (
@@ -23,7 +23,7 @@ insert into purchase_request_detail (
     '神奈川文具株式会社',
     10,
     680,
-    10 * 680 * 110 / 100
+    10 * 680
 ),
 
 -- PR2: サービス明細1つ
@@ -38,7 +38,7 @@ insert into purchase_request_detail (
     '関西オフィスサービス株式会社',
     1,
     25000,
-    1 * 25000 * 110 / 100
+    1 * 25000
 ),
 
 -- PR3: モノ明細3つ
@@ -53,7 +53,7 @@ insert into purchase_request_detail (
     '神奈川文具株式会社',
     5,
     680,
-    5 * 680 * 110 / 100
+    5 * 680
 ),
 (
     'c24303dd-c257-41fd-b226-689c6369b0c9',
@@ -66,7 +66,7 @@ insert into purchase_request_detail (
     '神奈川文具株式会社',
     3,
     980,
-    3 * 980 * 110 / 100
+    3 * 980
 ),
 (
     'c24303dd-c257-41fd-b226-689c6369b0c9',
@@ -79,7 +79,7 @@ insert into purchase_request_detail (
     '関西オフィスサービス株式会社',
     2,
     16800,
-    2 * 16800 * 110 / 100
+    2 * 16800
 ),
 
 -- PR4: モノ1 + サービス1
@@ -94,7 +94,7 @@ insert into purchase_request_detail (
     '関西オフィスサービス株式会社',
     1,
     16800,
-    1 * 16800 * 110 / 100
+    1 * 16800
 ),
 (
     '5690f8f2-454c-4d33-beb7-d15a49bae6d3',
@@ -107,7 +107,7 @@ insert into purchase_request_detail (
     '中部設備サプライ株式会社',
     4,
     4500,
-    4 * 4500 * 110 / 100
+    4 * 4500
 ),
 
 -- PR5: サービス明細2つ
@@ -122,7 +122,7 @@ insert into purchase_request_detail (
     '関西オフィスサービス株式会社',
     2,
     25000,
-    2 * 25000 * 110 / 100
+    2 * 25000
 ),
 (
     '761293c2-6103-4006-9a4b-4e9e3ceb3001',
@@ -135,16 +135,16 @@ insert into purchase_request_detail (
     '中部設備サプライ株式会社',
     6,
     4500,
-    6 * 4500 * 110 / 100
+    6 * 4500
 );
 
 -- PRヘッダーの合計金額も明細合計に合わせる場合
 update purchase_request pr
-set total_amount = detail.total
+set total_amount_excluding_tax = detail.total
 from (
   select
     pr_id,
-    sum(subtotal) as total
+    sum(subtotal_excluding_tax) as total
   from purchase_request_detail
   group by pr_id
 ) detail

@@ -9,7 +9,7 @@
       snap_supplier_name as supplier_name,
       quantity,
       snap_unit_price as unit_price,
-      subtotal
+      subtotal_excluding_tax
     from purchase_request_detail
     where pr_id = #{prId}
   </select>

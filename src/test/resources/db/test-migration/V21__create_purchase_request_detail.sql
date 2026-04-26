@@ -14,7 +14,7 @@ create table purchase_request_detail (
 
     quantity integer not null check(quantity >= 1),
     snap_unit_price integer not null check(snap_unit_price >= 0),
-    subtotal integer not null check(subtotal >= 0),
+    subtotal_excluding_tax integer not null check(subtotal_excluding_tax >= 0),
 
     created_at timestamp not null default current_timestamp,
     updated_at timestamp not null default current_timestamp,
@@ -31,4 +31,6 @@ for each row
 execute procedure update_timestamp();
 
 alter table supplier alter column name type varchar(100);
+
+alter table purchase_request rename column total_amount to total_amount_excluding_tax;
 

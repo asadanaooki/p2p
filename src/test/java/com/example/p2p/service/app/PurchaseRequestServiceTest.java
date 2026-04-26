@@ -45,7 +45,7 @@ class PurchaseRequestServiceTest {
         assertThat(actual.getDisplayNumber()).isEqualTo(3);
         assertThat(actual.getRequester()).isEqualTo("鈴木 一郎");
         assertThat(actual.getDueDate()).isEqualTo(LocalDate.of(2026, 5, 10));
-        assertThat(actual.getTotalAmount()).isEqualTo(43934);
+        assertThat(actual.getTotalAmountExcludingTax()).isEqualTo(16800);
         assertThat(actual.getStatus()).isEqualTo(PurchaseRequestStatus.APPROVED);
         assertThat(actual.getNote()).isEqualTo("test");
         assertThat(actual.getCreatedAt()).isEqualTo(LocalDate.of(2026, 4, 21));

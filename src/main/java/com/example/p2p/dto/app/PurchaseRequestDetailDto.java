@@ -18,7 +18,7 @@ public class PurchaseRequestDetailDto {
 
     private LocalDate dueDate;
 
-    private Integer totalAmount;
+    private int totalAmountExcludingTax;
 
     private PurchaseRequestStatus status;
 

@@ -11,7 +11,7 @@ insert into purchase_request_detail (
     snap_supplier_name,
     quantity,
     snap_unit_price,
-    subtotal
+    subtotal_excluding_tax
 ) values
 -- PR1: モノ明細1つ
 (
@@ -25,7 +25,7 @@ insert into purchase_request_detail (
     '神奈川文具株式会社',
     10,
     680,
-    10 * 680 * 110 / 100
+    10 * 680
 ),
 
 -- PR2: サービス明細1つ
@@ -40,7 +40,7 @@ insert into purchase_request_detail (
     '関西オフィスサービス株式会社',
     1,
     25000,
-    1 * 25000 * 110 / 100
+    1 * 25000
 ),
 
 -- PR3: モノ明細3つ
@@ -55,7 +55,7 @@ insert into purchase_request_detail (
     '神奈川文具株式会社',
     5,
     680,
-    5 * 680 * 110 / 100
+    5 * 680
 ),
 (
     '3c4f62bf-855b-4c35-b19d-eb06acb16896',
@@ -68,7 +68,7 @@ insert into purchase_request_detail (
     '神奈川文具株式会社',
     3,
     980,
-    3 * 980 * 110 / 100
+    3 * 980
 ),
 (
     '3c4f62bf-855b-4c35-b19d-eb06acb16896',
@@ -81,7 +81,7 @@ insert into purchase_request_detail (
     '関西オフィスサービス株式会社',
     2,
     16800,
-    2 * 16800 * 110 / 100
+    2 * 16800
 ),
 
 -- PR4: モノ1 + サービス1
@@ -96,7 +96,7 @@ insert into purchase_request_detail (
     '関西オフィスサービス株式会社',
     1,
     16800,
-    1 * 16800 * 110 / 100
+    1 * 16800
 ),
 (
     '56856dfe-8e7a-4524-9d05-9e161c6b8fc3',
@@ -109,7 +109,7 @@ insert into purchase_request_detail (
     '中部設備サプライ株式会社',
     4,
     4500,
-    4 * 4500 * 110 / 100
+    4 * 4500
 ),
 
 -- PR5: サービス明細2つ
@@ -124,7 +124,7 @@ insert into purchase_request_detail (
     '関西オフィスサービス株式会社',
     2,
     25000,
-    2 * 25000 * 110 / 100
+    2 * 25000
 ),
 (
     '6b2c5959-233f-4b54-8a9b-98f4a1b13c40',
@@ -137,16 +137,17 @@ insert into purchase_request_detail (
     '中部設備サプライ株式会社',
     6,
     4500,
-    6 * 4500 * 110 / 100
+    6 * 4500
 );
 
+-- PRヘッダーの合計金額も明細合計に合わせる場合
 update purchase_request pr
-set total_amount = detail.total_amount
+set total_amount_excluding_tax = detail.total
 from (
-    select
-        pr_id,
-        sum(subtotal) as total_amount
-    from purchase_request_detail
-    group by pr_id
+  select
+    pr_id,
+    sum(subtotal_excluding_tax) as total
+  from purchase_request_detail
+  group by pr_id
 ) detail
 where pr.pr_id = detail.pr_id;

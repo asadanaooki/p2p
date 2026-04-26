@@ -38,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.p2p.dto.admin.UserDetailDto;
 import com.example.p2p.dto.admin.UserListViewDto;
+import com.example.p2p.entity.PurchaseRequestDetailExample;
 import com.example.p2p.entity.PurchaseRequestExample;
 import com.example.p2p.entity.UserInvitationToken;
 import com.example.p2p.entity.UserInvitationTokenExample;
@@ -46,6 +47,7 @@ import com.example.p2p.entity.UsersExample;
 import com.example.p2p.exception.BusinessException;
 import com.example.p2p.form.admin.UserSearchForm;
 import com.example.p2p.form.admin.UserUpsertForm;
+import com.example.p2p.mapper.PurchaseRequestDetailMapper;
 import com.example.p2p.mapper.PurchaseRequestMapper;
 import com.example.p2p.mapper.UserInvitationTokenMapper;
 import com.example.p2p.mapper.UsersMapper;
@@ -66,6 +68,9 @@ class UserServiceTest {
     @Autowired
     PurchaseRequestMapper purchaseRequestMapper;
 
+    @Autowired
+    PurchaseRequestDetailMapper purchaseRequestDetailMapper;
+
     @Nested
     class SearchItems {
 
@@ -74,6 +79,7 @@ class UserServiceTest {
 
             @BeforeEach
             void setup() {
+                purchaseRequestDetailMapper.deleteByExample(new PurchaseRequestDetailExample());
                 purchaseRequestMapper.deleteByExample(new PurchaseRequestExample());
                 usersMapper.deleteByExample(new UsersExample());
             }
@@ -354,6 +360,7 @@ class UserServiceTest {
     @ParameterizedTest
     @CsvSource(value = {"testPass123, true, false", "null, false, true"}, nullValues = "null")
     void getUserDetail_canInvite(String password, boolean isActive, boolean expected) {
+        purchaseRequestDetailMapper.deleteByExample(new PurchaseRequestDetailExample());
         purchaseRequestMapper.deleteByExample(new PurchaseRequestExample());
         usersMapper.deleteByExample(new UsersExample());
         Users u = new Users();
