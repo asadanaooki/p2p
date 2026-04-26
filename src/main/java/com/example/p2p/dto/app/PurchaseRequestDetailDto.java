@@ -1,7 +1,6 @@
 package com.example.p2p.dto.app;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import com.example.p2p.enums.PurchaseRequestStatus;
@@ -28,4 +27,12 @@ public class PurchaseRequestDetailDto {
 
     // 明細
     private List<PurchaseRequestDetailLineDto> details;
+    
+    public int getTaxAmount() {
+        return totalAmountExcludingTax * 10 / 100;
+    }
+    
+    public int totalAmountIncludingTax() {
+        return totalAmountExcludingTax + getTaxAmount();
+    }
 }

@@ -249,6 +249,7 @@ select {
 ========================= */
 .purchase-request-table tbody td {
   padding: 10px;
+  border-right: 1px solid #d8dfdd;
   border-bottom: 1px solid #d8dfdd;
   overflow-wrap: break-word;
 }

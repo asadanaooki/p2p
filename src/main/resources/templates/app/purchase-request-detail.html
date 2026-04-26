@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" th:href="@{/css/app/purchase-request-view.css}">
+</head>
+
+<body>
+  <main class="page">
+    <h1 class="page-title">購買申請詳細</h1>
+
+    <div class="summary-grid">
+      <div class="summary-item status-summary-item">
+        <div class="summary-label">状態</div>
+        <div class="summary-value" th:text="${view.status.label}"></div>
+      </div>
+
+      <div class="summary-item">
+        <div class="summary-label">番号</div>
+        <div class="summary-value" th:text="${view.displayNumber}"></div>
+      </div>
+
+      <div class="summary-item">
+        <div class="summary-label">申請者</div>
+        <div class="summary-value" th:text="${view.requester}"></div>
+      </div>
+
+      <div class="summary-item">
+        <div class="summary-label">納期</div>
+        <div class="summary-value" th:text="${#temporals.format(view.dueDate, 'yyyy/M/d')}"></div>
+      </div>
+
+      <div class="summary-item">
+        <div class="summary-label">申請日</div>
+        <div class="summary-value" th:text="${#temporals.format(view.createdAt, 'yyyy/M/d')}"></div>
+      </div>
+
+    </div>
+
+    <table class="detail-table">
+      <thead>
+        <tr>
+          <th class="col-line">No.</th>
+          <th class="col-name">名称</th>
+          <th class="col-kind">区分</th>
+          <th class="col-supplier">仕入先</th>
+          <th class="col-quantity">数量</th>
+          <th class="col-unit">単位</th>
+          <th class="col-price">単価</th>
+          <th class="col-subtotal">小計</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr th:each="detail, stat: ${view.details}">
+          <td class="text-right" th:text="${stat.count}"></td>
+          <td th:text="${detail.itemName}"></td>
+          <td th:text="${detail.kind.label}"></td>
+          <td th:text="${detail.supplierName}"></td>
+          <td class="text-right" th:text="${detail.quantity}"></td>
+          <td th:text="${detail.unitName}"></td>
+          <td class="text-right" th:text="${#numbers.formatInteger(detail.unitPrice, 1, 'COMMA')}"></td>
+          <td class="text-right" th:text="${#numbers.formatInteger(detail.subtotalExcludingTax, 1, 'COMMA')}"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="amount-area">
+      <div class="amount-row">
+        <div class="amount-label">税抜合計</div>
+        <div class="amount-value" th:text="${#numbers.formatInteger(view.totalAmountExcludingTax, 1, 'COMMA')}"></div>
+      </div>
+
+      <div class="amount-row">
+        <div class="amount-label">消費税（10%）</div>
+        <div class="amount-value" th:text="${#numbers.formatInteger(view.taxAmount, 1, 'COMMA')}"></div>
+      </div>
+
+      <div class="amount-row">
+        <div class="amount-label">税込合計</div>
+        <div class="amount-value" th:text="${#numbers.formatInteger(view.totalAmountIncludingTax, 1, 'COMMA')}"></div>
+      </div>
+    </div>
+
+    <div class="info-area">
+      <div class="info-block">
+        <div class="info-label">備考</div>
+        <div class="info-value" th:text="${view.note}"></div>
+      </div>
+
+    </div>
+
+  </main>
+</body>
+
+</html>
