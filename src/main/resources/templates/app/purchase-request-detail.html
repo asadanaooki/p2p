@@ -3,7 +3,7 @@
 
 <head>
   <link rel="stylesheet" th:href="@{/css/common.css}" />
-  <link rel="stylesheet" th:href="@{/css/app/purchase-request-view.css}">
+  <link rel="stylesheet" th:href="@{/css/app/purchase-request-detail.css}">
 </head>
 
 <body>
@@ -11,31 +11,30 @@
     <h1 class="page-title">購買申請詳細</h1>
 
     <div class="summary-grid">
-      <div class="summary-item status-summary-item">
+      <div class=" status-summary-item">
         <div class="summary-label">状態</div>
         <div class="summary-value" th:text="${view.status.label}"></div>
       </div>
 
-      <div class="summary-item">
+      <div>
         <div class="summary-label">番号</div>
         <div class="summary-value" th:text="${view.displayNumber}"></div>
       </div>
 
-      <div class="summary-item">
+      <div>
         <div class="summary-label">申請者</div>
         <div class="summary-value" th:text="${view.requester}"></div>
       </div>
 
-      <div class="summary-item">
+      <div>
         <div class="summary-label">納期</div>
         <div class="summary-value" th:text="${#temporals.format(view.dueDate, 'yyyy/M/d')}"></div>
       </div>
 
-      <div class="summary-item">
+      <div>
         <div class="summary-label">申請日</div>
         <div class="summary-value" th:text="${#temporals.format(view.createdAt, 'yyyy/M/d')}"></div>
       </div>
-
     </div>
 
     <table class="detail-table">
@@ -67,20 +66,14 @@
     </table>
 
     <div class="amount-area">
-      <div class="amount-row">
-        <div class="amount-label">税抜合計</div>
-        <div class="amount-value" th:text="${#numbers.formatInteger(view.totalAmountExcludingTax, 1, 'COMMA')}"></div>
-      </div>
+      <div class="amount-cell">税抜合計</div>
+      <div class="amount-cell" th:text="${#numbers.formatInteger(view.totalAmountExcludingTax, 1, 'COMMA')}"></div>
 
-      <div class="amount-row">
-        <div class="amount-label">消費税（10%）</div>
-        <div class="amount-value" th:text="${#numbers.formatInteger(view.taxAmount, 1, 'COMMA')}"></div>
-      </div>
+      <div class="amount-cell">消費税(10%）</div>
+      <div class="amount-cell" th:text="${#numbers.formatInteger(view.taxAmount, 1, 'COMMA')}"></div>
 
-      <div class="amount-row">
-        <div class="amount-label">税込合計</div>
-        <div class="amount-value" th:text="${#numbers.formatInteger(view.totalAmountIncludingTax, 1, 'COMMA')}"></div>
-      </div>
+      <div class="amount-cell">税込合計</div>
+      <div class="amount-cell" th:text="${#numbers.formatInteger(view.totalAmountIncludingTax, 1, 'COMMA')}"></div>
     </div>
 
     <div class="info-area">
