@@ -3,22 +3,26 @@ package com.example.p2p.controller.app;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.context.MessageSource;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.p2p.dto.app.PurchaseRequestDetailDto;
+import com.example.p2p.dto.app.UserProfileDto;
+import com.example.p2p.form.app.ProfileEditForm;
 import com.example.p2p.form.app.PurchaseRequestSearchForm;
 import com.example.p2p.service.app.PurchaseRequestService;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 
 @Controller
@@ -36,11 +40,6 @@ public class PurchaseRequestController {
 
     private MessageSource messageSource;
     
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(String.class, "supplierId" , new StringTrimmerEditor(true));
-    }
-
     @GetMapping
     public String showPurchaseRequestList(
             @Valid @ModelAttribute("form") PurchaseRequestSearchForm form,
@@ -62,6 +61,17 @@ public class PurchaseRequestController {
 
         logger.debug("PR一覧画面表示完了");
         return "app/purchase-request-list";
+    }
+    
+    @GetMapping("/{prId}")
+    public String showPurchaseRequestDetail(@PathVariable @NotBlank String prId,
+            Model model) {
+        logger.debug("PR詳細画面表示開始");
+        
+        model.addAttribute("view", purchaseRequestService.getPurchaseRequestDetail(prId));
+
+        logger.debug("PR詳細画面表示完了");
+        return "app/purchase-request-detail";
     }
 
     // @PostMapping("/initial-password-setup")

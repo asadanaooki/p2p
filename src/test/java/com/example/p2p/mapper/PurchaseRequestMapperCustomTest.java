@@ -40,7 +40,6 @@ class PurchaseRequestMapperCustomTest {
         @Test
         void selectPurchaseRequests_allCondition() {
             PurchaseRequestSearchForm form = new PurchaseRequestSearchForm();
-            form.setSupplierId("a7f3c9d2-4b8e-41f1-9c6a-1d2e3f4a5b6c");
             form.setDueDateFrom(LocalDate.of(2026, 3, 20));
             form.setDueDateTo(LocalDate.of(2026, 4, 27));
             form.setStatus(PurchaseRequestStatus.COMPLETED);
@@ -67,9 +66,8 @@ class PurchaseRequestMapperCustomTest {
             PurchaseRequestListRowDto first = actual.get(0);
             assertThat(first.getPrId()).isEqualTo("3c4f62bf-855b-4c35-b19d-eb06acb16896");
             assertThat(first.getDisplayNumber()).isEqualTo(3);
-            assertThat(first.getSupplier()).isEqualTo("関西オフィスサービス株式会社");
             assertThat(first.getRequester()).isEqualTo("鈴木 一郎");
-            assertThat(first.getTotalAmount()).isEqualTo(24800);
+            assertThat(first.getTotalAmountExcludingTax()).isEqualTo(39940);
             assertThat(first.getStatus()).isEqualTo(PurchaseRequestStatus.APPROVED);
         }
 
@@ -90,8 +88,6 @@ class PurchaseRequestMapperCustomTest {
 
             static Stream<Arguments> createFilterCaces() {
                 return Stream.of(
-                        Arguments.of((Consumer<PurchaseRequestSearchForm>) f -> f
-                            .setSupplierId("c9e2a4b6-7d1f-43a8-b5c2-9f0e1d2c3b4a"), 2),
                         Arguments.of(
                                 (Consumer<PurchaseRequestSearchForm>) f -> f.setDueDateFrom(LocalDate.of(2026, 5, 1)),
                                 3),
@@ -171,8 +167,6 @@ class PurchaseRequestMapperCustomTest {
                     return Stream.of(
                             Arguments.of(PurchaseRequestSortBy.NUMBER, SortDirection.DESC,
                                     "6b2c5959-233f-4b54-8a9b-98f4a1b13c40"),
-                            Arguments.of(PurchaseRequestSortBy.SUPPLIER, SortDirection.ASC,
-                                    "3c4f62bf-855b-4c35-b19d-eb06acb16896"),
                             Arguments.of(PurchaseRequestSortBy.REQUESTER, SortDirection.DESC,
                                     "3a5b130e-0279-4bca-bee3-d41cddbc9192"),
                             Arguments.of(PurchaseRequestSortBy.DUE_DATE, SortDirection.ASC,

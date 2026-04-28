@@ -109,9 +109,10 @@ select {
   padding: 18px 22px 20px;
 }
 
+/* サプライヤー削除後：納期・状態の2項目 */
 .filter-grid {
   display: grid;
-  grid-template-columns: 1.45fr 1.45fr 0.5fr;
+  grid-template-columns: 2fr 1fr;
   gap: 40px;
 }
 
@@ -248,6 +249,7 @@ select {
 ========================= */
 .purchase-request-table tbody td {
   padding: 10px;
+  border-right: 1px solid #d8dfdd;
   border-bottom: 1px solid #d8dfdd;
   overflow-wrap: break-word;
 }
@@ -296,27 +298,24 @@ select {
    列幅
 ========================= */
 .col-number {
-  width: 10%;
-}
-
-.col-supplier {
-  width: 30%;
-}
-
-.col-requester {
-  width: 20%;
-}
-
-.col-due-date {
-  width: 15%;
-}
-
-.col-total-amount {
   width: 12%;
 }
 
+.col-requester {
+  width: 28%;
+}
+
+.col-due-date {
+  width: 18%;
+}
+
+.col-total-amount {
+  width: 20%;
+  text-align: right;
+}
+
 .col-status {
-  width: 13%;
+  width: 22%;
 }
 
 /* =========================
@@ -332,6 +331,9 @@ select {
   height: 25px;
 }
 
+/* =========================
+   メッセージ
+========================= */
 .success-message {
   margin-bottom: 16px;
   padding: 12px 16px;

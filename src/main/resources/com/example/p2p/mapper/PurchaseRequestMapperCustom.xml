@@ -5,20 +5,14 @@
     select 
       pr.pr_id,
       pr.display_number,
-      s.name as supplier,
       CONCAT_WS(' ', u.last_name, u.first_name) as requester,
       pr.due_date,
-      pr.total_amount,
+      pr.total_amount_excluding_tax,
       pr.status
     from purchase_request pr
-    join supplier s
-      on pr.supplier_id = s.supplier_id
     join users u
       on pr.requester_user_id = u.user_id
     <where>
-      <if test="supplierId != null">
-        s.supplier_id = #{supplierId}
-      </if>
       <if test="dueDateFrom != null">
         and pr.due_date &gt;= #{dueDateFrom}
       </if>
@@ -40,7 +34,6 @@
     order by
       <choose>
         <when test="sortBy.toString().equals('NUMBER')">pr.display_number</when>
-        <when test="sortBy.toString().equals('SUPPLIER')">s.name</when>
         <when test="sortBy.toString().equals('REQUESTER')">concat(u.last_name_kana, u.first_name_kana)</when>
         <when test="sortBy.toString().equals('DUE_DATE')">pr.due_date
           <choose>
@@ -49,7 +42,7 @@
           </choose>
         </when>
         
-        <when test="sortBy.toString().equals('TOTAL')">pr.total_amount</when>
+        <when test="sortBy.toString().equals('TOTAL')">pr.total_amount_excluding_tax</when>
         <when test="sortBy.toString().equals('STATUS')">
         case pr.status
           when 'PENDING' then 1
@@ -71,14 +64,9 @@
   <select id="countPurchaseRequests" resultType="int">
     select count(*)
     from purchase_request pr
-    join supplier s
-      on pr.supplier_id = s.supplier_id
     join users u
       on pr.requester_user_id = u.user_id
     <where>
-      <if test="supplierId != null">
-        s.supplier_id = #{supplierId}
-      </if>
       <if test="dueDateFrom != null">
         and pr.due_date &gt;= #{dueDateFrom}
       </if>
@@ -97,5 +85,20 @@
         )
       </if>
     </where>
+  </select>
+  
+  <select id="selectPurchaseRequestDetailHeader" resultType="com.example.p2p.dto.app.PurchaseRequestDetailDto">
+    select 
+      pr.display_number,
+      CONCAT_WS(' ', u.last_name, u.first_name) as requester,
+      pr.due_date,
+      pr.total_amount_excluding_tax,
+      pr.status,
+      pr.note,
+      CAST(pr.created_at AS DATE) as created_at
+    from purchase_request pr
+    join users u
+      on pr.requester_user_id = u.user_id
+    where pr.pr_id = #{prId}
   </select>
 </mapper>

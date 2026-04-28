@@ -13,13 +13,11 @@ public class PurchaseRequestListRowDto {
     
     private int displayNumber;
     
-    private String supplier;
-    
     private String requester;
     
     private LocalDate dueDate;
     
-    private int totalAmount;
+    private int totalAmountExcludingTax;
     
     private PurchaseRequestStatus status;
 }

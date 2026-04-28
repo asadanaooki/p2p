@@ -20,11 +20,13 @@ import com.example.p2p.dto.admin.ItemEditViewDto;
 import com.example.p2p.dto.admin.ItemListViewDto;
 import com.example.p2p.entity.Item;
 import com.example.p2p.entity.ItemExample;
+import com.example.p2p.entity.PurchaseRequestDetailExample;
 import com.example.p2p.enums.ItemKind;
 import com.example.p2p.form.admin.ItemSearchForm;
 import com.example.p2p.form.admin.ItemUpsertForm;
 import com.example.p2p.mapper.ItemMapper;
 import com.example.p2p.mapper.ItemMapperCustom;
+import com.example.p2p.mapper.PurchaseRequestDetailMapper;
 import com.example.p2p.service.admin.ItemService;
 import com.example.p2p.util.CommonUtil;
 
@@ -40,6 +42,9 @@ class ItemServiceTest {
 
     @Autowired
     ItemMapperCustom itemMapperCustom;
+
+    @Autowired
+    PurchaseRequestDetailMapper purchaseRequestDetailMapper;
     
 
     @Nested
@@ -47,6 +52,7 @@ class ItemServiceTest {
 
         @BeforeEach
         void setup() {
+            purchaseRequestDetailMapper.deleteByExample(new PurchaseRequestDetailExample());
             itemMapper.deleteByExample(new ItemExample());
         }
 

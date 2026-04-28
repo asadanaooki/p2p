@@ -1,0 +1,116 @@
+.page {
+  padding: 32px 38px;
+}
+
+.page-title {
+  margin: 0 0 26px;
+  font-size: 24px;
+  font-weight: 400;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  row-gap: 22px;
+  margin-bottom: 20px;
+}
+
+.status-summary-item {
+  grid-column: 1 / -1;
+}
+
+.summary-label {
+  font-size: 14px;
+  color: #687579;
+}
+
+.summary-value {
+  font-size: 15px;
+}
+
+.detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 15px;
+}
+
+.detail-table thead th {
+  padding: 6px 3px;
+  background: #9fb6b4;
+  border: 1px solid #9fb6b4;
+  font-weight: 400;
+  text-align: left;
+  font-size: 14px;
+}
+
+.detail-table tbody td {
+  padding: 6px 3px;
+  border-left: 1px solid #d8dfdf;
+  border-right: 1px solid #d8dfdf;
+  border-bottom: 1px solid #8e9696;
+  vertical-align: top;
+  font-size: 15px;
+}
+
+.col-line {
+  width: 6%;
+}
+
+.col-name {
+  width: 30%;
+}
+
+.col-kind {
+  width: 8%;
+}
+
+.col-supplier {
+  width: 26%;
+}
+
+.col-quantity {
+  width: 6%;
+}
+
+.col-unit {
+  width: 6%;
+}
+
+.col-price {
+  width: 9%;
+}
+
+.col-subtotal {
+  width: 9%;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.amount-area {
+  margin: 22px 0 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 150px;
+  font-size: 15px;
+  row-gap: 10px;
+}
+
+.amount-cell {
+  text-align: right;
+}
+
+.info-area {
+  margin-top: 30px;
+}
+
+.info-label {
+  font-size: 14px;
+  color: #687579;
+}
+
+.info-value {
+  font-size: 15px;
+  white-space: pre-wrap;
+}

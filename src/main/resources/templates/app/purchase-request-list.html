@@ -17,7 +17,6 @@
 
       <div class="toolbar-right">
         <form th:action="@{/purchase-request}" th:object="${form}" method="get" class="keyword-search-form">
-          <input type="hidden" th:field="*{supplierId}">
           <input type="hidden" th:field="*{dueDateFrom}">
           <input type="hidden" th:field="*{dueDateTo}">
           <input type="hidden" th:field="*{status}">
@@ -51,8 +50,7 @@
     </div>
 
     <div id="filterPanel" class="filter-panel" th:classappend="${
-                       form.supplierId != null
-                       or form.dueDateFrom != null
+                       form.dueDateFrom != null
                        or form.dueDateTo != null
                        or form.status != null
                       } ? ' is-open' : ''">
@@ -63,22 +61,12 @@
 
         <div class="filter-grid">
           <div class="filter-item">
-            <label for="supplierId" class="field-label">サプライヤー</label>
-            <select id="supplierId" th:field="*{supplierId}">
-              <option value="">すべて</option>
-              <option th:each="s : ${view.supplierOptions}" th:value="${s.supplierId}" th:text="${s.name}"></option>
-            </select>
-            <p class="field-error" th:if="${#fields.hasErrors('supplierId')}" th:errors="*{supplierId}"></p>
-          </div>
-
-          <div class="filter-item">
             <label class="field-label">納期</label>
             <div class="date-range">
               <input id="dueDateFrom" type="date" th:field="*{dueDateFrom}">
               <span>～</span>
               <input id="dueDateTo" type="date" th:field="*{dueDateTo}">
             </div>
-
           </div>
 
           <div class="filter-item">
@@ -109,13 +97,7 @@
                   th:text="${form.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
               </button>
             </th>
-            <th class="col-supplier">
-              <button type="button" class="sort-button" data-sort-by="SUPPLIER">
-                <span>サプライヤー</span>
-                <span class="sort-icon" th:if="${form.sortBy.name().equals('SUPPLIER')}"
-                  th:text="${form.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
-              </button>
-            </th>
+
             <th class="col-requester">
               <button type="button" class="sort-button" data-sort-by="REQUESTER">
                 <span>申請者</span>
@@ -123,6 +105,7 @@
                   th:text="${form.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
               </button>
             </th>
+
             <th class="col-due-date">
               <button type="button" class="sort-button" data-sort-by="DUE_DATE">
                 <span>納期</span>
@@ -130,6 +113,7 @@
                   th:text="${form.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
               </button>
             </th>
+
             <th class="col-total-amount">
               <button type="button" class="sort-button" data-sort-by="TOTAL">
                 <span>合計</span>
@@ -137,6 +121,7 @@
                   th:text="${form.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
               </button>
             </th>
+
             <th class="col-status">
               <button type="button" class="sort-button" data-sort-by="STATUS">
                 <span>状態</span>
@@ -154,11 +139,14 @@
               <a class="purchase-request-link js-row-link-a" th:text="${pr.displayNumber}"
                 th:href="@{/purchase-request/{prId}(prId=${pr.prId})}"></a>
             </td>
-            <td class="col-supplier" th:text="${pr.supplier}"></td>
+
             <td class="col-requester" th:text="${pr.requester}"></td>
+
             <td class="col-due-date" th:text="${pr.dueDate == null ? '' : #temporals.format(pr.dueDate, 'yyyy/M/d')}">
             </td>
-            <td class="col-total-amount" th:text="${#numbers.formatInteger(pr.totalAmount, 1, 'COMMA')}"></td>
+
+            <td class="col-total-amount" th:text="${#numbers.formatInteger(pr.totalAmountExcludingTax, 1, 'COMMA')}"></td>
+
             <td class="col-status" th:text="${pr.status.label}"></td>
           </tr>
         </tbody>
@@ -169,7 +157,6 @@
       <a class="page-link" th:if="${view.currentPage > 1}" th:href="@{/purchase-request(
           page=${view.currentPage - 1},
           keyword=${form.keyword},
-          supplierId=${form.supplierId},
           dueDateFrom=${form.dueDateFrom},
           dueDateTo=${form.dueDateTo},
           status=${form.status},
@@ -183,7 +170,6 @@
         th:classappend="${pageNo == view.currentPage} ? 'active' : ''" th:text="${pageNo}" th:href="@{/purchase-request(
           page=${pageNo},
           keyword=${form.keyword},
-          supplierId=${form.supplierId},
           dueDateFrom=${form.dueDateFrom},
           dueDateTo=${form.dueDateTo},
           status=${form.status},
@@ -196,7 +182,6 @@
       <a class="page-link" th:if="${view.currentPage < #lists.size(view.pageNumberList)}" th:href="@{/purchase-request(
            page=${view.currentPage + 1},
            keyword=${form.keyword},
-           supplierId=${form.supplierId},
            dueDateFrom=${form.dueDateFrom},
            dueDateTo=${form.dueDateTo},
            status=${form.status},

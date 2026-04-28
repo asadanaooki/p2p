@@ -5,6 +5,9 @@ spring:
     url: jdbc:postgresql://localhost/p2p_test
     username: postgres
     password: softeni0926
+    hikari:
+      maximum-pool-size: 2
+      minimum-idle: 0
 mybatis:
     configuration:
         map-underscore-to-camel-case: true

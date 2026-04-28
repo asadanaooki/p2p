@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.p2p.mapper.PurchaseRequestDetailMapperCustom">
+  <select id="selectPurchaseRequestDetailLines" resultType="com.example.p2p.dto.app.PurchaseRequestDetailLineDto">
+    select 
+      snap_item_name as item_name,
+      snap_kind as kind,
+      snap_unit_name as unit_name,
+      snap_supplier_name as supplier_name,
+      quantity,
+      snap_unit_price as unit_price,
+      subtotal_excluding_tax
+    from purchase_request_detail
+    where pr_id = #{prId}
+  </select>
+</mapper>

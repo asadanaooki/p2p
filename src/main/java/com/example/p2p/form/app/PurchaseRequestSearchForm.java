@@ -23,9 +23,6 @@ public class PurchaseRequestSearchForm {
     private int size = 2; // TODO: 仮値
 
     // フィルター
-    @Length(min = 36, max = 36)
-    private String supplierId;
-    
     private LocalDate dueDateFrom;
     
     private LocalDate dueDateTo;
