@@ -42,10 +42,147 @@
         </div>
     </div>
 
+    <div id="filterPanel" class="filter-panel"
+      th:classappend="${form.kind != null or form.supplierId != null} ? ' is-open' : ''">
 
-    </form>
+      <form id="catalogFilterForm" th:object="${form}" class="filter-form">
 
+        <input type="hidden" th:field="*{keyword}">
+        <input type="hidden" th:field="*{page}">
 
+        <div class="filter-grid">
+          <div class="filter-item">
+            <label for="kind" class="field-label">種別</label>
+            <select id="kind" th:field="*{kind}">
+              <option value="">すべて</option>
+              <option th:each="kind : ${T(com.example.p2p.enums.ItemKind).values()}" th:value="${kind}"
+                th:text="${kind.label}">
+              </option>
+            </select>
+          </div>
+
+          <div class="filter-item">
+            <label for="supplierId" class="field-label">仕入先</label>
+            <select id="supplierId" th:field="*{supplierId}">
+              <option value="">すべて</option>
+              <option th:each="s : ${supplierOptions}" th:value="${s.supplierId}" th:text="${s.name}">
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="filter-actions">
+          <button type="button" id="filterSubmitButton" class="filter-submit-button">
+            絞り込む
+          </button>
+
+          <button type="button" id="filterResetButton" class="filter-reset-button">
+            リセット
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div id="catalogSearchErrorArea" class="search-error-area"></div>
+
+    <div class="catalogResultArea" th:fragment="catalogResultArea">
+      <table class="catalog-table">
+        <thead>
+          <tr>
+            <th class="col-name">名称</th>
+            <th class="col-kind">種別</th>
+            <th class="col-supplier">仕入先</th>
+            <th class="col-unit">単位</th>
+            <th class="col-price">価格</th>
+            <th class="col-quantity">数量</th>
+            <th class="col-action">追加</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr th:each="item : ${view.items}">
+            <td class="col-name" th:text="${item.name}"></td>
+            <td class="col-kind" th:text="${item.kind.label}"></td>
+            <td class="col-supplier" th:text="${item.supplier}"></td>
+            <td class="col-unit" th:text="${item.unit}"></td>
+            <td class="col-price" th:text="${#numbers.formatInteger(item.price, 1, 'COMMA')}"></td>
+            <td class="col-quantity">
+              <input type="number" class="quantity-input">
+            </td>
+            <td class="col-action">
+              <button type="button" class="add-button" th:data-item-id="${item.itemId}" th:data-name="${item.name}"
+                th:data-kind="${item.kind.label}" th:data-supplier="${item.supplier}" th:data-unit="${item.unit}"
+                th:data-price="${item.price}">
+                追加
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination" th:if="${!#lists.isEmpty(view.pageNumberList)}">
+        <button type="button" class="page-link" th:if="${view.currentPage > 1}" th:data-page="${view.currentPage - 1}">
+          &lt;
+        </button>
+
+        <button type="button" class="page-link" th:each="pageNo : ${view.pageNumberList}"
+          th:classappend="${pageNo == view.currentPage} ? ' active' : ''" th:data-page="${pageNo}" th:text="${pageNo}">
+        </button>
+
+        <button type="button" class="page-link" th:if="${view.currentPage < #lists.size(view.pageNumberList)}"
+          th:data-page="${view.currentPage + 1}">
+          &gt;
+        </button>
+      </div>
+    </div>
+
+    <th:block th:fragment="catalogSearchErrors" th:object="${form}">
+      <p class="field-error" th:each="err : ${#fields.errors('*')}" th:text="${err}"></p>
+    </th:block>
+
+    <div class="catalog-footer">
+      <div class="selected-summary">
+        <button type="button" id="toggleSelectedAreaButton" class="selected-button">
+          <span>追加予定</span>
+          <span><span id="selectedCount" class="selected-badge">0</span>件</span>
+        </button>
+
+        <span class="selected-total-label">
+          <span>税抜合計</span>
+          <span id="footerTotalAmount">0</span>
+          円
+        </span>
+      </div>
+
+      <div id="selectedArea" class="selected-area" hidden>
+        <table class="selected-table">
+          <thead>
+            <tr>
+              <th class="selected-col-name">名称</th>
+              <th class="selected-col-kind">種別</th>
+              <th class="selected-col-supplier">仕入先</th>
+              <th class="selected-col-unit">単位</th>
+              <th class="selected-col-price">価格</th>
+              <th class="selected-col-quantity">数量</th>
+              <th class="selected-col-subtotal">小計</th>
+              <th class="selected-col-action">削除</th>
+            </tr>
+          </thead>
+
+          <tbody id="selectedRows">
+          </tbody>
+
+        </table>
+
+      </div>
+
+      <div class="footer-actions">
+        <button type="button" id="confirmButton" class="confirm-button">
+          明細へ反映
+        </button>
+        <button type="button" id="cancelButton" class="cancel-button">
+          キャンセル
+        </button>
+      </div>
     </div>
 
   </main>
