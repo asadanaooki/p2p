@@ -6,7 +6,9 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.example.p2p.dto.admin.ItemDetailDto;
 import com.example.p2p.dto.admin.ItemListItemDto;
+import com.example.p2p.dto.app.CatalogListRowDto;
 import com.example.p2p.form.admin.ItemSearchForm;
+import com.example.p2p.form.app.CatalogSearchForm;
 
 @Mapper
 public interface ItemMapperCustom {
@@ -16,4 +18,8 @@ public interface ItemMapperCustom {
     int countItems(ItemSearchForm form);
     
     ItemDetailDto selectItemDetail(String itemId);
+    
+    List<CatalogListRowDto> selectCatalogItems(CatalogSearchForm form);
+    
+    int countCatalogItems(CatalogSearchForm form);
 }

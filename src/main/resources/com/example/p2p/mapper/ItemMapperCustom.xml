@@ -102,4 +102,58 @@
         on i.supplier_id = s.supplier_id 
     where i.item_id = #{itemId}
   </select>
+  
+  <select id="selectCatalogItems" resultType="com.example.p2p.dto.app.CatalogListRowDto">
+    select
+      i.item_id,
+      i.name,
+      i.kind,
+      s.name as supplier,
+      u.name as unit,
+      i.price
+    from item i 
+    left join unit u
+        on i.unit_id = u.unit_id
+    left join supplier s
+        on i.supplier_id = s.supplier_id 
+    <where>
+      <if test="kind != null">
+        i.kind = #{kind}
+      </if>
+      <if test="supplierId != null">
+        and i.supplier_id = #{supplierId}
+      </if>
+      
+      <if test="keyword != null and keyword != ''">
+        and ( 
+          normalization(lower(i.name)) ~ #{keywordRegex}
+        )
+      </if>
+    </where>
+    order by kind asc, name asc
+    
+    limit #{size} offset #{offset}
+  </select>
+  
+  <select id="countCatalogItems" resultType="int">
+    select count(*)
+    from item i 
+    left join supplier s
+    on i.supplier_id = s.supplier_id 
+    <where>
+      <if test="kind != null">
+        i.kind = #{kind}
+      </if>
+      <if test="supplierId != null">
+        and i.supplier_id = #{supplierId}
+      </if>
+      
+      <if test="keyword != null and keyword != ''">
+        and ( 
+          normalization(lower(i.name)) ~ #{keywordRegex}
+        )
+      </if>
+    </where>
+  </select>
+  
 </mapper>

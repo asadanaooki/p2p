@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 
 import com.example.p2p.dto.admin.ItemListItemDto;
+import com.example.p2p.dto.app.CatalogListRowDto;
 import com.example.p2p.entity.Item;
 import com.example.p2p.entity.ItemExample;
 import com.example.p2p.entity.PurchaseRequestDetailExample;
@@ -29,6 +31,7 @@ import com.example.p2p.enums.ItemKind;
 import com.example.p2p.enums.ItemSortBy;
 import com.example.p2p.enums.SortDirection;
 import com.example.p2p.form.admin.ItemSearchForm;
+import com.example.p2p.form.app.CatalogSearchForm;
 
 @MybatisTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -42,7 +45,7 @@ class ItemMapperCustomTest {
 
     @Autowired
     SupplierMapper supplierMapper;
-    
+
     @Autowired
     PurchaseRequestMapper purchaseRequestMapper;
 
@@ -191,180 +194,182 @@ class ItemMapperCustomTest {
 
             @Nested
             class Normalization {
+
                 @BeforeEach
                 void setup() {
                     purchaseRequestDetailMapper.deleteByExample(new PurchaseRequestDetailExample());
                     purchaseRequestMapper.deleteByExample(new PurchaseRequestExample());
                     itemMapper.deleteByExample(new ItemExample());
                     supplierMapper.deleteByExample(new SupplierExample());
-                    
+
                     Supplier s = new Supplier();
                     s.setSupplierId("3f7c2a91-5d84-4b6f-9a21-7c8e3f1d6b42");
                     s.setName("dummySupplier");
                     supplierMapper.insertSelective(s);
-                    
+
                     Item i = new Item();
                     i.setItemId("a8d14c7e-2f93-46b1-b5d8-1e7a9c3f4d65");
                     i.setName("dummyItem");
                     itemMapper.insertSelective(i);
                 }
-                
+
                 @Test
                 void selectItems_toLower() {
                     Supplier s = new Supplier();
                     s.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                     s.setName("SUpPlieR2");
                     supplierMapper.insertSelective(s);
-                    
+
                     Item i = new Item();
                     i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
                     i.setName("IteM2");
                     i.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                     itemMapper.insertSelective(i);
-                    
+
                     ItemSearchForm form = new ItemSearchForm();
                     form.setKeyword("tem2");
                     form.setSize(100);
                     List<ItemListItemDto> actual = itemMapperCustom.selectItems(form);
-                    
+
                     assertThat(actual).hasSize(1);
                     ItemListItemDto dto = actual.get(0);
                     assertThat(dto.getItemId()).isEqualTo("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
                 }
-                
+
                 @Test
                 void selectItems_fullToHalf() {
                     Supplier s = new Supplier();
                     s.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                     s.setName("ｖu５カ％");
                     supplierMapper.insertSelective(s);
-                    
+
                     Item i = new Item();
                     i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
                     i.setName("IteM2");
                     i.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                     itemMapper.insertSelective(i);
-                    
+
                     ItemSearchForm form = new ItemSearchForm();
                     form.setKeyword("vu5");
                     form.setSize(100);
                     List<ItemListItemDto> actual = itemMapperCustom.selectItems(form);
-                    
+
                     assertThat(actual).hasSize(1);
                     ItemListItemDto dto = actual.get(0);
                     assertThat(dto.getItemId()).isEqualTo("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
                 }
+
                 @Test
                 void selectItems_hiraganaToKatakana() {
                     Supplier s = new Supplier();
                     s.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                     s.setName("ｖu５カ％");
                     supplierMapper.insertSelective(s);
-                    
+
                     Item i = new Item();
                     i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
                     i.setName("たをブ漢");
                     i.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                     itemMapper.insertSelective(i);
-                    
+
                     ItemSearchForm form = new ItemSearchForm();
                     form.setKeyword("ヲブ 漢");
                     form.setSize(100);
                     List<ItemListItemDto> actual = itemMapperCustom.selectItems(form);
-                    
+
                     assertThat(actual).hasSize(1);
                     ItemListItemDto dto = actual.get(0);
                     assertThat(dto.getItemId()).isEqualTo("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
                 }
-                
+
                 @Test
                 void selectItems_halfKatakanaToFullKatakana() {
                     Supplier s = new Supplier();
                     s.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                     s.setName("ｶあモﾃ");
                     supplierMapper.insertSelective(s);
-                    
+
                     Item i = new Item();
                     i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
                     i.setName("item2");
                     i.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                     itemMapper.insertSelective(i);
-                    
+
                     ItemSearchForm form = new ItemSearchForm();
                     form.setKeyword("カ");
                     form.setSize(100);
                     List<ItemListItemDto> actual = itemMapperCustom.selectItems(form);
-                    
+
                     assertThat(actual).hasSize(1);
                     ItemListItemDto dto = actual.get(0);
                     assertThat(dto.getItemId()).isEqualTo("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
                 }
-                
+
                 @ParameterizedTest
-                @ValueSource(strings = {" ", "　", "(", ")", "[", "]"})
+                @ValueSource(strings = { " ", "　", "(", ")", "[", "]" })
                 void selectItems_ignoreSymbol(String symbol) {
                     Supplier s = new Supplier();
                     s.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                     s.setName("abc" + symbol + "de");
                     supplierMapper.insertSelective(s);
-                    
+
                     Item i = new Item();
                     i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
                     i.setName("item2");
                     i.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                     itemMapper.insertSelective(i);
-                    
+
                     ItemSearchForm form = new ItemSearchForm();
                     form.setKeyword("cd");
                     form.setSize(100);
                     List<ItemListItemDto> actual = itemMapperCustom.selectItems(form);
-                    
+
                     assertThat(actual).hasSize(1);
                     ItemListItemDto dto = actual.get(0);
                     assertThat(dto.getItemId()).isEqualTo("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
                 }
-                
+
                 @Test
                 void selectItems_mixed() {
                     Supplier s = new Supplier();
                     s.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                     s.setName("sup");
                     supplierMapper.insertSelective(s);
-                    
+
                     Item i = new Item();
                     i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
                     i.setName("　asBDｇ( う漢８字　をカ%#ﾀ    ");
                     i.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                     itemMapper.insertSelective(i);
-                    
+
                     ItemSearchForm form = new ItemSearchForm();
                     form.setKeyword("asbdgウ漢8字ヲカ%#タ");
                     form.setSize(100);
                     List<ItemListItemDto> actual = itemMapperCustom.selectItems(form);
-                    
+
                     assertThat(actual).hasSize(1);
                     ItemListItemDto dto = actual.get(0);
                     assertThat(dto.getItemId()).isEqualTo("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
                 }
-                
+
                 @Test
                 void selectItems_multipleHit() {
                     Supplier s = new Supplier();
                     s.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                     s.setName("sup");
                     supplierMapper.insertSelective(s);
-                    
+
                     Item i = new Item();
                     i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
                     i.setName("myI");
                     i.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                     itemMapper.insertSelective(i);
-                    
+
                     ItemSearchForm form = new ItemSearchForm();
                     form.setKeyword("myi");
                     form.setSize(100);
                     List<ItemListItemDto> actual = itemMapperCustom.selectItems(form);
-                    
+
                     assertThat(actual).hasSize(2);
                 }
 
@@ -425,6 +430,99 @@ class ItemMapperCustomTest {
 
                 assertThat(actual).extracting(ItemListItemDto::getItemId)
                     .containsExactlyInAnyOrder("d21fb363-afb3-4911-a051-fac108a06658");
+            }
+
+        }
+
+    }
+
+    @Nested
+    class SelectCatalogItems {
+
+        @Test
+        void selectItems_allCondition() {
+            CatalogSearchForm form = new CatalogSearchForm();
+            form.setKind(ItemKind.SERVICE);
+            form.setSupplierId("c9e2a4b6-7d1f-43a8-b5c2-9f0e1d2c3b4a");
+            form.setKeyword("プリンタ");
+
+            List<CatalogListRowDto> actual = itemMapperCustom.selectCatalogItems(form);
+
+            assertThat(actual).hasSize(１);
+
+            CatalogListRowDto first = actual.get(0);
+            assertThat(first.getItemId()).isEqualTo("2cc30fd9-9dae-4abe-a145-b280d9de2f38");
+            assertThat(first.getName()).isEqualTo("プリンター保守サポート");
+            assertThat(first.getKind()).isEqualTo(ItemKind.SERVICE);
+            assertThat(first.getSupplier()).isEqualTo("中部設備サプライ株式会社");
+            assertThat(first.getUnit()).isEqualTo("時間");
+            assertThat(first.getPrice()).isEqualTo(4500);
+        }
+
+        @Test
+        void selectCatalogItems_noCondition() {
+            CatalogSearchForm form = new CatalogSearchForm();
+            form.setPage(2);
+
+            List<CatalogListRowDto> actual = itemMapperCustom.selectCatalogItems(form);
+
+            assertThat(actual).hasSize(2);
+
+            CatalogListRowDto first = actual.get(0);
+            assertThat(first.getItemId()).isEqualTo("1bd0d872-69b1-4999-b522-ac202c481662");
+            assertThat(first.getName()).isEqualTo("油性ボールペン 黒 10本セット");
+            assertThat(first.getKind()).isEqualTo(ItemKind.GOODS);
+            assertThat(first.getSupplier()).isEqualTo("神奈川文具株式会社");
+            assertThat(first.getUnit()).isEqualTo("個");
+            assertThat(first.getPrice()).isEqualTo(980);
+        }
+
+        @Nested
+        class Filter {
+
+            @ParameterizedTest
+            @MethodSource("createFilterCaces")
+            void selectCatalogItems_filter(Consumer<CatalogSearchForm> consumer, int expected) {
+                CatalogSearchForm form = new CatalogSearchForm();
+                form.setSize(100);
+                consumer.accept(form);
+
+                List<CatalogListRowDto> actual = itemMapperCustom.selectCatalogItems(form);
+
+                assertThat(actual).hasSize(expected);
+            }
+
+            static Stream<Arguments> createFilterCaces() {
+                return Stream
+                    .of(Arguments.of((Consumer<CatalogSearchForm>) f -> f.setKind(ItemKind.GOODS), 3), Arguments.of(
+                            (Consumer<CatalogSearchForm>) f -> f.setSupplierId("b4d8e1f7-92ac-4c35-8f21-6a7b8c9d0e1f"),
+                            2));
+            }
+
+        }
+
+        @Nested
+        class Search {
+
+            @Test
+            void selectCatalogItems_singleWord() {
+                CatalogSearchForm form = new CatalogSearchForm();
+                form.setKeyword("ター");
+                form.setSize(100);
+                List<CatalogListRowDto> actual = itemMapperCustom.selectCatalogItems(form);
+
+                assertThat(actual).hasSize(3);
+            }
+
+            @Test
+            void selectCatalogItems_multiWords() {
+                ItemSearchForm form = new ItemSearchForm();
+                form.setKeyword("ボールペン  　黒");
+                form.setSize(100);
+                List<ItemListItemDto> actual = itemMapperCustom.selectItems(form);
+
+                assertThat(actual).hasSize(1);
+                assertThat(actual.get(0).getItemId()).isEqualTo("1bd0d872-69b1-4999-b522-ac202c481662");
             }
 
         }
