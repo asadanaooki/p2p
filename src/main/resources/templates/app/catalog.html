@@ -5,13 +5,18 @@
   <link rel="stylesheet" th:href="@{/css/common.css}" />
   <link rel="stylesheet" th:href="@{/css/app/catalog.css}" />
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script defer th:src="@{/js/common.js}"></script>
   <script defer th:src="@{/js/app/catalog.js}"></script>
 </head>
 
 <body>
   <main class="page">
-    <h1 class="page-title">カタログから追加</h1>
-    <button type="button" id="closeCatalogButton" class="close-button">×</button>
+    <div class="page-header">
+      <h1 class="page-title">カタログから追加</h1>
+      <button type="button" id="closeCatalogButton" class="close-button">×</button>
+    </div>
+
+    <div id="catalogSearchErrorArea" class="search-error-area"></div>
 
     <div class="toolbar">
       <form id="catalogKeywordForm" th:object="${form}" class="keyword-search-form">
@@ -21,7 +26,6 @@
 
         <div class="search-box">
           <input id="keyword" type="text" th:field="*{keyword}" class="search-input" placeholder="名称で検索">
-
           <button type="button" id="keywordSearchButton" class="search-icon-button">
             <svg class="search-icon" viewBox="0 0 632.399 632.399">
               <path
@@ -32,14 +36,14 @@
                     c0-119.34,96.751-216.091,216.092-216.091s216.091,96.751,216.091,216.091C471.199,364.244,374.448,460.996,255.108,460.996z" />
             </svg>
           </button>
-
-          <button type="button" id="filterToggleButton" class="filter-toggle-button">
-            <svg class="filter-toggle-icon" viewBox="0 0 48 48">
-              <polyline points="6.33 7 20.01 24 20.01 42 28.01 37 28.01 24 27.99 24 41.99 7 15.01 7" fill="none"
-                stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4" />
-            </svg>
-          </button>
         </div>
+      </form>
+      <button type="button" id="filterToggleButton" class="filter-toggle-button">
+        <svg class="filter-toggle-icon" viewBox="0 0 48 48">
+          <polyline points="6.33 7 20.01 24 20.01 42 28.01 37 28.01 24 27.99 24 41.99 7 15.01 7" fill="none"
+            stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4" />
+        </svg>
+      </button>
     </div>
 
     <div id="filterPanel" class="filter-panel"
@@ -83,10 +87,8 @@
       </form>
     </div>
 
-    <div id="catalogSearchErrorArea" class="search-error-area"></div>
-
-    <div class="catalogResultArea" th:fragment="catalogResultArea">
-      <table class="catalog-table">
+    <div class="catalog-result-area" th:fragment="catalogResultArea">
+      <table class="list-table">
         <thead>
           <tr>
             <th class="col-name">名称</th>
@@ -107,11 +109,11 @@
             <td class="col-unit" th:text="${item.unit}"></td>
             <td class="col-price" th:text="${#numbers.formatInteger(item.price, 1, 'COMMA')}"></td>
             <td class="col-quantity">
-              <input type="number" class="quantity-input">
+              <input type="number" class="quantity-input" value="1" min="1">
             </td>
             <td class="col-action">
               <button type="button" class="add-button" th:data-item-id="${item.itemId}" th:data-name="${item.name}"
-                th:data-kind="${item.kind.label}" th:data-supplier="${item.supplier}" th:data-unit="${item.unit}"
+                th:data-kind="${item.kind}" th:data-supplier="${item.supplier}" th:data-unit="${item.unit}"
                 th:data-price="${item.price}">
                 追加
               </button>
@@ -143,18 +145,17 @@
       <div class="selected-summary">
         <button type="button" id="toggleSelectedAreaButton" class="selected-button">
           <span>追加予定</span>
-          <span><span id="selectedCount" class="selected-badge">0</span>件</span>
+          <span><span id="selectedCount">0</span>件</span>
         </button>
 
         <span class="selected-total-label">
           <span>税抜合計</span>
-          <span id="footerTotalAmount">0</span>
-          円
+          <span><span id="footerTotalAmount">0</span>円</span>
         </span>
       </div>
 
       <div id="selectedArea" class="selected-area" hidden>
-        <table class="selected-table">
+        <table class="list-table">
           <thead>
             <tr>
               <th class="selected-col-name">名称</th>

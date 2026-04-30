@@ -48,7 +48,7 @@ public class CatalogController {
         
         if (bindingResult.hasErrors()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return "app/catalog :: catalogSearchErrorArea";
+            return "app/catalog :: catalogSearchErrors";
         }
         model.addAttribute("view", catalogService.searchItems(form));
 

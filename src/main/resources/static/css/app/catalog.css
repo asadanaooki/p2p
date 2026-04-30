@@ -1,0 +1,384 @@
+button {
+  cursor: pointer;
+}
+
+.page {
+  min-height: 100vh;
+  padding: 20px;
+  /* background-color: #f3f6f5; */
+}
+
+/* =========================
+   ヘッダー
+========================= */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  background-color: red;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 400;
+}
+
+.close-button {
+  border: none;
+  background-color: transparent;
+  font-size: 25px;
+}
+
+/* =========================
+   検索ツールバー
+========================= */
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px 32px 16px;
+  background-color: aquamarine;
+  gap: 12px;
+}
+
+.search-box {
+  display: flex;
+  align-items: flex-start;
+}
+
+.search-input {
+  width: 260px;
+  height: 35px;
+  padding: 0 12px;
+  border: 1px solid #aab9b6;
+  border-right: none;
+  outline: none;
+  background: #fff;
+  font-size: 14px;
+}
+
+.search-icon-button,
+.filter-toggle-button {
+  height: 35px;
+  border: 1px solid #aab9b6;
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-icon-button {
+  width: 48px;
+}
+
+.filter-toggle-button {
+  width: 48px;
+}
+
+.search-icon-button:hover,
+.filter-toggle-button:hover {
+  background: #e7efec;
+}
+
+.search-icon,
+.filter-toggle-icon {
+  width: 25px;
+  height: 25px;
+}
+
+/* =========================
+   フィルターパネル
+========================= */
+.filter-panel {
+  /* display: none; */
+  border-top: 1px solid #d4dddb;
+  background: #dfe6e3;
+}
+
+.filter-panel.is-open {
+  display: block;
+}
+
+.filter-form {
+  padding: 18px 32px 20px;
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: 150px 320px;
+  background-color: red;
+  gap: 25px;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.field-label {
+  font-size: 14px;
+  color: #4f605d;
+}
+
+.filter-item select {
+  padding: 6px 12px;
+  border: 1px solid #aab9b6;
+}
+
+.filter-actions {
+  display: flex;
+  background-color: green;
+  margin-top: 18px;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.filter-submit-button,
+.filter-reset-button,
+.confirm-button,
+.cancel-button,
+.selected-button {
+  min-width: 100px;
+  height: 30px;
+  border: 1px solid #9db1ae;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  background-color: #fff;
+}
+
+.filter-submit-button,
+.confirm-button {
+  color: #13a24a;
+}
+
+.filter-submit-button:hover,
+.filter-reset-button:hover,
+.confirm-button:hover,
+.cancel-button:hover,
+.selected-button:hover {
+  background: #f5f8f7;
+}
+
+/* =========================
+   エラー
+========================= */
+.search-error-area:not(:empty) {
+  margin: 12px 32px 0;
+}
+
+.field-error {
+  margin: 0;
+  color: #d93025;
+  font-size: 12px;
+}
+
+/* =========================
+   カタログ一覧
+========================= */
+.catalog-result-area {
+  border-top: 1px solid #d5dfdc;
+  border-bottom: 1px solid #d5dfdc;
+}
+
+.list-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.list-table th {
+  padding: 10px 12px;
+  border-bottom: 1px solid #d5dfdc;
+  border-right: 1px solid #c7d1ce;
+  background: #9fb3b2;
+  font-weight: 400;
+  text-align: left;
+  font-size: 14px;
+}
+
+.list-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e1e8e6;
+  font-size: 14px;
+  overflow-wrap: break-word;
+}
+
+.list-table tbody tr:hover {
+  background: #f8fbfa;
+}
+
+.quantity-input {
+  padding: 5px;
+  text-align: right;
+  border: 1px solid #b5c4c1;
+  outline: none;
+  width: 100%;
+}
+
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button,
+.selected-quantity-input::-webkit-outer-spin-button,
+.selected-quantity-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.add-button,
+.delete-selected-button {
+  min-width: 64px;
+  height: 34px;
+  border: 1px solid #4d6761;
+  border-radius: 17px;
+  background-color: #4d6761;
+  color: #fff;
+  font-size: 14px;
+}
+
+.add-button:hover,
+.delete-selected-button:hover {
+  background: #3f5651;
+}
+
+/* =========================
+   カタログ一覧 列幅
+========================= */
+.col-name {
+  width: 28%;
+}
+
+.col-kind {
+  width: 10%;
+}
+
+.col-supplier {
+  width: 24%;
+}
+
+.col-unit {
+  width: 8%;
+}
+
+.col-price {
+  width: 10%;
+  text-align: right;
+}
+
+.col-quantity {
+  width: 10%;
+}
+
+.col-action {
+  width: 10%;
+  text-align: center;
+}
+
+/* =========================
+   ページネーション
+========================= */
+.pagination {
+  display: flex;
+  justify-content: center;
+  padding: 18px 0;
+  gap: 8px;
+}
+
+.page-link {
+  min-width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: #243238;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-link:hover {
+  background: #f4f8f7;
+}
+
+.page-link.active {
+  background: #dfe8e5;
+  font-weight: 700;
+}
+
+/* =========================
+   フッター・追加予定
+========================= */
+.catalog-footer {
+  background-color: purple;
+  width: 100%;
+  margin: 8px 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* 追加予定ボタンは左、税抜合計は右 */
+.selected-summary {
+  display: flex;
+  justify-content: space-between;
+  background-color: yellowgreen;
+  padding-right: 64px;
+}
+
+.selected-button {
+  min-width: 190px;
+  color: #33413f;
+  gap: 8px;
+  border: 1px solid #9db1ae;
+}
+
+.selected-total-label {
+  display: flex;
+  gap: 8px;
+}
+
+/* =========================
+   追加予定一覧
+   カタログ一覧と同じ横幅で表示
+========================= */
+.selected-area {
+  border-top: 1px solid #d5dfdc;
+  border-bottom: 1px solid #d5dfdc;
+}
+
+/* =========================
+   追加予定一覧 列幅・配置
+========================= */
+.selected-col-name {
+  width: 24%;
+}
+
+.selected-col-kind {
+  width: 10%;
+}
+
+.selected-col-supplier {
+  width: 20%;
+}
+
+.selected-col-unit {
+  width: 8%;
+}
+
+.selected-col-price {
+  width: 10%;
+  text-align: right;
+}
+
+.selected-col-quantity {
+  width: 10%;
+  text-align: right;
+}
+
+.selected-col-subtotal {
+  width: 10%;
+  text-align: right;
+}
+
+.selected-col-action {
+  width: 8%;
+  text-align: center;
+}
