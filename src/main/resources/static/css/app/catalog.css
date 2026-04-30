@@ -14,7 +14,6 @@ button {
 .page-header {
   display: flex;
   justify-content: space-between;
-  background-color: red;
 }
 
 .page-title {
@@ -36,7 +35,6 @@ button {
   display: flex;
   justify-content: flex-end;
   padding: 20px 32px 16px;
-  background-color: aquamarine;
   gap: 12px;
 }
 
@@ -89,7 +87,7 @@ button {
    フィルターパネル
 ========================= */
 .filter-panel {
-  /* display: none; */
+  display: none;
   border-top: 1px solid #d4dddb;
   background: #dfe6e3;
 }
@@ -105,7 +103,6 @@ button {
 .filter-grid {
   display: grid;
   grid-template-columns: 150px 320px;
-  background-color: red;
   gap: 25px;
 }
 
@@ -127,7 +124,6 @@ button {
 
 .filter-actions {
   display: flex;
-  background-color: green;
   margin-top: 18px;
   gap: 10px;
   justify-content: flex-end;
@@ -218,9 +214,7 @@ button {
 }
 
 .quantity-input::-webkit-outer-spin-button,
-.quantity-input::-webkit-inner-spin-button,
-.selected-quantity-input::-webkit-outer-spin-button,
-.selected-quantity-input::-webkit-inner-spin-button {
+.quantity-input::-webkit-inner-spin-button {
   -webkit-appearance: none;
 }
 
@@ -307,7 +301,6 @@ button {
    フッター・追加予定
 ========================= */
 .catalog-footer {
-  background-color: purple;
   width: 100%;
   margin: 8px 0 16px;
   display: flex;
@@ -319,7 +312,6 @@ button {
 .selected-summary {
   display: flex;
   justify-content: space-between;
-  background-color: yellowgreen;
   padding-right: 64px;
 }
 
@@ -333,6 +325,13 @@ button {
 .selected-total-label {
   display: flex;
   gap: 8px;
+}
+
+.footer-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
 }
 
 /* =========================

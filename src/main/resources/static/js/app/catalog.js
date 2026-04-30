@@ -6,38 +6,36 @@ $(function () {
   // =========================
 
   $("#keywordSearchButton").on("click", function () {
-    $("#catalogKeywordForm input[name=page]").val(1);
-    searchCatalog($("#catalogKeywordForm"));
+    $("#catalogSearchForm input[name=page]").val(1);
+    searchCatalog($("#catalogSearchForm"));
   });
 
   $("#keyword").on("keydown", function (event) {
     if (event.key === "Enter") {
       event.preventDefault();
-      $("#catalogKeywordForm input[name=page]").val(1);
-      searchCatalog($("#catalogKeywordForm"));
+      $("#catalogSearchForm input[name=page]").val(1);
+      searchCatalog($("#catalogSearchForm"));
     }
   });
 
   $("#filterSubmitButton").on("click", function () {
-    $("#catalogFilterForm input[name=page]").val(1);
-    searchCatalog($("#catalogFilterForm"));
+    $("#catalogSearchForm input[name=page]").val(1);
+    searchCatalog($("#catalogSearchForm"));
   });
 
   $("#filterResetButton").on("click", function () {
-    $("#catalogFilterForm select[name=kind]").val("");
-    $("#catalogFilterForm select[name=supplierId]").val("");
-    $("#catalogFilterForm input[name=page]").val(1);
+    $("#catalogSearchForm select[name=kind]").val("");
+    $("#catalogSearchForm select[name=supplierId]").val("");
+    $("#catalogSearchForm input[name=page]").val(1);
 
-    searchCatalog($("#catalogFilterForm"));
+    searchCatalog($("#catalogSearchForm"));
   });
 
   $(document).on("click", ".page-link", function () {
     const page = $(this).data("page");
 
-    $("#catalogKeywordForm input[name=page]").val(page);
-    $("#catalogFilterForm input[name=page]").val(page);
-
-    searchCatalog($("#catalogKeywordForm"));
+    $("#catalogSearchForm input[name=page]").val(page);
+    searchCatalog($("#catalogSearchForm"));
   });
 
   /**
@@ -74,6 +72,10 @@ $(function () {
     const price = Number($button.data("price"));
 
     const quantity = Number($row.find(".quantity-input").val());
+
+    if (!Number.isInteger(quantity) || quantity < 1) {
+      return;
+    }
 
     const existingItem = selectedItems.find((item) => item.itemId === itemId);
 
@@ -112,6 +114,10 @@ $(function () {
       return;
     }
 
+    if (selectedItems.length === 0) {
+        return;
+    }
+
     renderSelectedRows();
     $("#selectedArea").prop("hidden", false);
   });
@@ -121,8 +127,12 @@ $(function () {
   // =========================
 
   $(document).on("change", "#selectedRows .quantity-input", function () {
-    const itemId = $(this).data("item-id");
-    const quantity = NUmber($(this).val());
+    const itemId = String($(this).data("item-id"));
+    const quantity = Number($(this).val());
+
+    if (!Number.isInteger(quantity) || quantity < 1) {
+      return;
+    }
 
     const item = selectedItems.find((item) => item.itemId === itemId);
 
@@ -135,14 +145,20 @@ $(function () {
   });
 
   $(document).on("click", ".delete-selected-button", function () {
-    const itemId = $(this).data("item-id");
+    const itemId = String($(this).data("item-id"));
     const index = selectedItems.findIndex((item) => item.itemId === itemId);
 
-    if (index != -1) {
+    if (index !== -1) {
       selectedItems.splice(index, 1);
     }
 
     updateSelectedSummary();
+
+    if (selectedItems.length === 0) {
+        $("#selectedArea").prop("hidden", true);
+        return;
+    }
+
     renderSelectedRows();
   });
 

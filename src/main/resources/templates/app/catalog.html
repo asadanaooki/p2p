@@ -18,14 +18,13 @@
 
     <div id="catalogSearchErrorArea" class="search-error-area"></div>
 
-    <div class="toolbar">
-      <form id="catalogKeywordForm" th:object="${form}" class="keyword-search-form">
-        <input type="hidden" th:field="*{kind}">
-        <input type="hidden" th:field="*{supplierId}">
-        <input type="hidden" th:field="*{page}">
+    <form id="catalogSearchForm" th:object="${form}" class="keyword-search-form">
+      <input type="hidden" th:field="*{page}">
 
+      <div class="toolbar">
         <div class="search-box">
           <input id="keyword" type="text" th:field="*{keyword}" class="search-input" placeholder="名称で検索">
+
           <button type="button" id="keywordSearchButton" class="search-icon-button">
             <svg class="search-icon" viewBox="0 0 632.399 632.399">
               <path
@@ -37,55 +36,52 @@
             </svg>
           </button>
         </div>
-      </form>
-      <button type="button" id="filterToggleButton" class="filter-toggle-button">
-        <svg class="filter-toggle-icon" viewBox="0 0 48 48">
-          <polyline points="6.33 7 20.01 24 20.01 42 28.01 37 28.01 24 27.99 24 41.99 7 15.01 7" fill="none"
-            stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4" />
-        </svg>
-      </button>
-    </div>
 
-    <div id="filterPanel" class="filter-panel"
-      th:classappend="${form.kind != null or form.supplierId != null} ? ' is-open' : ''">
+        <button type="button" id="filterToggleButton" class="filter-toggle-button">
+          <svg class="filter-toggle-icon" viewBox="0 0 48 48">
+            <polyline points="6.33 7 20.01 24 20.01 42 28.01 37 28.01 24 27.99 24 41.99 7 15.01 7" fill="none"
+              stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4" />
+          </svg>
+        </button>
+      </div>
 
-      <form id="catalogFilterForm" th:object="${form}" class="filter-form">
+      <div id="filterPanel" class="filter-panel"
+        th:classappend="${form.kind != null or form.supplierId != null} ? ' is-open' : ''">
 
-        <input type="hidden" th:field="*{keyword}">
-        <input type="hidden" th:field="*{page}">
+        <div class="filter-form">
+          <div class="filter-grid">
+            <div class="filter-item">
+              <label for="kind" class="field-label">種別</label>
+              <select id="kind" th:field="*{kind}">
+                <option value="">すべて</option>
+                <option th:each="kind : ${T(com.example.p2p.enums.ItemKind).values()}" th:value="${kind}"
+                  th:text="${kind.label}">
+                </option>
+              </select>
+            </div>
 
-        <div class="filter-grid">
-          <div class="filter-item">
-            <label for="kind" class="field-label">種別</label>
-            <select id="kind" th:field="*{kind}">
-              <option value="">すべて</option>
-              <option th:each="kind : ${T(com.example.p2p.enums.ItemKind).values()}" th:value="${kind}"
-                th:text="${kind.label}">
-              </option>
-            </select>
+            <div class="filter-item">
+              <label for="supplierId" class="field-label">仕入先</label>
+              <select id="supplierId" th:field="*{supplierId}">
+                <option value="">すべて</option>
+                <option th:each="s : ${view.supplierOptions}" th:value="${s.supplierId}" th:text="${s.name}">
+                </option>
+              </select>
+            </div>
           </div>
 
-          <div class="filter-item">
-            <label for="supplierId" class="field-label">仕入先</label>
-            <select id="supplierId" th:field="*{supplierId}">
-              <option value="">すべて</option>
-              <option th:each="s : ${supplierOptions}" th:value="${s.supplierId}" th:text="${s.name}">
-              </option>
-            </select>
+          <div class="filter-actions">
+            <button type="button" id="filterSubmitButton" class="filter-submit-button">
+              絞り込む
+            </button>
+
+            <button type="button" id="filterResetButton" class="filter-reset-button">
+              リセット
+            </button>
           </div>
         </div>
-
-        <div class="filter-actions">
-          <button type="button" id="filterSubmitButton" class="filter-submit-button">
-            絞り込む
-          </button>
-
-          <button type="button" id="filterResetButton" class="filter-reset-button">
-            リセット
-          </button>
-        </div>
-      </form>
-    </div>
+      </div>
+    </form>
 
     <div class="catalog-result-area" th:fragment="catalogResultArea">
       <table class="list-table">
@@ -121,6 +117,7 @@
           </tr>
         </tbody>
       </table>
+
       <div class="pagination" th:if="${!#lists.isEmpty(view.pageNumberList)}">
         <button type="button" class="page-link" th:if="${view.currentPage > 1}" th:data-page="${view.currentPage - 1}">
           &lt;
@@ -171,9 +168,7 @@
 
           <tbody id="selectedRows">
           </tbody>
-
         </table>
-
       </div>
 
       <div class="footer-actions">
@@ -185,9 +180,7 @@
         </button>
       </div>
     </div>
-
   </main>
-
 </body>
 
 </html>
