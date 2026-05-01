@@ -59,7 +59,6 @@ public class ItemController {
         if (bindingResult.hasErrors()) {
             ItemSearchForm lastCondition = (ItemSearchForm) session.getAttribute(LAST_SEARCH_CONDITION);
             ItemSearchForm formToSearch = lastCondition == null ? new ItemSearchForm() : lastCondition;
-            formToSearch = lastCondition == null ? new ItemSearchForm() : lastCondition;
             model.addAttribute("view", itemService.searchItems(formToSearch));
             return "admin/item-list";
         }

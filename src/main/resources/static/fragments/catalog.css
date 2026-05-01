@@ -1,0 +1,380 @@
+.catalog-page {
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.catalog-page button {
+  cursor: pointer;
+}
+
+/* =========================
+   ヘッダー
+========================= */
+.catalog-page-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.catalog-page-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 400;
+}
+
+.catalog-close-button {
+  border: none;
+  background-color: transparent;
+  font-size: 25px;
+}
+
+/* =========================
+   検索ツールバー
+========================= */
+.catalog-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px 32px 16px;
+  gap: 12px;
+}
+
+.catalog-search-box {
+  display: flex;
+  align-items: flex-start;
+}
+
+.catalog-search-input {
+  width: 260px;
+  height: 35px;
+  padding: 0 12px;
+  border: 1px solid #aab9b6;
+  border-right: none;
+  outline: none;
+  background: #fff;
+  font-size: 14px;
+}
+
+.catalog-search-icon-button,
+.catalog-filter-toggle-button {
+  height: 35px;
+  border: 1px solid #aab9b6;
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.catalog-search-icon-button {
+  width: 48px;
+}
+
+.catalog-filter-toggle-button {
+  width: 48px;
+}
+
+.catalog-search-icon-button:hover,
+.catalog-filter-toggle-button:hover {
+  background: #e7efec;
+}
+
+.catalog-search-icon,
+.catalog-filter-toggle-icon {
+  width: 25px;
+  height: 25px;
+}
+
+/* =========================
+   フィルターパネル
+========================= */
+.catalog-filter-panel {
+  display: none;
+  border-top: 1px solid #d4dddb;
+  background: #dfe6e3;
+}
+
+.catalog-filter-panel.is-open {
+  display: block;
+}
+
+.catalog-filter-form {
+  padding: 18px 32px 20px;
+}
+
+.catalog-filter-grid {
+  display: grid;
+  grid-template-columns: 150px 320px;
+  gap: 25px;
+}
+
+.catalog-filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.catalog-field-label {
+  font-size: 14px;
+  color: #4f605d;
+}
+
+.catalog-filter-item select {
+  padding: 6px 12px;
+  border: 1px solid #aab9b6;
+}
+
+.catalog-filter-actions {
+  display: flex;
+  margin-top: 18px;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.catalog-filter-submit-button,
+.catalog-filter-reset-button,
+.catalog-confirm-button,
+.catalog-cancel-button,
+.catalog-selected-button {
+  min-width: 100px;
+  height: 30px;
+  border: 1px solid #9db1ae;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  background-color: #fff;
+}
+
+.catalog-filter-submit-button,
+.catalog-confirm-button {
+  color: #13a24a;
+}
+
+.catalog-filter-submit-button:hover,
+.catalog-filter-reset-button:hover,
+.catalog-confirm-button:hover,
+.catalog-cancel-button:hover,
+.catalog-selected-button:hover {
+  background: #f5f8f7;
+}
+
+/* =========================
+   エラー
+========================= */
+.catalog-search-error-area:not(:empty) {
+  margin: 12px 32px 0;
+}
+
+.catalog-field-error {
+  margin: 0;
+  color: #d93025;
+  font-size: 12px;
+}
+
+/* =========================
+   カタログ一覧
+========================= */
+.catalog-result-area {
+  border-top: 1px solid #d5dfdc;
+  border-bottom: 1px solid #d5dfdc;
+}
+
+.catalog-list-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.catalog-list-table th {
+  padding: 10px 12px;
+  border-bottom: 1px solid #d5dfdc;
+  border-right: 1px solid #c7d1ce;
+  background: #9fb3b2;
+  font-weight: 400;
+  text-align: left;
+  font-size: 14px;
+}
+
+.catalog-list-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e1e8e6;
+  font-size: 14px;
+  overflow-wrap: break-word;
+}
+
+.catalog-list-table tbody tr:hover {
+  background: #f8fbfa;
+}
+
+.catalog-quantity-input {
+  padding: 5px;
+  text-align: right;
+  border: 1px solid #b5c4c1;
+  outline: none;
+  width: 100%;
+}
+
+.catalog-quantity-input::-webkit-outer-spin-button,
+.catalog-quantity-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.catalog-add-button,
+.catalog-delete-selected-button {
+  min-width: 64px;
+  height: 34px;
+  border: 1px solid #4d6761;
+  border-radius: 17px;
+  background-color: #4d6761;
+  color: #fff;
+  font-size: 14px;
+}
+
+.catalog-add-button:hover,
+.catalog-delete-selected-button:hover {
+  background: #3f5651;
+}
+
+/* =========================
+   カタログ一覧 列幅
+========================= */
+.catalog-col-name {
+  width: 28%;
+}
+
+.catalog-col-kind {
+  width: 10%;
+}
+
+.catalog-col-supplier {
+  width: 24%;
+}
+
+.catalog-col-unit {
+  width: 8%;
+}
+
+.catalog-col-price {
+  width: 10%;
+  text-align: right;
+}
+
+.catalog-col-quantity {
+  width: 10%;
+}
+
+.catalog-col-action {
+  width: 10%;
+  text-align: center;
+}
+
+/* =========================
+   ページネーション
+========================= */
+.catalog-pagination {
+  display: flex;
+  justify-content: center;
+  padding: 18px 0;
+  gap: 8px;
+}
+
+.catalog-page-link {
+  min-width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: #243238;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.catalog-page-link:hover {
+  background: #f4f8f7;
+}
+
+.catalog-page-link.active {
+  background: #dfe8e5;
+  font-weight: 700;
+}
+
+/* =========================
+   フッター・追加予定
+========================= */
+.catalog-footer {
+  width: 100%;
+  margin: 8px 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.catalog-selected-summary {
+  display: flex;
+  justify-content: space-between;
+  padding-right: 64px;
+}
+
+.catalog-selected-button {
+  min-width: 190px;
+  color: #33413f;
+  gap: 8px;
+  border: 1px solid #9db1ae;
+}
+
+.catalog-selected-total-label {
+  display: flex;
+  gap: 8px;
+}
+
+.catalog-footer-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* =========================
+   追加予定一覧
+========================= */
+.catalog-selected-area {
+  border-top: 1px solid #d5dfdc;
+  border-bottom: 1px solid #d5dfdc;
+}
+
+/* =========================
+   追加予定一覧 列幅・配置
+========================= */
+.catalog-selected-col-name {
+  width: 24%;
+}
+
+.catalog-selected-col-kind {
+  width: 10%;
+}
+
+.catalog-selected-col-supplier {
+  width: 20%;
+}
+
+.catalog-selected-col-unit {
+  width: 8%;
+}
+
+.catalog-selected-col-price {
+  width: 10%;
+  text-align: right;
+}
+
+.catalog-selected-col-quantity {
+  width: 10%;
+  text-align: right;
+}
+
+.catalog-selected-col-subtotal {
+  width: 10%;
+  text-align: right;
+}
+
+.catalog-selected-col-action {
+  width: 8%;
+  text-align: center;
+}

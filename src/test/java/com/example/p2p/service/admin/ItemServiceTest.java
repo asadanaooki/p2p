@@ -27,7 +27,6 @@ import com.example.p2p.form.admin.ItemUpsertForm;
 import com.example.p2p.mapper.ItemMapper;
 import com.example.p2p.mapper.ItemMapperCustom;
 import com.example.p2p.mapper.PurchaseRequestDetailMapper;
-import com.example.p2p.service.admin.ItemService;
 import com.example.p2p.util.CommonUtil;
 
 @SpringBootTest
