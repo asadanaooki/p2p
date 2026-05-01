@@ -1,28 +1,27 @@
-button {
-  cursor: pointer;
-}
-
-.page {
+.catalog-page {
   min-height: 100vh;
   padding: 20px;
-  /* background-color: #f3f6f5; */
+}
+
+.catalog-page button {
+  cursor: pointer;
 }
 
 /* =========================
    ヘッダー
 ========================= */
-.page-header {
+.catalog-page-header {
   display: flex;
   justify-content: space-between;
 }
 
-.page-title {
+.catalog-page-title {
   margin: 0;
   font-size: 22px;
   font-weight: 400;
 }
 
-.close-button {
+.catalog-close-button {
   border: none;
   background-color: transparent;
   font-size: 25px;
@@ -31,19 +30,19 @@ button {
 /* =========================
    検索ツールバー
 ========================= */
-.toolbar {
+.catalog-toolbar {
   display: flex;
   justify-content: flex-end;
   padding: 20px 32px 16px;
   gap: 12px;
 }
 
-.search-box {
+.catalog-search-box {
   display: flex;
   align-items: flex-start;
 }
 
-.search-input {
+.catalog-search-input {
   width: 260px;
   height: 35px;
   padding: 0 12px;
@@ -54,8 +53,8 @@ button {
   font-size: 14px;
 }
 
-.search-icon-button,
-.filter-toggle-button {
+.catalog-search-icon-button,
+.catalog-filter-toggle-button {
   height: 35px;
   border: 1px solid #aab9b6;
   background: #fff;
@@ -64,21 +63,21 @@ button {
   justify-content: center;
 }
 
-.search-icon-button {
+.catalog-search-icon-button {
   width: 48px;
 }
 
-.filter-toggle-button {
+.catalog-filter-toggle-button {
   width: 48px;
 }
 
-.search-icon-button:hover,
-.filter-toggle-button:hover {
+.catalog-search-icon-button:hover,
+.catalog-filter-toggle-button:hover {
   background: #e7efec;
 }
 
-.search-icon,
-.filter-toggle-icon {
+.catalog-search-icon,
+.catalog-filter-toggle-icon {
   width: 25px;
   height: 25px;
 }
@@ -86,54 +85,54 @@ button {
 /* =========================
    フィルターパネル
 ========================= */
-.filter-panel {
+.catalog-filter-panel {
   display: none;
   border-top: 1px solid #d4dddb;
   background: #dfe6e3;
 }
 
-.filter-panel.is-open {
+.catalog-filter-panel.is-open {
   display: block;
 }
 
-.filter-form {
+.catalog-filter-form {
   padding: 18px 32px 20px;
 }
 
-.filter-grid {
+.catalog-filter-grid {
   display: grid;
   grid-template-columns: 150px 320px;
   gap: 25px;
 }
 
-.filter-item {
+.catalog-filter-item {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.field-label {
+.catalog-field-label {
   font-size: 14px;
   color: #4f605d;
 }
 
-.filter-item select {
+.catalog-filter-item select {
   padding: 6px 12px;
   border: 1px solid #aab9b6;
 }
 
-.filter-actions {
+.catalog-filter-actions {
   display: flex;
   margin-top: 18px;
   gap: 10px;
   justify-content: flex-end;
 }
 
-.filter-submit-button,
-.filter-reset-button,
-.confirm-button,
-.cancel-button,
-.selected-button {
+.catalog-filter-submit-button,
+.catalog-filter-reset-button,
+.catalog-confirm-button,
+.catalog-cancel-button,
+.catalog-selected-button {
   min-width: 100px;
   height: 30px;
   border: 1px solid #9db1ae;
@@ -144,27 +143,27 @@ button {
   background-color: #fff;
 }
 
-.filter-submit-button,
-.confirm-button {
+.catalog-filter-submit-button,
+.catalog-confirm-button {
   color: #13a24a;
 }
 
-.filter-submit-button:hover,
-.filter-reset-button:hover,
-.confirm-button:hover,
-.cancel-button:hover,
-.selected-button:hover {
+.catalog-filter-submit-button:hover,
+.catalog-filter-reset-button:hover,
+.catalog-confirm-button:hover,
+.catalog-cancel-button:hover,
+.catalog-selected-button:hover {
   background: #f5f8f7;
 }
 
 /* =========================
    エラー
 ========================= */
-.search-error-area:not(:empty) {
+.catalog-search-error-area:not(:empty) {
   margin: 12px 32px 0;
 }
 
-.field-error {
+.catalog-field-error {
   margin: 0;
   color: #d93025;
   font-size: 12px;
@@ -178,13 +177,13 @@ button {
   border-bottom: 1px solid #d5dfdc;
 }
 
-.list-table {
+.catalog-list-table {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
 }
 
-.list-table th {
+.catalog-list-table th {
   padding: 10px 12px;
   border-bottom: 1px solid #d5dfdc;
   border-right: 1px solid #c7d1ce;
@@ -194,18 +193,18 @@ button {
   font-size: 14px;
 }
 
-.list-table td {
+.catalog-list-table td {
   padding: 10px 12px;
   border-bottom: 1px solid #e1e8e6;
   font-size: 14px;
   overflow-wrap: break-word;
 }
 
-.list-table tbody tr:hover {
+.catalog-list-table tbody tr:hover {
   background: #f8fbfa;
 }
 
-.quantity-input {
+.catalog-quantity-input {
   padding: 5px;
   text-align: right;
   border: 1px solid #b5c4c1;
@@ -213,13 +212,13 @@ button {
   width: 100%;
 }
 
-.quantity-input::-webkit-outer-spin-button,
-.quantity-input::-webkit-inner-spin-button {
+.catalog-quantity-input::-webkit-outer-spin-button,
+.catalog-quantity-input::-webkit-inner-spin-button {
   -webkit-appearance: none;
 }
 
-.add-button,
-.delete-selected-button {
+.catalog-add-button,
+.catalog-delete-selected-button {
   min-width: 64px;
   height: 34px;
   border: 1px solid #4d6761;
@@ -229,40 +228,40 @@ button {
   font-size: 14px;
 }
 
-.add-button:hover,
-.delete-selected-button:hover {
+.catalog-add-button:hover,
+.catalog-delete-selected-button:hover {
   background: #3f5651;
 }
 
 /* =========================
    カタログ一覧 列幅
 ========================= */
-.col-name {
+.catalog-col-name {
   width: 28%;
 }
 
-.col-kind {
+.catalog-col-kind {
   width: 10%;
 }
 
-.col-supplier {
+.catalog-col-supplier {
   width: 24%;
 }
 
-.col-unit {
+.catalog-col-unit {
   width: 8%;
 }
 
-.col-price {
+.catalog-col-price {
   width: 10%;
   text-align: right;
 }
 
-.col-quantity {
+.catalog-col-quantity {
   width: 10%;
 }
 
-.col-action {
+.catalog-col-action {
   width: 10%;
   text-align: center;
 }
@@ -270,14 +269,14 @@ button {
 /* =========================
    ページネーション
 ========================= */
-.pagination {
+.catalog-pagination {
   display: flex;
   justify-content: center;
   padding: 18px 0;
   gap: 8px;
 }
 
-.page-link {
+.catalog-page-link {
   min-width: 40px;
   height: 40px;
   border: none;
@@ -288,11 +287,11 @@ button {
   justify-content: center;
 }
 
-.page-link:hover {
+.catalog-page-link:hover {
   background: #f4f8f7;
 }
 
-.page-link.active {
+.catalog-page-link.active {
   background: #dfe8e5;
   font-weight: 700;
 }
@@ -308,26 +307,25 @@ button {
   gap: 14px;
 }
 
-/* 追加予定ボタンは左、税抜合計は右 */
-.selected-summary {
+.catalog-selected-summary {
   display: flex;
   justify-content: space-between;
   padding-right: 64px;
 }
 
-.selected-button {
+.catalog-selected-button {
   min-width: 190px;
   color: #33413f;
   gap: 8px;
   border: 1px solid #9db1ae;
 }
 
-.selected-total-label {
+.catalog-selected-total-label {
   display: flex;
   gap: 8px;
 }
 
-.footer-actions {
+.catalog-footer-actions {
   margin-top: 20px;
   display: flex;
   justify-content: center;
@@ -336,9 +334,8 @@ button {
 
 /* =========================
    追加予定一覧
-   カタログ一覧と同じ横幅で表示
 ========================= */
-.selected-area {
+.catalog-selected-area {
   border-top: 1px solid #d5dfdc;
   border-bottom: 1px solid #d5dfdc;
 }
@@ -346,38 +343,38 @@ button {
 /* =========================
    追加予定一覧 列幅・配置
 ========================= */
-.selected-col-name {
+.catalog-selected-col-name {
   width: 24%;
 }
 
-.selected-col-kind {
+.catalog-selected-col-kind {
   width: 10%;
 }
 
-.selected-col-supplier {
+.catalog-selected-col-supplier {
   width: 20%;
 }
 
-.selected-col-unit {
+.catalog-selected-col-unit {
   width: 8%;
 }
 
-.selected-col-price {
+.catalog-selected-col-price {
   width: 10%;
   text-align: right;
 }
 
-.selected-col-quantity {
+.catalog-selected-col-quantity {
   width: 10%;
   text-align: right;
 }
 
-.selected-col-subtotal {
+.catalog-selected-col-subtotal {
   width: 10%;
   text-align: right;
 }
 
-.selected-col-action {
+.catalog-selected-col-action {
   width: 8%;
   text-align: center;
 }

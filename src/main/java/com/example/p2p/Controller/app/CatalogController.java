@@ -25,43 +25,41 @@ import lombok.AllArgsConstructor;
 public class CatalogController {
 
     private static final Logger logger = LoggerFactory.getLogger(CatalogController.class);
-    
-    private CatalogService catalogService;
-    
+
+    private final CatalogService catalogService;
+
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(String.class, "supplierId", new StringTrimmerEditor(true));
     }
-    
+
     @GetMapping
-    public String showCatalogList(
-            @ModelAttribute("form") CatalogSearchForm form,
+    public String showCatalogList(@ModelAttribute("catalogSearchForm") CatalogSearchForm catalogSearchForm,
             Model model) {
         logger.debug("カタログ一覧画面表示開始");
 
-        model.addAttribute("view", catalogService.searchItems(form));
+        model.addAttribute("catalogView", catalogService.searchItems(catalogSearchForm));
 
         logger.debug("カタログ一覧画面表示完了");
-        
+
         return "app/catalog";
     }
-    
+
     @GetMapping("/search")
-    public String searchCatalogList(
-            @Valid @ModelAttribute("form") CatalogSearchForm form,
-            BindingResult bindingResult,
-            Model model,
-            HttpServletResponse response) {
+    public String searchCatalogList(@Valid @ModelAttribute("catalogSearchForm") CatalogSearchForm catalogSearchForm,
+            BindingResult bindingResult, Model model, HttpServletResponse response) {
         logger.debug("カタログ一覧検索開始");
-        
+
         if (bindingResult.hasErrors()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return "app/catalog :: catalogSearchErrors";
         }
-        model.addAttribute("view", catalogService.searchItems(form));
+
+        model.addAttribute("catalogView", catalogService.searchItems(catalogSearchForm));
 
         logger.debug("カタログ一覧検索完了");
-        
+
         return "app/catalog :: catalogResultArea";
     }
+
 }

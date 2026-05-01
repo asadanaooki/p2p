@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+  <div th:fragment="catalogContent" class="catalog-page">
+    <div class="catalog-page-header">
+      <h1 class="catalog-page-title">カタログから追加</h1>
+      <button type="button" id="catalogCloseButton" class="catalog-close-button">×</button>
+    </div>
+
+    <div id="catalogSearchErrorArea" class="catalog-search-error-area"></div>
+
+    <form id="catalogSearchForm" th:object="${catalogSearchForm}" class="keyword-search-form catalog-search-form">
+      <input type="hidden" th:field="*{page}">
+
+      <div class="catalog-toolbar">
+        <div class="catalog-search-box">
+          <input id="catalogKeyword" type="text" th:field="*{keyword}" class="catalog-search-input" placeholder="名称で検索">
+
+          <button type="button" id="catalogKeywordSearchButton" class="catalog-search-icon-button">
+            <svg class="catalog-search-icon" viewBox="0 0 632.399 632.399">
+              <path
+                d="M255.108,0C119.863,0,10.204,109.66,10.204,244.904c0,135.245,109.659,244.905,244.904,244.905
+                    c52.006,0,100.238-16.223,139.883-43.854l185.205,185.176c1.671,1.672,4.379,1.672,5.964,0.115l34.892-34.891
+                    c1.613-1.613,1.47-4.379-0.115-5.965L438.151,407.605c38.493-43.246,61.86-100.237,61.86-162.702
+                    C500.012,109.66,390.353,0,255.108,0z M255.108,460.996c-119.34,0-216.092-96.752-216.092-216.092
+                    c0-119.34,96.751-216.091,216.092-216.091s216.091,96.751,216.091,216.091C471.199,364.244,374.448,460.996,255.108,460.996z" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Common.js が id="filterToggleButton" を見るので id は残す -->
+        <button type="button" id="filterToggleButton" class="catalog-filter-toggle-button">
+          <svg class="catalog-filter-toggle-icon" viewBox="0 0 48 48">
+            <polyline points="6.33 7 20.01 24 20.01 42 28.01 37 28.01 24 27.99 24 41.99 7 15.01 7" fill="none"
+              stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Common.js が id="filterPanel" を見るので id は残す -->
+      <div id="filterPanel" class="catalog-filter-panel"
+        th:classappend="${catalogSearchForm.kind != null or catalogSearchForm.supplierId != null} ? ' is-open' : ''">
+
+        <div class="catalog-filter-form">
+          <div class="catalog-filter-grid">
+            <div class="catalog-filter-item">
+              <label for="kind" class="catalog-field-label">種別</label>
+              <select id="kind" th:field="*{kind}">
+                <option value="">すべて</option>
+                <option th:each="kind : ${T(com.example.p2p.enums.ItemKind).values()}" th:value="${kind}"
+                  th:text="${kind.label}">
+                </option>
+              </select>
+            </div>
+
+            <div class="catalog-filter-item">
+              <label for="supplierId" class="catalog-field-label">仕入先</label>
+              <select id="supplierId" th:field="*{supplierId}">
+                <option value="">すべて</option>
+                <option th:each="s : ${catalogView.supplierOptions}" th:value="${s.supplierId}" th:text="${s.name}">
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="catalog-filter-actions">
+            <button type="button" id="catalogFilterSubmitButton" class="catalog-filter-submit-button">
+              絞り込む
+            </button>
+
+            <button type="button" id="catalogFilterResetButton" class="catalog-filter-reset-button">
+              リセット
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <div class="catalog-result-area" th:fragment="catalogResultArea">
+      <table class="catalog-list-table">
+        <thead>
+          <tr>
+            <th class="catalog-col-name">名称</th>
+            <th class="catalog-col-kind">種別</th>
+            <th class="catalog-col-supplier">仕入先</th>
+            <th class="catalog-col-unit">単位</th>
+            <th class="catalog-col-price">価格</th>
+            <th class="catalog-col-quantity">数量</th>
+            <th class="catalog-col-action">追加</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr th:each="item : ${catalogView.items}">
+            <td class="catalog-col-name" th:text="${item.name}"></td>
+            <td class="catalog-col-kind" th:text="${item.kind.label}"></td>
+            <td class="catalog-col-supplier" th:text="${item.supplier}"></td>
+            <td class="catalog-col-unit" th:text="${item.unit}"></td>
+            <td class="catalog-col-price" th:text="${#numbers.formatInteger(item.price, 1, 'COMMA')}"></td>
+
+            <td class="catalog-col-quantity">
+              <input type="number" class="catalog-quantity-input" value="1" min="1">
+            </td>
+
+            <td class="catalog-col-action">
+              <button type="button" class="catalog-add-button" th:data-item-id="${item.itemId}"
+                th:data-name="${item.name}" th:data-kind="${item.kind}" th:data-supplier="${item.supplier}"
+                th:data-unit="${item.unit}" th:data-price="${item.price}">
+                追加
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="catalog-pagination" th:if="${!#lists.isEmpty(catalogView.pageNumberList)}">
+        <button type="button" class="catalog-page-link" th:if="${catalogView.currentPage > 1}"
+          th:data-page="${catalogView.currentPage - 1}">
+          &lt;
+        </button>
+
+        <button type="button" class="catalog-page-link" th:each="pageNo : ${catalogView.pageNumberList}"
+          th:classappend="${pageNo == catalogView.currentPage} ? ' active' : ''" th:data-page="${pageNo}"
+          th:text="${pageNo}">
+        </button>
+
+        <button type="button" class="catalog-page-link"
+          th:if="${catalogView.currentPage < #lists.size(catalogView.pageNumberList)}"
+          th:data-page="${catalogView.currentPage + 1}">
+          &gt;
+        </button>
+      </div>
+    </div>
+
+    <th:block th:fragment="catalogSearchErrors" th:object="${catalogSearchForm}">
+      <p class="catalog-field-error" th:each="err : ${#fields.errors('*')}" th:text="${err}">
+      </p>
+    </th:block>
+
+    <div class="catalog-footer">
+      <div class="catalog-selected-summary">
+        <button type="button" id="catalogToggleSelectedAreaButton" class="catalog-selected-button">
+          <span>追加予定</span>
+          <span><span id="catalogSelectedCount">0</span>件</span>
+        </button>
+
+        <span class="catalog-selected-total-label">
+          <span>税抜合計</span>
+          <span><span id="catalogFooterTotalAmount">0</span>円</span>
+        </span>
+      </div>
+
+      <div id="catalogSelectedArea" class="catalog-selected-area" hidden>
+        <table class="catalog-list-table">
+          <thead>
+            <tr>
+              <th class="catalog-selected-col-name">名称</th>
+              <th class="catalog-selected-col-kind">種別</th>
+              <th class="catalog-selected-col-supplier">仕入先</th>
+              <th class="catalog-selected-col-unit">単位</th>
+              <th class="catalog-selected-col-price">価格</th>
+              <th class="catalog-selected-col-quantity">数量</th>
+              <th class="catalog-selected-col-subtotal">小計</th>
+              <th class="catalog-selected-col-action">削除</th>
+            </tr>
+          </thead>
+
+          <tbody id="catalogSelectedRows">
+          </tbody>
+        </table>
+      </div>
+
+      <div class="catalog-footer-actions">
+        <button type="button" id="catalogConfirmButton" class="catalog-confirm-button">
+          明細へ反映
+        </button>
+
+        <button type="button" id="catalogCancelButton" class="catalog-cancel-button">
+          キャンセル
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

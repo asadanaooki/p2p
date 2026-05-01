@@ -5,12 +5,12 @@ $(function () {
   // 検索・フィルター
   // =========================
 
-  $("#keywordSearchButton").on("click", function () {
+  $("#catalogKeywordSearchButton").on("click", function () {
     $("#catalogSearchForm input[name=page]").val(1);
     searchCatalog($("#catalogSearchForm"));
   });
 
-  $("#keyword").on("keydown", function (event) {
+  $("#catalogKeyword").on("keydown", function (event) {
     if (event.key === "Enter") {
       event.preventDefault();
       $("#catalogSearchForm input[name=page]").val(1);
@@ -18,12 +18,12 @@ $(function () {
     }
   });
 
-  $("#filterSubmitButton").on("click", function () {
+  $("#catalogFilterSubmitButton").on("click", function () {
     $("#catalogSearchForm input[name=page]").val(1);
     searchCatalog($("#catalogSearchForm"));
   });
 
-  $("#filterResetButton").on("click", function () {
+  $("#catalogFilterResetButton").on("click", function () {
     $("#catalogSearchForm select[name=kind]").val("");
     $("#catalogSearchForm select[name=supplierId]").val("");
     $("#catalogSearchForm input[name=page]").val(1);
@@ -31,7 +31,7 @@ $(function () {
     searchCatalog($("#catalogSearchForm"));
   });
 
-  $(document).on("click", ".page-link", function () {
+  $(document).on("click", ".catalog-page-link", function () {
     const page = $(this).data("page");
 
     $("#catalogSearchForm input[name=page]").val(page);
@@ -60,7 +60,7 @@ $(function () {
   // カタログ追加
   // =========================
 
-  $(document).on("click", ".add-button", function () {
+  $(document).on("click", ".catalog-add-button", function () {
     const $button = $(this);
     const $row = $button.closest("tr");
 
@@ -71,7 +71,7 @@ $(function () {
     const unit = $button.data("unit");
     const price = Number($button.data("price"));
 
-    const quantity = Number($row.find(".quantity-input").val());
+    const quantity = Number($row.find(".catalog-quantity-input").val());
 
     if (!Number.isInteger(quantity) || quantity < 1) {
       return;
@@ -93,11 +93,11 @@ $(function () {
       });
     }
 
-    $row.find(".quantity-input").val(1);
+    $row.find(".catalog-quantity-input").val(1);
 
     updateSelectedSummary();
 
-    if (!$("#selectedArea").prop("hidden")) {
+    if (!$("#catalogSelectedArea").prop("hidden")) {
       renderSelectedRows();
     }
   });
@@ -106,27 +106,27 @@ $(function () {
   // 追加予定の開閉
   // =========================
 
-  $("#toggleSelectedAreaButton").on("click", function () {
-    const isOpen = !$("#selectedArea").prop("hidden");
+  $("#catalogToggleSelectedAreaButton").on("click", function () {
+    const isOpen = !$("#catalogSelectedArea").prop("hidden");
 
     if (isOpen) {
-      $("#selectedArea").prop("hidden", true);
+      $("#catalogSelectedArea").prop("hidden", true);
       return;
     }
 
     if (selectedItems.length === 0) {
-        return;
+      return;
     }
 
     renderSelectedRows();
-    $("#selectedArea").prop("hidden", false);
+    $("#catalogSelectedArea").prop("hidden", false);
   });
 
   // =========================
   // 追加予定の数量変更・削除
   // =========================
 
-  $(document).on("change", "#selectedRows .quantity-input", function () {
+  $(document).on("change", "#catalogSelectedRows .catalog-quantity-input", function () {
     const itemId = String($(this).data("item-id"));
     const quantity = Number($(this).val());
 
@@ -144,7 +144,7 @@ $(function () {
     renderSelectedRows();
   });
 
-  $(document).on("click", ".delete-selected-button", function () {
+  $(document).on("click", ".catalog-delete-selected-button", function () {
     const itemId = String($(this).data("item-id"));
     const index = selectedItems.findIndex((item) => item.itemId === itemId);
 
@@ -155,8 +155,8 @@ $(function () {
     updateSelectedSummary();
 
     if (selectedItems.length === 0) {
-        $("#selectedArea").prop("hidden", true);
-        return;
+      $("#catalogSelectedArea").prop("hidden", true);
+      return;
     }
 
     renderSelectedRows();
@@ -177,8 +177,8 @@ $(function () {
       return sum + item.quantity * item.price;
     }, 0);
 
-    $("#selectedCount").text(formatNumber(selectedItems.length));
-    $("#footerTotalAmount").text(formatNumber(totalAmount));
+    $("#catalogSelectedCount").text(formatNumber(selectedItems.length));
+    $("#catalogFooterTotalAmount").text(formatNumber(totalAmount));
   }
 
   function formatNumber(value) {
@@ -190,7 +190,7 @@ $(function () {
   // =========================
 
   function renderSelectedRows() {
-    const $selectedRows = $("#selectedRows");
+    const $selectedRows = $("#catalogSelectedRows");
 
     $selectedRows.empty();
 
@@ -199,14 +199,14 @@ $(function () {
 
       const $row = $("<tr>");
 
-      $row.append($("<td>").addClass("selected-col-name").text(item.name));
-      $row.append($("<td>").addClass("selected-col-kind").text(item.kind));
+      $row.append($("<td>").addClass("catalog-selected-col-name").text(item.name));
+      $row.append($("<td>").addClass("catalog-selected-col-kind").text(item.kind));
       $row.append(
-        $("<td>").addClass("selected-col-supplier").text(item.supplier),
+        $("<td>").addClass("catalog-selected-col-supplier").text(item.supplier),
       );
-      $row.append($("<td>").addClass("selected-col-unit").text(item.unit));
+      $row.append($("<td>").addClass("catalog-selected-col-unit").text(item.unit));
       $row.append(
-        $("<td>").addClass("selected-col-price").text(formatNumber(item.price)),
+        $("<td>").addClass("catalog-selected-col-price").text(formatNumber(item.price)),
       );
 
       const $quantityInput = $("<input>")
@@ -214,26 +214,26 @@ $(function () {
         .attr("min", "1")
         .val(item.quantity)
         .data("item-id", item.itemId)
-        .addClass("quantity-input");
+        .addClass("catalog-quantity-input");
 
       $row.append(
-        $("<td>").addClass("selected-col-quantity").append($quantityInput),
+        $("<td>").addClass("catalog-selected-col-quantity").append($quantityInput),
       );
 
       $row.append(
         $("<td>")
-          .addClass("selected-col-subtotal")
+          .addClass("catalog-selected-col-subtotal")
           .text(formatNumber(subtotal)),
       );
 
       const $deleteButton = $("<button>")
         .attr("type", "button")
-        .addClass("delete-selected-button")
+        .addClass("catalog-delete-selected-button")
         .data("item-id", item.itemId)
         .text("削除");
 
       $row.append(
-        $("<td>").addClass("selected-col-action").append($deleteButton),
+        $("<td>").addClass("catalog-selected-col-action").append($deleteButton),
       );
 
       $selectedRows.append($row);
