@@ -65,12 +65,16 @@ $(function () {
     const $row = $button.closest("tr");
 
     const itemId = String($button.data("item-id"));
-    const name = $button.data("name");
+    const itemName = $button.data("item-name");
     const kind = $button.data("kind");
-    const supplier = $button.data("supplier");
-    const unit = $button.data("unit");
-    const price = Number($button.data("price"));
 
+    const supplierId = String($button.data("supplier-id"));
+    const supplierName = $button.data("supplier-name");
+
+    const unitId = String($button.data("unit-id"));
+    const unitName = $button.data("unit-name");
+
+    const price = Number($button.data("price"));
     const quantity = Number($row.find(".catalog-quantity-input").val());
 
     if (!Number.isInteger(quantity) || quantity < 1) {
@@ -84,10 +88,12 @@ $(function () {
     } else {
       selectedItems.push({
         itemId,
-        name,
+        itemName,
         kind,
-        supplier,
-        unit,
+        supplierId,
+        supplierName,
+        unitId,
+        unitName,
         price,
         quantity,
       });
@@ -199,12 +205,12 @@ $(function () {
 
       const $row = $("<tr>");
 
-      $row.append($("<td>").addClass("catalog-selected-col-name").text(item.name));
+      $row.append($("<td>").addClass("catalog-selected-col-name").text(item.itemName));
       $row.append($("<td>").addClass("catalog-selected-col-kind").text(item.kind));
       $row.append(
-        $("<td>").addClass("catalog-selected-col-supplier").text(item.supplier),
+        $("<td>").addClass("catalog-selected-col-supplier").text(item.supplierName),
       );
-      $row.append($("<td>").addClass("catalog-selected-col-unit").text(item.unit));
+      $row.append($("<td>").addClass("catalog-selected-col-unit").text(item.unitName));
       $row.append(
         $("<td>").addClass("catalog-selected-col-price").text(formatNumber(item.price)),
       );

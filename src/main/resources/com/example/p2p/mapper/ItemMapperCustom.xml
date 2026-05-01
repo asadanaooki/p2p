@@ -106,10 +106,12 @@
   <select id="selectCatalogItems" resultType="com.example.p2p.dto.app.CatalogListRowDto">
     select
       i.item_id,
-      i.name,
+      i.name as item_name,
       i.kind,
-      s.name as supplier,
-      u.name as unit,
+      s.supplier_id,
+      s.name as supplier_name,
+      u.unit_id,
+      u.name as unit_name,
       i.price
     from item i 
     left join unit u
@@ -130,7 +132,7 @@
         )
       </if>
     </where>
-    order by kind asc, name asc
+    order by i.kind asc, i.name asc
     
     limit #{size} offset #{offset}
   </select>
