@@ -33,6 +33,3 @@ build/
 .vscode/
 
 node_modules/
-
-/tasks.txt
-/todo.txt

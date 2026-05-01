@@ -42,8 +42,13 @@ public class PurchaseRequestService {
     }
     
     public PurchaseRequestDetailDto getPurchaseRequestDetail(String prId) {
+        logger.debug("PR詳細取得開始");
+        
         PurchaseRequestDetailDto dto = purchaseRequestMapperCustom.selectPurchaseRequestDetailHeader(prId);
         dto.setDetails(purchaseRequestDetailMapperCustom.selectPurchaseRequestDetailLines(prId));
+        
+        logger.debug("PR詳細取得完了");
+        
         return dto;
     }
 
