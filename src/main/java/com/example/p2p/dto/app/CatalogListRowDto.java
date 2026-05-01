@@ -9,13 +9,17 @@ public class CatalogListRowDto {
     
     private String itemId;
 
-    private String name;
+    private String itemName;
     
     private ItemKind kind;
     
-    private String supplier;
+    private String supplierId;
     
-    private String unit;
+    private String supplierName;
+    
+    private String unitId;
+    
+    private String unitName;
     
     private int price;
 }
