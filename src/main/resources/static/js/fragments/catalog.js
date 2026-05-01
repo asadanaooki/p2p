@@ -87,6 +87,7 @@ $(function () {
       existingItem.quantity += quantity;
     } else {
       selectedItems.push({
+        detailInputType: "CATALOG",
         itemId,
         itemName,
         kind,
