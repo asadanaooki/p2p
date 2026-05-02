@@ -3,12 +3,15 @@ package com.example.p2p.controller.app;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.context.MessageSource;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +43,13 @@ public class PurchaseRequestController {
     private PurchaseRequestService purchaseRequestService;
 
     private MessageSource messageSource;
+    
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(String.class, "itemId", new StringTrimmerEditor(true));
+        binder.registerCustomEditor(String.class, "supplierId", new StringTrimmerEditor(true));
+        binder.registerCustomEditor(String.class, "unitId", new StringTrimmerEditor(true));
+    }
     
     @GetMapping
     public String showPurchaseRequestList(

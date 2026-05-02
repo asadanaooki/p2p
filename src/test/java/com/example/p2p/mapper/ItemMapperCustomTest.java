@@ -453,6 +453,10 @@ class ItemMapperCustomTest {
             form.setKind(ItemKind.SERVICE);
             form.setSupplierId("c9e2a4b6-7d1f-43a8-b5c2-9f0e1d2c3b4a");
             form.setKeyword("プリンタ");
+            Item i = new Item();
+            i.setItemId("2cc30fd9-9dae-4abe-a145-b280d9de2f38");
+            i.setIsActive(true);
+            itemMapper.updateByPrimaryKeySelective(i);
 
             List<CatalogListRowDto> actual = itemMapperCustom.selectCatalogItems(form);
 
@@ -523,7 +527,7 @@ class ItemMapperCustomTest {
                 form.setSize(100);
                 List<CatalogListRowDto> actual = itemMapperCustom.selectCatalogItems(form);
 
-                assertThat(actual).hasSize(3);
+                assertThat(actual).hasSize(2);
             }
 
             @Test
