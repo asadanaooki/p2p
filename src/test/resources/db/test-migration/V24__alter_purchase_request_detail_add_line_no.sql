@@ -1,5 +1,5 @@
 alter table purchase_request_detail
- add column line_no integer;
+ add column if not exists line_no integer;
  
 update purchase_request_detail prd
 set line_no = numbered.line_no
@@ -12,3 +12,6 @@ from (
 where prd.pr_detail_id = numbered.pr_detail_id;
 
 alter table purchase_request_detail alter column line_no set not null;
+
+alter table purchase_request_detail add constraint purchase_request_detail_line_no_check
+check (line_no >= 1);
