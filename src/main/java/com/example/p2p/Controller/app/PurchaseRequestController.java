@@ -14,16 +14,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.example.p2p.dto.app.CatalogListViewDto;
-import com.example.p2p.dto.app.PurchaseRequestDetailDto;
-import com.example.p2p.dto.app.UserProfileDto;
-import com.example.p2p.form.app.ProfileEditForm;
+import com.example.p2p.form.app.PurchaseRequestCreateForm;
 import com.example.p2p.form.app.PurchaseRequestSearchForm;
 import com.example.p2p.service.app.PurchaseRequestService;
 
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -43,20 +42,15 @@ public class PurchaseRequestController {
     private PurchaseRequestService purchaseRequestService;
 
     private MessageSource messageSource;
-    
+
     @InitBinder
     public void initBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(String.class, "itemId", new StringTrimmerEditor(true));
-        binder.registerCustomEditor(String.class, "supplierId", new StringTrimmerEditor(true));
-        binder.registerCustomEditor(String.class, "unitId", new StringTrimmerEditor(true));
+        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
-    
+
     @GetMapping
-    public String showPurchaseRequestList(
-            @Valid @ModelAttribute("form") PurchaseRequestSearchForm form,
-            BindingResult bindingResult,
-            Model model,
-            HttpSession session) {
+    public String showPurchaseRequestList(@Valid @ModelAttribute("form") PurchaseRequestSearchForm form,
+            BindingResult bindingResult, Model model, HttpSession session) {
         logger.debug("PR一覧画面表示開始");
 
         if (bindingResult.hasErrors()) {
@@ -73,46 +67,50 @@ public class PurchaseRequestController {
         logger.debug("PR一覧画面表示完了");
         return "app/purchase-request-list";
     }
-    
+
     @GetMapping("/{prId}")
-    public String showPurchaseRequestDetail(@PathVariable @NotBlank String prId,
-            Model model) {
+    public String showPurchaseRequestDetail(@PathVariable @NotBlank String prId, Model model) {
         logger.debug("PR詳細画面表示開始");
-        
+
         model.addAttribute("view", purchaseRequestService.getPurchaseRequestDetail(prId));
 
         logger.debug("PR詳細画面表示完了");
         return "app/purchase-request-detail";
     }
 
-    // @PostMapping("/initial-password-setup")
-    // public String accept(@Valid @ModelAttribute("form") InitialPasswordSetupForm form,
-    // BindingResult result,
-    // Model model, HttpServletRequest request, RedirectAttributes redirectAttributes)
-    // throws ServletException {
-    // logger.info("初回パスワード設定開始");
-    // if (result.hasErrors()) {
-    // logger.warn("初回パスワード設定バリデーションエラー");
-    // model.addAttribute("user", accountService.getInvitedUserInfo(form.getToken()));
-    // return "app/initial-password-setup";
-    // }
-    // String email;
-    // try {
-    // email = accountService.acceptInvitation(form);
-    // }
-    // catch (BusinessException e) {
-    // logger.warn("初回パスワード設定業務エラー");
-    // model.addAttribute("user", accountService.getInvitedUserInfo(form.getToken()));
-    // result.reject("account.invitation.invalid");
-    // return "app/initial-password-setup";
-    // }
-    // // 自動ログイン
-    // request.login(email, form.getPassword());
-    //
-    // logger.info("初回パスワード設定成功");
-    // // TODO: 仮値
-    // return "redirect:/test";
-    // }
+    @GetMapping("/create")
+    public String showPurchaseRequestCreateForm(@AuthenticationPrincipal(expression = "username") String userId,
+            @ModelAttribute("form") PurchaseRequestCreateForm form,
+            Model model) {
+        logger.debug("PR作成画面表示開始");
+
+        model.addAttribute("view", purchaseRequestService.prepareCreateView(userId));
+
+        logger.debug("PR作成画面表示完了");
+
+        return "app/purchase-request-create";
+    }
+
+    @PostMapping("/create")
+    public String create(@AuthenticationPrincipal(expression = "username") String userId,
+            @Valid @ModelAttribute("form") PurchaseRequestCreateForm form, BindingResult bindingResult, Model model,
+            RedirectAttributes redirectAttributes) throws ServletException {
+        logger.info("PR作成開始");
+
+        if (bindingResult.hasErrors()) {
+            logger.warn("PR作成バリデーションエラー");
+
+            model.addAttribute("view", purchaseRequestService.prepareCreateView(userId));
+            return "app/purchase-request-create";
+        }
+        String prId = purchaseRequestService.create(userId, form);
+
+        redirectAttributes.addAttribute("prId", prId);
+
+        logger.info("PR作成成功");
+
+        return "redirect:/purchase-request/{prId}";
+    }
     //
     // @GetMapping("/profile")
     // public String showProfileEditForm(@AuthenticationPrincipal(expression = "username")

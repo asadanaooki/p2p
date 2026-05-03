@@ -1,0 +1,283 @@
+.pr-create-page {
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.pr-page-title {
+  margin: 0 0 18px;
+  font-size: 24px;
+  font-weight: 400;
+}
+
+/* =========================
+   ヘッダー
+========================= */
+
+.pr-header-card {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 30px;
+  border: 1px solid #d8e1e6;
+  padding: 18px;
+  margin-bottom: 18px;
+}
+
+.pr-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pr-input,
+.pr-select {
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid #cfd8dc;
+}
+
+/* =========================
+   エラー
+========================= */
+
+.pr-global-error {
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  border: 1px solid #f0b8b8;
+  border-radius: 8px;
+  background: #fff3f3;
+  color: #c0392b;
+  font-size: 14px;
+}
+
+.pr-global-error p {
+  margin: 0;
+}
+
+.pr-error {
+  color: #c0392b;
+  font-size: 12px;
+}
+
+/* =========================
+   明細
+========================= */
+
+.pr-detail-card {
+  border: 1px solid #d8e1e6;
+  border-radius: 8px;
+  padding: 18px;
+  margin-bottom: 18px;
+}
+
+.pr-detail-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pr-detail-table th,
+.pr-detail-table td {
+  border-bottom: 1px solid #e2e8ec;
+  padding: 10px;
+  font-size: 14px;
+}
+
+.pr-detail-table th {
+  background: #f4f7f8;
+  color: #455a64;
+  font-weight: 400;
+  text-align: left;
+}
+
+.pr-col-no {
+  width: 5%;
+}
+
+.pr-col-name {
+  width: 21%;
+}
+
+.pr-col-kind {
+  width: 10%;
+}
+
+.pr-col-unit {
+  width: 9%;
+}
+
+.pr-col-price {
+  width: 11%;
+}
+
+.pr-col-supplier {
+  width: 16%;
+}
+
+.pr-col-quantity {
+  width: 8%;
+}
+
+.pr-col-subtotal {
+  width: 11%;
+}
+
+.pr-col-actions {
+  width: 9%;
+}
+
+.pr-col-line {
+  text-align: center;
+}
+
+.pr-price-cell,
+.pr-quantity-cell,
+.pr-subtotal-cell {
+  text-align: right;
+}
+
+.pr-detail-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 12px;
+  padding-top: 14px;
+}
+
+.pr-detail-footer-left {
+  display: flex;
+  gap: 10px;
+}
+
+.pr-detail-add-button {
+  height: 36px;
+  padding: 0 16px;
+  border: 1px solid #b8c8cf;
+  border-radius: 18px;
+  background: #fff;
+  color: #33413f;
+  cursor: pointer;
+}
+
+.pr-detail-add-button:hover {
+  background: #f4f7f8;
+}
+
+/* .pr-amount-summary {
+  display: grid;
+  grid-template-columns: 120px 150px;
+  gap: 8px 15px;
+}
+
+.pr-amount-label {
+  text-align: right;
+} */
+
+.pr-amount-summary {
+  width: 300px;
+  margin-right: 24px;
+  display: grid;
+  grid-template-columns: 140px 150px;
+  row-gap: 8px;
+  column-gap: 10px;
+  align-items: center;
+}
+
+.pr-amount-label,
+.pr-amount-value {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* =========================
+   備考
+========================= */
+
+.pr-note-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pr-textarea {
+  height: 130px;
+  width: 400px;
+  padding: 10px;
+}
+
+/* =========================
+   申請操作
+========================= */
+
+.pr-submit-area {
+  display: flex;
+  gap: 20px;
+  margin-top: 22px;
+}
+
+.pr-submit-button,
+.pr-cancel-button {
+  min-width: 140px;
+  height: 35px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+}
+
+.pr-submit-button {
+  border: none;
+  background: #2f6f73;
+  color: #fff;
+}
+
+.pr-submit-button:hover {
+  background: #285f63;
+}
+
+.pr-cancel-button {
+  border: 1px solid #b8c8cf;
+  background: #fff;
+  color: #33413f;
+}
+
+.pr-cancel-button:hover {
+  background: #f4f7f8;
+}
+
+/* TODO: */
+/* =========================
+   行操作ボタン
+========================= */
+/* =========================
+   明細入力欄
+========================= */
+
+/* =========================
+   カタログモーダル
+========================= */
+
+.pr-nodal[hidden] {
+  display: none;
+}
+
+.pr-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+
+.pr-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.pr-modal-content {
+  position: relative;
+  z-index: 1;
+  margin: 20px;
+  height: calc(100vh - 40px);
+  overflow: auto;
+  border-radius: 12px;
+}

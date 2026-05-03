@@ -108,7 +108,9 @@ class PurchaseRequestServiceTest {
             try (MockedStatic<UUID> mocked = mockStatic(UUID.class)) {
                 mocked.when(UUID::randomUUID).thenReturn(fixedPrId);
 
-                purchaseRequestService.create(userId, form);
+               String prId = purchaseRequestService.create(userId, form);
+               
+               assertThat(prId).isEqualTo(fixedPrId.toString());
             }
             
             PurchaseRequest actualHeader = purchaseRequestMapper.selectByPrimaryKey(fixedPrId.toString());

@@ -7,13 +7,118 @@
   <link rel="stylesheet" th:href="@{/css/fragments/catalog.css}" />
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script defer th:src="@{/js/common.js}"></script>
+  <script defer th:src="@{/js/app/purchase-request-create.js}"></script>
   <script defer th:src="@{/js/app/catalog.js}"></script>
+
 </head>
 
 <body>
+  <main class="pr-create-page">
+    <h1 class="pr-page-title">PR作成</h1>
 
-  <div th:replace="~{fragment/catalog :: catalogContent}"></div>
+    <form id="purchaseRequestCreateForm" th:action="@{/purchase-request/create}" th:object="${form}" method="post">
+      <div class="pr-header-card">
+        <div class="pr-form-group">
+          <label for="dueDate" class="pr-label">期限日</label>
+          <input type="date" id="dueDate" th:field="*{dueDate}" class="pr-input">
+        </div>
 
+        <div class="pr-form-group">
+          <div class="pr-label">申請者</div>
+          <div th:text="${view.requester}"></div>
+        </div>
+      </div>
+
+      <div class="pr-global-error" th:if="${#fields.hasGlobalErrors()}">
+        <p th:each="error : ${#fields.globalErrors()}" th:text="${error}"></p>
+      </div>
+
+      <div class="pr-detail-card">
+        <table class="pr-detail-table">
+          <colgroup>
+            <col class="pr-col-no">
+            <col class="pr-col-name">
+            <col class="pr-col-kind">
+            <col class="pr-col-unit">
+            <col class="pr-col-price">
+            <col class="pr-col-supplier">
+            <col class="pr-col-quantity">
+            <col class="pr-col-subtotal">
+            <col class="pr-col-actions">
+          </colgroup>
+
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>品名</th>
+              <th>種別</th>
+              <th>単位</th>
+              <th>単価</th>
+              <th>仕入先</th>
+              <th>個数</th>
+              <th>小計</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+
+          <tbody id="purchaseRequestDetailRows">
+          </tbody>
+        </table>
+
+        <div class="pr-detail-footer">
+          <div class="pr-detail-footer-left">
+            <button type="button" id="openCatalogButton" class="pr-detail-add-button">カタログから追加</button>
+            <button type="button" id="addFreeDetailButton" class="pr-detail-add-button">フリー入力</button>
+          </div>
+
+          <div class="pr-amount-summary">
+            <span class="pr-amount-label">小計</span>
+            <span class="pr-amount-value"><span id="detailSubtotalAmount">0</span>円</span>
+
+            <span class="pr-amount-label">消費税(10%)</span>
+            <span class="pr-amount-value"><span id="detailTaxAmount">0</span>円</span>
+
+            <span class="pr-amount-label">税込合計</span>
+            <span class="pr-amount-value"><span id="detailTotalAmount">0</span>円</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pr-note-card">
+        <label for="note" class="pr-label">備考</label>
+        <textarea id="note" th:field="*{note}" class="pr-textarea"></textarea>
+        <div class="pr-error" th:if="${#fields.hasErrors('note')}" th:errors="*{note}"></div>
+      </div>
+
+      <div id="purchaseRequestDetailHiddenInputs"></div>
+
+      <div class="pr-submit-area">
+        <button type="submit" class="pr-submit-button">申請</button>
+        <a th:href="@{/purchase-request}" class="pr-cancel-button">キャンセル</a>
+      </div>
+    </form>
+
+    <template id="unitOptionsTemplate">
+      <option value=""></option>
+      <option th:each="unit : ${view.unitOptions}" th:value="${unit.unitId}" th:text="${unit.name}">
+      </option>
+      <option value="manual">手入力</option>
+    </template>
+
+    <template id="supplierOptionsTemplate">
+      <option value=""></option>
+      <option th:each="supplier : ${view.supplierOptions}" th:value="${supplier.supplierId}" th:text="${supplier.name}">
+      </option>
+      <option value="manual">手入力</option>
+    </template>
+
+    <div id="catalogModal" class="pr-modal" th:data-catalog-modal-url="@{/catalog}" hidden>
+      <div class="pr-modal-backdrop"></div>
+
+      <div id="catalogModalContent" class="pr-modal-content"></div>
+    </div>
+
+  </main>
 </body>
 
 </html>

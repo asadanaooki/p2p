@@ -24,8 +24,6 @@ class PurchaseRequestDetailFormTest {
     @Autowired
     Validator validator;
 
-    PurchaseRequestDetailForm form = new PurchaseRequestDetailForm();
-
     @ParameterizedTest
     @MethodSource("createOkCases")
     void validPurchaseRequestDetailForm_ok(Consumer<PurchaseRequestDetailForm> consumer) {
@@ -44,7 +42,7 @@ class PurchaseRequestDetailFormTest {
         PurchaseRequestDetailForm form = baseForm();
         consumer.accept(form);
 
-        BindingResult bindingResult = new BindException(form, "PurchaseRequestDetailForm");
+        BindingResult bindingResult = new BindException(form, "purchaseRequestDetailForm");
         validator.validate(form, bindingResult);
 
         assertThat(bindingResult.hasErrors()).isTrue();
@@ -74,8 +72,8 @@ class PurchaseRequestDetailFormTest {
                 // itemName
                 Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setItemName("あ".repeat(100))),
                 // supplierId
-                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setItemId(null)),
-                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setItemId("a".repeat(36))),
+                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setSupplierId(null)),
+                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setSupplierId("a".repeat(36))),
                 // supplierName
                 Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setSupplierName("あ".repeat(100))),
                 // unitId
@@ -113,22 +111,19 @@ class PurchaseRequestDetailFormTest {
                 Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setKind(null)),
                 // itemName
                 Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setItemName(null)),
-                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setItemName("")),
                 Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setItemName("あ".repeat(101))),
                 // supplierId
                 Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setSupplierId("a".repeat(35))),
                 Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setSupplierId("a".repeat(37))),
                 // supplierName
                 Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setSupplierName(null)),
-                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setSupplierName(" ")),
                 Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setSupplierName("あ".repeat(101))),
                 // unitId
                 Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setUnitId("a".repeat(35))),
                 Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setUnitId("a".repeat(37))),
                 // unitName
                 Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setUnitName(null)),
-                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setUnitName("　")),
-                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setUnitName("あ".repeat(101))),
+                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setUnitName("あ".repeat(51))),
                 // price
                 Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setPrice(null)),
                 Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setPrice(-1))

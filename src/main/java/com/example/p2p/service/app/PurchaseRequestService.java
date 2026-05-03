@@ -1,7 +1,9 @@
 package com.example.p2p.service.app;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.p2p.dto.app.CatalogItemSnapDto;
+import com.example.p2p.dto.app.PurchaseRequestCreateViewDto;
 import com.example.p2p.dto.app.PurchaseRequestDetailDto;
 import com.example.p2p.dto.app.PurchaseRequestListRowDto;
 import com.example.p2p.dto.app.PurchaseRequestListViewDto;
@@ -26,6 +29,12 @@ import com.example.p2p.mapper.ItemMapperCustom;
 import com.example.p2p.mapper.PurchaseRequestDetailMapperCustom;
 import com.example.p2p.mapper.PurchaseRequestMapper;
 import com.example.p2p.mapper.PurchaseRequestMapperCustom;
+import com.example.p2p.mapper.SupplierMapper;
+import com.example.p2p.mapper.SupplierMapperCustom;
+import com.example.p2p.mapper.UnitMapper;
+import com.example.p2p.mapper.UnitMapperCustom;
+import com.example.p2p.mapper.UsersMapper;
+import com.example.p2p.mapper.UsersMapperCustom;
 import com.example.p2p.util.CommonUtil;
 
 import lombok.AllArgsConstructor;
@@ -46,7 +55,11 @@ public class PurchaseRequestService {
 
     private ItemMapperCustom itemMapperCustom;
 
-    private ModelMapper modelMapper;
+    private UnitMapperCustom unitMapperCustom;
+    
+    private SupplierMapperCustom supplierMapperCustom;
+    
+    private UsersMapperCustom usersMapperCustom;
 
     public PurchaseRequestListViewDto searchPurchaseRequests(PurchaseRequestSearchForm form) {
         logger.debug("PR一覧取得開始");
@@ -75,7 +88,7 @@ public class PurchaseRequestService {
     }
 
     @Transactional
-    public void create(String userId, PurchaseRequestCreateForm form) {
+    public String create(String userId, PurchaseRequestCreateForm form) {
         String prId = UUID.randomUUID().toString();
         // 明細作成
         List<PurchaseRequestDetail> details = toDetailEntities(prId, form.getDetails());
@@ -95,7 +108,18 @@ public class PurchaseRequestService {
 
         // 明細登録
         purchaseRequestDetailMapperCustom.bulkInsert(details);
+        
+        return prId;
 
+    }
+    
+    public PurchaseRequestCreateViewDto prepareCreateView(String userId) {
+        PurchaseRequestCreateViewDto dto = new PurchaseRequestCreateViewDto();
+        dto.setRequester(usersMapperCustom.selectFullName(userId));
+        dto.setUnitOptions(unitMapperCustom.selectUnitOptions());
+        dto.setSupplierOptions(supplierMapperCustom.selectSupplierOptions());
+        
+        return dto;
     }
 
     private List<PurchaseRequestDetail> toDetailEntities(String prId, List<PurchaseRequestDetailForm> details) {

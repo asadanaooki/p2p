@@ -19,4 +19,6 @@ public interface UsersMapperCustom {
     UserDetailDto selectUserDetail(String userId);
     
     UserProfileDto selectUserProfile(String userId);
+    
+    String selectFullName(String userId);
 }

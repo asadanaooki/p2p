@@ -42,7 +42,7 @@ public class CatalogController {
 
         logger.debug("カタログ一覧画面表示完了");
 
-        return "app/catalog";
+        return "fragments/catalog :: catalogContent";
     }
 
     @GetMapping("/search")
