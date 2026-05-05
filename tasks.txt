@@ -1,1 +1,1 @@
-PurchaseRequestDetailFormのテストから
+フリー入力 手入力切替　JS

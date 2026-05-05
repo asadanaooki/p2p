@@ -68,11 +68,11 @@
         <div class="pr-detail-footer">
           <div class="pr-detail-footer-left">
             <button type="button" id="openCatalogButton" class="pr-detail-add-button">カタログから追加</button>
-            <button type="button" id="addFreeDetailButton" class="pr-detail-add-button">フリー入力</button>
+            <button type="button" id="openFreeInputButton" class="pr-detail-add-button">フリー入力</button>
           </div>
 
           <div class="pr-amount-summary">
-            <span class="pr-amount-label">小計</span>
+            <span class="pr-amount-label">税抜合計</span>
             <span class="pr-amount-value"><span id="detailSubtotalAmount">0</span>円</span>
 
             <span class="pr-amount-label">消費税(10%)</span>
@@ -97,6 +97,12 @@
         <a th:href="@{/purchase-request}" class="pr-cancel-button">キャンセル</a>
       </div>
     </form>
+
+    <template id="kindOptionsTemplate">
+      <option value=""></option>
+      <option th:each="kind : ${T(com.example.p2p.enums.ItemKind).values()}" th:value="${kind}" th:text="${kind.label}">
+      </option>
+    </template>
 
     <template id="unitOptionsTemplate">
       <option value=""></option>
