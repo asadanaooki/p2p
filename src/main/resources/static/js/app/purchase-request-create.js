@@ -164,8 +164,27 @@ $(function () {
   // =========================
 
   $(document).on("change", ".pr-free-supplier-select", function () {
-    const index = Number($(this).data("index"));
-    const detail = details[index];
+    const $select = $(this);
+    const $area = $select.closest(".pr-free-select-manual-area");
+    const $input = $area.find(".pr-free-supplier-name-input");
+
+    if ($select.val() === "manual") {
+      $input.prop("hidden", false).val("");
+    } else {
+      $input.prop("hidden", true).val("");
+    }
+  });
+
+  $(document).on("change", ".pr-free-unit-select", function () {
+    const $select = $(this);
+    const $area = $select.closest(".pr-free-select-manual-area");
+    const $input = $area.find(".pr-free-unit-name-input");
+
+    if ($select.val() === "manual") {
+      $input.prop("hidden", false).val("");
+    } else {
+      $input.prop("hidden", true).val("");
+    }
   });
 
   // =========================
