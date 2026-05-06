@@ -1,5 +1,10 @@
 package com.example.p2p.controller.app;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +14,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -80,8 +86,7 @@ public class PurchaseRequestController {
 
     @GetMapping("/create")
     public String showPurchaseRequestCreateForm(@AuthenticationPrincipal(expression = "username") String userId,
-            @ModelAttribute("form") PurchaseRequestCreateForm form,
-            Model model) {
+            @ModelAttribute("form") PurchaseRequestCreateForm form, Model model) {
         logger.debug("PR作成画面表示開始");
 
         model.addAttribute("view", purchaseRequestService.prepareCreateView(userId));
@@ -101,6 +106,7 @@ public class PurchaseRequestController {
             logger.warn("PR作成バリデーションエラー");
 
             model.addAttribute("view", purchaseRequestService.prepareCreateView(userId));
+            model.addAttribute("detailErrorMessages", createDetailErrorMessages(bindingResult));
             return "app/purchase-request-create";
         }
         String prId = purchaseRequestService.create(userId, form);
@@ -110,6 +116,31 @@ public class PurchaseRequestController {
         logger.info("PR作成成功");
 
         return "redirect:/purchase-request/{prId}";
+    }
+
+    private Map<Integer, List<String>> createDetailErrorMessages(BindingResult bindingResult) {
+        Map<Integer, List<String>> errorMap = new LinkedHashMap<Integer, List<String>>();
+        List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+
+        for (FieldError fe : fieldErrors) {
+            String field = fe.getField();
+            if (!field.startsWith("details[")) {
+                continue;
+            }
+            int startIndex = field.indexOf("[") + 1;
+            int endIndex = field.indexOf("]");
+            Integer key = Integer.parseInt(field.substring(startIndex, endIndex));
+            if (errorMap.containsKey(key)) {
+                errorMap.get(key).add(fe.getDefaultMessage());
+            }
+            else {
+                List<String> list = new ArrayList<String>();
+                list.add(fe.getDefaultMessage());
+                errorMap.put(key, list);
+            }
+
+        }
+        return errorMap;
     }
     //
     // @GetMapping("/profile")
