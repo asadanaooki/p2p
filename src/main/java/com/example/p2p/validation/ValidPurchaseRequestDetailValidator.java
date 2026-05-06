@@ -12,36 +12,77 @@ public class ValidPurchaseRequestDetailValidator
     @Override
     public boolean isValid(PurchaseRequestDetailForm value, ConstraintValidatorContext context) {
         if (value == null) {
-            return true;
+            addViolation(context, "error.purchaseRequest.detail.invalid");
+            return false;
         }
 
         if (value.getDetailInputType() == null) {
+            addViolation(context, "error.purchaseRequest.detail.invalid");
             return false;
         }
 
+        boolean isValid = true;
+
         if (value.getQuantity() == null || value.getQuantity() < 1) {
-            return false;
+            addViolation(context, "error.purchaseRequest.detail.quantity.requiredPositive");
+            isValid = false;
         }
 
         if (value.getDetailInputType() == DetailInputType.CATALOG) {
-            return value.getItemId() != null
-                    && value.getItemId().length() == 36;
+            if (value.getItemId() == null || value.getItemId().length() != 36) {
+                addViolation(context, "error.purchaseRequest.detail.itemId.requiredLength");
+                isValid = false;
+            }
         }
 
         if (value.getDetailInputType() == DetailInputType.FREE) {
-            return value.getKind() != null
-                    && value.getItemName() != null
-                    && value.getItemName().length() <= 100
-                    && (value.getSupplierId() == null || value.getSupplierId().length() == 36)
-                    && value.getSupplierName() != null
-                    && value.getSupplierName().length() <= 100
-                    && (value.getUnitId() == null || value.getUnitId().length() == 36)
-                    && value.getUnitName() != null
-                    && value.getUnitName().length() <= 50
-                    && value.getPrice() != null
-                    && value.getPrice() >= 0;
+            if (value.getKind() == null) {
+                addViolation(context, "error.purchaseRequest.detail.kind.required");
+                isValid = false;
+            }
+
+            if (value.getItemName() == null || value.getItemName().length() > 100) {
+                addViolation(context, "error.purchaseRequest.detail.itemName.requiredMax");
+                isValid = false;
+            }
+
+            if (value.getItemName() == null || value.getItemName().length() > 100) {
+                addViolation(context, "error.purchaseRequest.detail.itemName.requiredMax");
+                isValid = false;
+            }
+
+            if (value.getSupplierId() != null && value.getSupplierId().length() != 36) {
+                addViolation(context, "error.purchaseRequest.detail.supplierId.invalid");
+                isValid = false;
+            }
+
+            if (value.getSupplierName() == null || value.getSupplierName().length() > 100) {
+                addViolation(context, "error.purchaseRequest.detail.supplierName.requiredMax");
+                isValid = false;
+            }
+
+            if (value.getUnitId() != null && value.getUnitId().length() != 36) {
+                addViolation(context, "error.purchaseRequest.detail.unitId.invalid");
+                isValid = false;
+            }
+
+            if (value.getUnitName() == null || value.getUnitName().length() > 50) {
+                addViolation(context, "error.purchaseRequest.detail.unitName.requiredMax");
+                isValid = false;
+            }
+
+            if (value.getPrice() == null || value.getPrice() < 0) {
+                addViolation(context, "error.purchaseRequest.detail.price.requiredPositiveOrZero");
+                isValid = false;
+            }
         }
 
-        return false;
+        return isValid;
     }
+
+    private void addViolation(ConstraintValidatorContext context, String messageKey) {
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate("{" + messageKey + "}").addConstraintViolation();
+    }
+
 }

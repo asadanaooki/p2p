@@ -38,7 +38,7 @@ class PurchaseRequestDetailFormTest {
 
     @ParameterizedTest
     @MethodSource("createNgCases")
-    void validPurchaseRequestDetailForm_ng(Consumer<PurchaseRequestDetailForm> consumer) {
+    void validPurchaseRequestDetailForm_ng(Consumer<PurchaseRequestDetailForm> consumer, String expMessage) {
         PurchaseRequestDetailForm form = baseForm();
         consumer.accept(form);
 
@@ -46,6 +46,9 @@ class PurchaseRequestDetailFormTest {
         validator.validate(form, bindingResult);
 
         assertThat(bindingResult.hasErrors()).isTrue();
+        
+        assertThat(bindingResult.getAllErrors()).hasSize(1);
+        assertThat(bindingResult.getAllErrors().get(0).getDefaultMessage()).isEqualTo(expMessage);
     }
 
     static Stream<Arguments> createOkCases() {
@@ -87,46 +90,48 @@ class PurchaseRequestDetailFormTest {
 
     static Stream<Arguments> createNgCases() {
         return Stream.of(
+                // detailInputType
+                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setDetailInputType(null), "明細情報が不正です。"),
                 // quantity
-                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setQuantity(null)),
-                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setQuantity(0)),
+                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setQuantity(null), "数量は1以上で入力してください。"),
+                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setQuantity(0), "数量は1以上で入力してください。"),
 
                 // Catalog
                 // itemId
                 Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> {
                     c.setDetailInputType(DetailInputType.CATALOG);
                     c.setItemId(null);
-                }),
+                }, "カタログ明細のアイテム情報が不正です。"),
                 Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> {
                     c.setDetailInputType(DetailInputType.CATALOG);
                     c.setItemId("a".repeat(35));
-                }),
+                }, "カタログ明細のアイテム情報が不正です。"),
                 Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> {
                     c.setDetailInputType(DetailInputType.CATALOG);
                     c.setItemId("a".repeat(37));
-                }),
+                }, "カタログ明細のアイテム情報が不正です。"),
 
                 // Free
                 // kind
-                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setKind(null)),
+                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setKind(null), "種別を選択してください。"),
                 // itemName
-                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setItemName(null)),
-                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setItemName("あ".repeat(101))),
+                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setItemName(null), "品名は100文字以内で入力してください。"),
+                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setItemName("あ".repeat(101)), "品名は100文字以内で入力してください。"),
                 // supplierId
-                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setSupplierId("a".repeat(35))),
-                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setSupplierId("a".repeat(37))),
+                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setSupplierId("a".repeat(35)), "仕入先情報が不正です。"),
+                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setSupplierId("a".repeat(37)), "仕入先情報が不正です。"),
                 // supplierName
-                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setSupplierName(null)),
-                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setSupplierName("あ".repeat(101))),
+                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setSupplierName(null), "仕入先名は100文字以内で入力してください。"),
+                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setSupplierName("あ".repeat(101)), "仕入先名は100文字以内で入力してください。"),
                 // unitId
-                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setUnitId("a".repeat(35))),
-                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setUnitId("a".repeat(37))),
+                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setUnitId("a".repeat(35)), "単位情報が不正です。"),
+                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setUnitId("a".repeat(37)), "単位情報が不正です。"),
                 // unitName
-                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setUnitName(null)),
-                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setUnitName("あ".repeat(51))),
+                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setUnitName(null), "単位名は50文字以内で入力してください。"),
+                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setUnitName("あ".repeat(51)), "単位名は50文字以内で入力してください。"),
                 // price
-                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setPrice(null)),
-                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setPrice(-1))
+                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setPrice(null), "単価は0円以上で入力してください。"),
+                Arguments.of((Consumer<PurchaseRequestDetailForm>) c -> c.setPrice(-1), "単価は0円以上で入力してください。")
 
         );
     }
