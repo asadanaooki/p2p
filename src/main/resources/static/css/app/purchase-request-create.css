@@ -1,0 +1,393 @@
+.pr-create-page {
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.pr-page-title {
+  margin: 0 0 18px;
+  font-size: 24px;
+  font-weight: 400;
+}
+
+/* =========================
+   ヘッダー
+========================= */
+
+.pr-header-card {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 30px;
+  border: 1px solid #d8e1e6;
+  padding: 18px;
+  margin-bottom: 18px;
+}
+
+.pr-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pr-input,
+.pr-select {
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid #cfd8dc;
+}
+
+/* =========================
+   エラー
+========================= */
+
+.pr-global-error {
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  border: 1px solid #f0b8b8;
+  border-radius: 8px;
+  background: #fff3f3;
+  color: #c0392b;
+  font-size: 14px;
+}
+
+.pr-global-error p {
+  margin: 0;
+}
+
+.pr-error {
+  color: #c0392b;
+  font-size: 12px;
+}
+
+.pr-detail-error-summary {
+  margin-bottom: 18px;
+  border: 1px solid #f0b8b8;
+  border-radius: 8px;
+  background: #fff3f3;
+  color: #c0392b;
+  font-size: 14px;
+}
+
+.pr-detail-error-block {
+  padding: 12px 14px;
+}
+
+.pr-detail-error-title {
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.pr-detail-error-list {
+  margin: 0;
+  padding-left: 22px;
+}
+
+/* =========================
+   明細
+========================= */
+
+.pr-detail-card {
+  border: 1px solid #d8e1e6;
+  border-radius: 8px;
+  padding: 18px;
+  margin-bottom: 18px;
+}
+
+.pr-detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.pr-detail-table th,
+.pr-detail-table td {
+  border-bottom: 1px solid #e2e8ec;
+  padding: 10px;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.pr-detail-table th {
+  background: #f4f7f8;
+  color: #455a64;
+  font-weight: 400;
+  text-align: left;
+}
+
+/* 列幅 */
+.pr-col-no {
+  width: 4%;
+}
+
+.pr-col-name {
+  width: 22%;
+}
+
+.pr-col-kind {
+  width: 10%;
+}
+
+.pr-col-supplier {
+  width: 23%;
+}
+
+.pr-col-unit {
+  width: 9%;
+}
+
+.pr-col-price {
+  width: 10%;
+}
+
+.pr-col-quantity {
+  width: 7%;
+}
+
+.pr-col-subtotal {
+  width: 10%;
+}
+
+.pr-col-actions {
+  width: 5%;
+}
+
+/* No.列 */
+.pr-detail-table th:nth-child(1),
+.pr-detail-table td:nth-child(1) {
+  text-align: center;
+}
+
+/* 数字列：単価・個数・小計 */
+.pr-detail-table td:nth-child(6),
+.pr-detail-table td:nth-child(7),
+.pr-detail-table td:nth-child(8) {
+  text-align: right;
+}
+
+/* 操作列 */
+.pr-detail-table th:nth-child(9),
+.pr-detail-table td:nth-child(9) {
+  text-align: left;
+}
+
+/* 入力行でも数値入力は右寄せ */
+.pr-detail-edit-row .pr-edit-price-input,
+.pr-detail-edit-row .pr-edit-quantity-input,
+.pr-detail-edit-row .pr-free-price-input,
+.pr-detail-edit-row .pr-free-quantity-input {
+  text-align: right;
+}
+
+.pr-detail-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 12px;
+  padding-top: 14px;
+}
+
+.pr-detail-footer-left {
+  display: flex;
+  gap: 10px;
+}
+
+.pr-detail-add-button {
+  height: 36px;
+  padding: 0 16px;
+  border: 1px solid #b8c8cf;
+  border-radius: 18px;
+  background: #fff;
+  color: #33413f;
+  cursor: pointer;
+}
+
+.pr-detail-add-button:hover {
+  background: #f4f7f8;
+}
+
+.pr-amount-summary {
+  width: 300px;
+  margin-right: 24px;
+  display: grid;
+  grid-template-columns: 140px 150px;
+  row-gap: 8px;
+  column-gap: 10px;
+  align-items: center;
+}
+
+.pr-amount-label,
+.pr-amount-value {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* =========================
+   備考
+========================= */
+
+.pr-note-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pr-textarea {
+  height: 130px;
+  width: 400px;
+  padding: 10px;
+}
+
+/* =========================
+   申請操作
+========================= */
+
+.pr-submit-area {
+  display: flex;
+  gap: 20px;
+  margin-top: 22px;
+}
+
+.pr-submit-button,
+.pr-cancel-button {
+  min-width: 140px;
+  height: 35px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+}
+
+.pr-submit-button {
+  border: none;
+  background: #2f6f73;
+  color: #fff;
+}
+
+.pr-submit-button:hover {
+  background: #285f63;
+}
+
+/* 明細0件などで disabled にしたとき */
+.pr-submit-button:disabled,
+.pr-submit-button.is-disabled {
+  background: #b0bec5;
+  color: #fff;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.pr-submit-button:disabled:hover,
+.pr-submit-button.is-disabled:hover {
+  background: #b0bec5;
+}
+
+.pr-cancel-button {
+  border: 1px solid #b8c8cf;
+  background: #fff;
+  color: #33413f;
+}
+
+.pr-cancel-button:hover {
+  background: #f4f7f8;
+}
+
+/* =========================
+   行操作ボタン
+========================= */
+
+.pr-detail-action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.pr-detail-edit-button,
+.pr-detail-delete-button,
+.pr-detail-save-button,
+.pr-detail-cancel-edit-button {
+  width: 30px;
+  height: 25px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.pr-detail-edit-button {
+  color: #2f6f73;
+}
+
+.pr-detail-delete-button {
+  color: #c0392b;
+}
+
+.pr-detail-save-button {
+  color: #1e8e3e;
+}
+
+.pr-detail-cancel-edit-button {
+  color: #c0392b;
+}
+
+.pr-detail-edit-button:hover,
+.pr-detail-delete-button:hover,
+.pr-detail-save-button:hover,
+.pr-detail-cancel-edit-button:hover {
+  opacity: 0.7;
+}
+
+/* =========================
+   明細入力欄
+========================= */
+
+.pr-detail-edit-row input,
+.pr-detail-edit-row select {
+  width: 100%;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid #cfd8dc;
+  font-size: 12px;
+  box-sizing: border-box;
+}
+
+/* number入力のスピンボタンを非表示 */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  appearance: textfield;
+}
+
+/* =========================
+   カタログモーダル
+========================= */
+
+.pr-modal[hidden] {
+  display: none;
+}
+
+.pr-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+
+.pr-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.pr-modal-content {
+  position: relative;
+  z-index: 1;
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  border-radius: 12px;
+  background: #fff;
+}

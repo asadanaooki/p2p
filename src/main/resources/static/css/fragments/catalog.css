@@ -156,6 +156,13 @@
   background: #f5f8f7;
 }
 
+.catalog-confirm-button:disabled {
+  border-color: #ddd;
+  background: #eee;
+  color: #999;
+  cursor: not-allowed;
+}
+
 /* =========================
    エラー
 ========================= */

@@ -8,6 +8,7 @@
 
 <body>
   <main class="page">
+    <div class="success-message" th:if="${successMessage}" th:text="${successMessage}"></div>
     <h1 class="page-title">購買申請詳細</h1>
 
     <div class="summary-grid">
@@ -44,9 +45,9 @@
           <th class="col-name">名称</th>
           <th class="col-kind">区分</th>
           <th class="col-supplier">仕入先</th>
-          <th class="col-quantity">数量</th>
           <th class="col-unit">単位</th>
           <th class="col-price">単価</th>
+          <th class="col-quantity">数量</th>
           <th class="col-subtotal">小計</th>
         </tr>
       </thead>
@@ -57,9 +58,9 @@
           <td th:text="${detail.itemName}"></td>
           <td th:text="${detail.kind.label}"></td>
           <td th:text="${detail.supplierName}"></td>
-          <td class="text-right" th:text="${detail.quantity}"></td>
           <td th:text="${detail.unitName}"></td>
           <td class="text-right" th:text="${#numbers.formatInteger(detail.unitPrice, 1, 'COMMA')}"></td>
+          <td class="text-right" th:text="${detail.quantity}"></td>
           <td class="text-right" th:text="${#numbers.formatInteger(detail.subtotalExcludingTax, 1, 'COMMA')}"></td>
         </tr>
       </tbody>

@@ -100,4 +100,11 @@
     where user_id = #{userId}
 
   </select>
+  
+  <select id="selectFullName" resultType="string">
+    select
+      CONCAT_WS(' ', last_name, first_name)
+    from users
+    where user_id = #{userId}
+  </select>
 </mapper>

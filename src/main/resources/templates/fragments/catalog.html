@@ -15,11 +15,7 @@
 
       <div class="catalog-toolbar">
         <div class="catalog-search-box">
-          <input id="catalogKeyword"
-                 type="text"
-                 th:field="*{keyword}"
-                 class="catalog-search-input"
-                 placeholder="名称で検索">
+          <input id="catalogKeyword" type="text" th:field="*{keyword}" class="catalog-search-input" placeholder="名称で検索">
 
           <button type="button" id="catalogKeywordSearchButton" class="catalog-search-icon-button">
             <svg class="catalog-search-icon" viewBox="0 0 632.399 632.399">
@@ -36,20 +32,15 @@
         <!-- Common.js が id="filterToggleButton" を見るので id は残す -->
         <button type="button" id="filterToggleButton" class="catalog-filter-toggle-button">
           <svg class="catalog-filter-toggle-icon" viewBox="0 0 48 48">
-            <polyline points="6.33 7 20.01 24 20.01 42 28.01 37 28.01 24 27.99 24 41.99 7 15.01 7"
-                      fill="none"
-                      stroke="#000"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="4" />
+            <polyline points="6.33 7 20.01 24 20.01 42 28.01 37 28.01 24 27.99 24 41.99 7 15.01 7" fill="none"
+              stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4" />
           </svg>
         </button>
       </div>
 
       <!-- Common.js が id="filterPanel" を見るので id は残す -->
-      <div id="filterPanel"
-           class="catalog-filter-panel"
-           th:classappend="${catalogSearchForm.kind != null or catalogSearchForm.supplierId != null} ? ' is-open' : ''">
+      <div id="filterPanel" class="catalog-filter-panel"
+        th:classappend="${catalogSearchForm.kind != null or catalogSearchForm.supplierId != null} ? ' is-open' : ''">
 
         <div class="catalog-filter-form">
           <div class="catalog-filter-grid">
@@ -57,9 +48,8 @@
               <label for="kind" class="catalog-field-label">種別</label>
               <select id="kind" th:field="*{kind}">
                 <option value="">すべて</option>
-                <option th:each="kind : ${T(com.example.p2p.enums.ItemKind).values()}"
-                        th:value="${kind}"
-                        th:text="${kind.label}">
+                <option th:each="kind : ${T(com.example.p2p.enums.ItemKind).values()}" th:value="${kind}"
+                  th:text="${kind.label}">
                 </option>
               </select>
             </div>
@@ -68,9 +58,7 @@
               <label for="supplierId" class="catalog-field-label">仕入先</label>
               <select id="supplierId" th:field="*{supplierId}">
                 <option value="">すべて</option>
-                <option th:each="s : ${catalogView.supplierOptions}"
-                        th:value="${s.supplierId}"
-                        th:text="${s.name}">
+                <option th:each="s : ${catalogView.supplierOptions}" th:value="${s.supplierId}" th:text="${s.name}">
                 </option>
               </select>
             </div>
@@ -116,16 +104,10 @@
             </td>
 
             <td class="catalog-col-action">
-              <button type="button"
-                      class="catalog-add-button"
-                      th:data-item-id="${item.itemId}"
-                      th:data-item-name="${item.itemName}"
-                      th:data-kind="${item.kind}"
-                      th:data-supplier-id="${item.supplierId}"
-                      th:data-supplier-name="${item.supplierName}"
-                      th:data-unit-id="${item.unitId}"
-                      th:data-unit-name="${item.unitName}"
-                      th:data-price="${item.price}">
+              <button type="button" class="catalog-add-button" th:data-item-id="${item.itemId}"
+                th:data-item-name="${item.itemName}" th:data-kind="${item.kind}" th:data-kind-label="${item.kind.label}"
+                th:data-supplier-id="${item.supplierId}" th:data-supplier-name="${item.supplierName}"
+                th:data-unit-id="${item.unitId}" th:data-unit-name="${item.unitName}" th:data-price="${item.price}">
                 追加
               </button>
             </td>
@@ -134,34 +116,26 @@
       </table>
 
       <div class="catalog-pagination" th:if="${!#lists.isEmpty(catalogView.pageNumberList)}">
-        <button type="button"
-                class="catalog-page-link"
-                th:if="${catalogView.currentPage > 1}"
-                th:data-page="${catalogView.currentPage - 1}">
+        <button type="button" class="catalog-page-link" th:if="${catalogView.currentPage > 1}"
+          th:data-page="${catalogView.currentPage - 1}">
           &lt;
         </button>
 
-        <button type="button"
-                class="catalog-page-link"
-                th:each="pageNo : ${catalogView.pageNumberList}"
-                th:classappend="${pageNo == catalogView.currentPage} ? ' active' : ''"
-                th:data-page="${pageNo}"
-                th:text="${pageNo}">
+        <button type="button" class="catalog-page-link" th:each="pageNo : ${catalogView.pageNumberList}"
+          th:classappend="${pageNo == catalogView.currentPage} ? ' active' : ''" th:data-page="${pageNo}"
+          th:text="${pageNo}">
         </button>
 
-        <button type="button"
-                class="catalog-page-link"
-                th:if="${catalogView.currentPage < #lists.size(catalogView.pageNumberList)}"
-                th:data-page="${catalogView.currentPage + 1}">
+        <button type="button" class="catalog-page-link"
+          th:if="${catalogView.currentPage < #lists.size(catalogView.pageNumberList)}"
+          th:data-page="${catalogView.currentPage + 1}">
           &gt;
         </button>
       </div>
     </div>
 
     <th:block th:fragment="catalogSearchErrors" th:object="${catalogSearchForm}">
-      <p class="catalog-field-error"
-         th:each="err : ${#fields.errors('*')}"
-         th:text="${err}">
+      <p class="catalog-field-error" th:each="err : ${#fields.errors('*')}" th:text="${err}">
       </p>
     </th:block>
 
@@ -199,7 +173,7 @@
       </div>
 
       <div class="catalog-footer-actions">
-        <button type="button" id="catalogConfirmButton" class="catalog-confirm-button">
+        <button type="button" id="catalogConfirmButton" class="catalog-confirm-button" disabled>
           明細へ反映
         </button>
 

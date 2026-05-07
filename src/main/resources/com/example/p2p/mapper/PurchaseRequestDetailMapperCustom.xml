@@ -13,4 +13,39 @@
     from purchase_request_detail
     where pr_id = #{prId}
   </select>
+  
+  <insert id="bulkInsert">
+    insert into purchase_request_detail
+    (
+       pr_id,
+       line_no,
+       item_id,
+       snap_item_name,
+       snap_kind,
+       unit_id,
+       snap_unit_name,
+       supplier_id,
+       snap_supplier_name,
+       quantity,
+       snap_unit_price,
+       subtotal_excluding_tax
+    ) 
+    values
+    <foreach collection="details" item="detail" separator=",">
+     (
+      #{detail.prId},
+      #{detail.lineNo},
+      #{detail.itemId},
+      #{detail.snapItemName},
+      #{detail.snapKind},
+      #{detail.unitId},
+      #{detail.snapUnitName},
+      #{detail.supplierId},
+      #{detail.snapSupplierName},
+      #{detail.quantity},
+      #{detail.snapUnitPrice},
+      #{detail.subtotalExcludingTax}
+      )
+    </foreach>
+  </insert>
 </mapper>

@@ -114,13 +114,17 @@
       u.name as unit_name,
       i.price
     from item i 
-    left join unit u
+    join unit u
         on i.unit_id = u.unit_id
-    left join supplier s
+    join supplier s
         on i.supplier_id = s.supplier_id 
     <where>
+      i.is_active = true
+      and i.unit_id is not null
+      and i.price is not null
+      and i.supplier_id is not null
       <if test="kind != null">
-        i.kind = #{kind}
+        and i.kind = #{kind}
       </if>
       <if test="supplierId != null">
         and i.supplier_id = #{supplierId}
@@ -140,11 +144,15 @@
   <select id="countCatalogItems" resultType="int">
     select count(*)
     from item i 
-    left join supplier s
+    join supplier s
     on i.supplier_id = s.supplier_id 
     <where>
+      i.is_active = true
+      and i.unit_id is not null
+      and i.price is not null
+      and i.supplier_id is not null
       <if test="kind != null">
-        i.kind = #{kind}
+        and i.kind = #{kind}
       </if>
       <if test="supplierId != null">
         and i.supplier_id = #{supplierId}
@@ -156,6 +164,24 @@
         )
       </if>
     </where>
+  </select>
+  
+  <select id="selectCatalogItemSnap" resultType="com.example.p2p.dto.app.CatalogItemSnapDto">
+    select
+      i.name as itemName,
+      i.kind,
+      u.unit_id,
+      u.name as unitName,
+      s.supplier_id,
+      s.name as supplierName,
+      i.price
+    from item i 
+    join unit u
+        on i.unit_id = u.unit_id
+    join supplier s
+        on i.supplier_id = s.supplier_id 
+    where i.item_id = #{itemId}
+      and i.is_active = true
   </select>
   
 </mapper>

@@ -69,16 +69,16 @@
   width: 26%;
 }
 
-.col-quantity {
-  width: 6%;
-}
-
 .col-unit {
   width: 6%;
 }
 
 .col-price {
   width: 9%;
+}
+
+.col-quantity {
+  width: 6%;
 }
 
 .col-subtotal {

@@ -73,3 +73,7 @@ $(function () {
     e.stopPropagation();
   });
 });
+
+  function formatNumber(value) {
+    return Number(value).toLocaleString("ja-JP");
+  }
