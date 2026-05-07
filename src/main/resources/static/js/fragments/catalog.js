@@ -67,6 +67,7 @@ $(function () {
     const itemId = String($button.data("item-id"));
     const itemName = $button.data("item-name");
     const kind = $button.data("kind");
+    const kindLabel = $button.data("kind-label");
 
     const supplierId = String($button.data("supplier-id"));
     const supplierName = $button.data("supplier-name");
@@ -93,6 +94,7 @@ $(function () {
         itemId: itemId,
         itemName: itemName,
         kind: kind,
+        kindLabel: kindLabel,
         supplierId: supplierId,
         supplierName: supplierName,
         unitId: unitId,
@@ -195,6 +197,7 @@ $(function () {
         itemId: item.itemId,
         itemName: item.itemName,
         kind: item.kind,
+        kindLabel: item.kindLabel,
         supplierId: item.supplierId,
         supplierName: item.supplierName,
         unitId: item.unitId,
@@ -262,7 +265,7 @@ $(function () {
       );
 
       $row.append(
-        $("<td>").addClass("catalog-selected-col-kind").text(item.kind),
+        $("<td>").addClass("catalog-selected-col-kind").text(item.kindLabel),
       );
 
       $row.append(

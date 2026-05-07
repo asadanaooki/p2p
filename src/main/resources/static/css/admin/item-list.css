@@ -332,12 +332,3 @@ select {
   width: 25px;
   height: 25px;
 }
-
-.success-message {
-  margin-bottom: 16px;
-  padding: 12px 16px;
-  border: 1px solid #b7dfc6;
-  background-color: #edf8f1;
-  color: #1e6b3a;
-  border-radius: 6px;
-}

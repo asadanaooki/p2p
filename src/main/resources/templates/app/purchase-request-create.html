@@ -34,10 +34,10 @@
       </div>
 
       <div class="pr-detail-error-summary" th:if="${detailErrorMessages != null && !detailErrorMessages.isEmpty()}">
-        <div class="pr-detail-error-block" th:each="entry : ${detailErrorMessages}">
-          <div class="pr-detail-error-title" th:text="|明細${entry.key + 1}行目|"></div>
+        <div th:each="entry : ${detailErrorMessages}">
+          <div th:text="|明細${entry.key + 1}行目|"></div>
 
-          <ul class="pr-detail-error-list">
+          <ul>
             <li th:each="message : ${entry.value}" th:text="${message}"></li>
           </ul>
         </div>
@@ -103,7 +103,7 @@
       <div id="purchaseRequestDetailHiddenInputs"></div>
 
       <div class="pr-submit-area">
-        <button type="submit" class="pr-submit-button">申請</button>
+        <button id="purchaseRequestSubmitButton" type="submit" class="pr-submit-button" disabled>申請</button>
         <a th:href="@{/purchase-request}" class="pr-cancel-button">キャンセル</a>
       </div>
     </form>

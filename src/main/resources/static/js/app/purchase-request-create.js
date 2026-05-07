@@ -68,6 +68,7 @@ $(function () {
       itemId: item.itemId,
       itemName: item.itemName,
       kind: item.kind,
+      kindLabel: item.kindLabel,
       supplierId: item.supplierId,
       supplierName: item.supplierName,
       unitId: item.unitId,
@@ -93,6 +94,7 @@ $(function () {
       itemId: "",
       itemName: "",
       kind: "",
+      kindLabel: "",
       supplierId: "",
       supplierName: "",
       unitId: "",
@@ -231,6 +233,7 @@ $(function () {
   function applyFreeEditingValues(detail, $row) {
     detail.itemName = $row.find(".pr-free-item-name-input").val().trim();
     detail.kind = $row.find(".pr-free-kind-select").val().trim();
+    detail.kindLabel = $row.find(".pr-free-kind-select option:selected").text();
     detail.price = $row.find(".pr-free-price-input").val().trim();
     detail.quantity = $row.find(".pr-edit-quantity-input").val().trim();
 
@@ -301,7 +304,7 @@ $(function () {
         .text(index + 1),
     );
     $row.append($("<td>").addClass("pr-detail-col-name").text(detail.itemName));
-    $row.append($("<td>").addClass("pr-detail-col-kind").text(detail.kind));
+    $row.append($("<td>").addClass("pr-detail-col-kind").text(getKindLabel(detail)));
     $row.append(
       $("<td>").addClass("pr-detail-col-supplier").text(detail.supplierName),
     );
@@ -366,7 +369,7 @@ $(function () {
         .text(index + 1),
     );
     $row.append($("<td>").addClass("pr-detail-col-name").text(detail.itemName));
-    $row.append($("<td>").addClass("pr-detail-col-kind").text(detail.kind));
+    $row.append($("<td>").addClass("pr-detail-col-kind").text(getKindLabel(detail)));
     $row.append(
       $("<td>").addClass("pr-detail-col-supplier").text(detail.supplierName),
     );
@@ -629,6 +632,7 @@ $(function () {
     renderDetails();
     renderDetailHiddenInputs();
     updateAmountSummary();
+    updateSubmitButtonState();
   }
 
   function getDetail(index) {
@@ -651,6 +655,7 @@ $(function () {
       itemId: detail.itemId,
       itemName: detail.itemName,
       kind: detail.kind,
+      kindLabel: detail.kindLabel,
       supplierId: detail.supplierId,
       supplierName: detail.supplierName,
       unitId: detail.unitId,
@@ -681,6 +686,20 @@ $(function () {
     return formatNumber(value);
   }
 
+  function getKindLabel(detail) {
+    return detail.kindLabel || findKindLabel(detail.kind) || detail.kind;
+  }
+
+  function findKindLabel(kind) {
+    if (!kind) {
+      return "";
+    }
+
+    return $("#kindOptionsTemplate")
+      .find(`option[value="${kind}"]`)
+      .text();
+  }
+
   function initializeDetails() {
     const initialDetails = window.initialPurchaseRequestDetails || [];
 
@@ -691,6 +710,7 @@ $(function () {
         itemId: detail.itemId,
         itemName: detail.itemName,
         kind: detail.kind,
+        kindLabel: detail.kindLabel || findKindLabel(detail.kind),
         supplierId: detail.supplierId,
         supplierName: detail.supplierName,
         unitId: detail.unitId,
@@ -706,5 +726,10 @@ $(function () {
     });
 
     refreshDetailArea();
+  } 
+
+  function updateSubmitButtonState() {
+    const disabled = details.length === 0 || details.some(d => d.editing);
+    $("#purchaseRequestSubmitButton").prop("disabled", disabled);
   }
 });

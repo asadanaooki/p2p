@@ -58,6 +58,29 @@
   font-size: 12px;
 }
 
+.pr-detail-error-summary {
+  margin-bottom: 18px;
+  border: 1px solid #f0b8b8;
+  border-radius: 8px;
+  background: #fff3f3;
+  color: #c0392b;
+  font-size: 14px;
+}
+
+.pr-detail-error-block {
+  padding: 12px 14px;
+}
+
+.pr-detail-error-title {
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.pr-detail-error-list {
+  margin: 0;
+  padding-left: 22px;
+}
+
 /* =========================
    明細
 ========================= */
@@ -72,6 +95,7 @@
 .pr-detail-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .pr-detail-table th,
@@ -79,6 +103,7 @@
   border-bottom: 1px solid #e2e8ec;
   padding: 10px;
   font-size: 14px;
+  vertical-align: middle;
 }
 
 .pr-detail-table th {
@@ -88,24 +113,25 @@
   text-align: left;
 }
 
+/* 列幅 */
 .pr-col-no {
   width: 4%;
 }
 
 .pr-col-name {
-  width: 21%;
-}
-
-.pr-col-kind {
-  width: 8%;
-}
-
-.pr-col-supplier {
   width: 22%;
 }
 
+.pr-col-kind {
+  width: 10%;
+}
+
+.pr-col-supplier {
+  width: 23%;
+}
+
 .pr-col-unit {
-  width: 7%;
+  width: 9%;
 }
 
 .pr-col-price {
@@ -117,20 +143,37 @@
 }
 
 .pr-col-subtotal {
-  width: 11%;
-}
-
-.pr-col-actions {
   width: 10%;
 }
 
-.pr-col-line {
+.pr-col-actions {
+  width: 5%;
+}
+
+/* No.列 */
+.pr-detail-table th:nth-child(1),
+.pr-detail-table td:nth-child(1) {
   text-align: center;
 }
 
-.pr-price-cell,
-.pr-quantity-cell,
-.pr-subtotal-cell {
+/* 数字列：単価・個数・小計 */
+.pr-detail-table td:nth-child(6),
+.pr-detail-table td:nth-child(7),
+.pr-detail-table td:nth-child(8) {
+  text-align: right;
+}
+
+/* 操作列 */
+.pr-detail-table th:nth-child(9),
+.pr-detail-table td:nth-child(9) {
+  text-align: left;
+}
+
+/* 入力行でも数値入力は右寄せ */
+.pr-detail-edit-row .pr-edit-price-input,
+.pr-detail-edit-row .pr-edit-quantity-input,
+.pr-detail-edit-row .pr-free-price-input,
+.pr-detail-edit-row .pr-free-quantity-input {
   text-align: right;
 }
 
@@ -160,16 +203,6 @@
 .pr-detail-add-button:hover {
   background: #f4f7f8;
 }
-
-/* .pr-amount-summary {
-  display: grid;
-  grid-template-columns: 120px 150px;
-  gap: 8px 15px;
-}
-
-.pr-amount-label {
-  text-align: right;
-} */
 
 .pr-amount-summary {
   width: 300px;
@@ -235,6 +268,20 @@
   background: #285f63;
 }
 
+/* 明細0件などで disabled にしたとき */
+.pr-submit-button:disabled,
+.pr-submit-button.is-disabled {
+  background: #b0bec5;
+  color: #fff;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.pr-submit-button:disabled:hover,
+.pr-submit-button.is-disabled:hover {
+  background: #b0bec5;
+}
+
 .pr-cancel-button {
   border: 1px solid #b8c8cf;
   background: #fff;
@@ -245,19 +292,81 @@
   background: #f4f7f8;
 }
 
-/* TODO: */
 /* =========================
    行操作ボタン
 ========================= */
+
+.pr-detail-action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.pr-detail-edit-button,
+.pr-detail-delete-button,
+.pr-detail-save-button,
+.pr-detail-cancel-edit-button {
+  width: 30px;
+  height: 25px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.pr-detail-edit-button {
+  color: #2f6f73;
+}
+
+.pr-detail-delete-button {
+  color: #c0392b;
+}
+
+.pr-detail-save-button {
+  color: #1e8e3e;
+}
+
+.pr-detail-cancel-edit-button {
+  color: #c0392b;
+}
+
+.pr-detail-edit-button:hover,
+.pr-detail-delete-button:hover,
+.pr-detail-save-button:hover,
+.pr-detail-cancel-edit-button:hover {
+  opacity: 0.7;
+}
+
 /* =========================
    明細入力欄
 ========================= */
+
+.pr-detail-edit-row input,
+.pr-detail-edit-row select {
+  width: 100%;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid #cfd8dc;
+  font-size: 12px;
+  box-sizing: border-box;
+}
+
+/* number入力のスピンボタンを非表示 */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  appearance: textfield;
+}
 
 /* =========================
    カタログモーダル
 ========================= */
 
-.pr-nodal[hidden] {
+.pr-modal[hidden] {
   display: none;
 }
 
@@ -281,5 +390,4 @@
   overflow: auto;
   border-radius: 12px;
   background: #fff;
-
 }

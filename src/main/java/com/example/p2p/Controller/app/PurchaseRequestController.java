@@ -117,6 +117,8 @@ public class PurchaseRequestController {
         String prId = purchaseRequestService.create(userId, form);
 
         redirectAttributes.addAttribute("prId", prId);
+        redirectAttributes.addFlashAttribute("successMessage",
+                messageSource.getMessage("purchaseRequest.create.success", null, null));
 
         logger.info("PR作成成功");
 
