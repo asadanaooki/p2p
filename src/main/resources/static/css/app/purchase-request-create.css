@@ -89,7 +89,7 @@
 }
 
 .pr-col-no {
-  width: 5%;
+  width: 4%;
 }
 
 .pr-col-name {
@@ -97,23 +97,23 @@
 }
 
 .pr-col-kind {
-  width: 10%;
-}
-
-.pr-col-unit {
-  width: 9%;
-}
-
-.pr-col-price {
-  width: 11%;
+  width: 8%;
 }
 
 .pr-col-supplier {
-  width: 16%;
+  width: 22%;
+}
+
+.pr-col-unit {
+  width: 7%;
+}
+
+.pr-col-price {
+  width: 10%;
 }
 
 .pr-col-quantity {
-  width: 8%;
+  width: 7%;
 }
 
 .pr-col-subtotal {
@@ -121,7 +121,7 @@
 }
 
 .pr-col-actions {
-  width: 9%;
+  width: 10%;
 }
 
 .pr-col-line {
@@ -276,8 +276,10 @@
 .pr-modal-content {
   position: relative;
   z-index: 1;
-  margin: 20px;
-  height: calc(100vh - 40px);
+  width: 100vw;
+  height: 100vh;
   overflow: auto;
   border-radius: 12px;
+  background: #fff;
+
 }

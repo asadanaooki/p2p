@@ -49,6 +49,11 @@ public class PurchaseRequestController {
 
     private MessageSource messageSource;
 
+    private static final Map<String, Integer> sortMap = Map.ofEntries(Map.entry("nonForm", 0),
+            Map.entry("detailInputType", 1), Map.entry("itemId", 2), Map.entry("itemName", 3), Map.entry("kind", 4),
+            Map.entry("supplierId", 5), Map.entry("supplierName", 6), Map.entry("unitId", 7), Map.entry("unitName", 8),
+            Map.entry("price", 9), Map.entry("quantity", 10));
+
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
@@ -121,24 +126,36 @@ public class PurchaseRequestController {
     private Map<Integer, List<String>> createDetailErrorMessages(BindingResult bindingResult) {
         Map<Integer, List<String>> errorMap = new LinkedHashMap<Integer, List<String>>();
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+        List<FieldError> sortedFieldErrors = fieldErrors.stream()
+            .filter(f -> f.getField().startsWith("details["))
+            .sorted((f1, f2) -> {
+                // 行明細並び替え
+                int f1RowStartIndex = f1.getField().indexOf("[") + 1;
+                int f1RowEndIndex = f1.getField().indexOf("]");
+                int f2RowStartIndex = f2.getField().indexOf("[") + 1;
+                int f2RowEndIndex = f2.getField().indexOf("]");
+                int rowCompare = Integer.compare(
+                        Integer.parseInt(f1.getField().substring(f1RowStartIndex, f1RowEndIndex)),
+                        Integer.parseInt(f2.getField().substring(f2RowStartIndex, f2RowEndIndex)));
 
-        for (FieldError fe : fieldErrors) {
+                if (rowCompare != 0) {
+                    return rowCompare;
+                }
+                // 明細内容並び替え
+                int f1FieldNameStartIndex = f1.getField().indexOf(".") + 1;
+                int f2FieldNameStartIndex = f2.getField().indexOf(".") + 1;
+                return Integer.compare(sortMap.get(f1.getField().substring(f1FieldNameStartIndex)),
+                        sortMap.get(f2.getField().substring(f2FieldNameStartIndex)));
+            })
+            .toList();
+
+        for (FieldError fe : sortedFieldErrors) {
             String field = fe.getField();
-            if (!field.startsWith("details[")) {
-                continue;
-            }
-            int startIndex = field.indexOf("[") + 1;
-            int endIndex = field.indexOf("]");
-            Integer key = Integer.parseInt(field.substring(startIndex, endIndex));
-            if (errorMap.containsKey(key)) {
-                errorMap.get(key).add(fe.getDefaultMessage());
-            }
-            else {
-                List<String> list = new ArrayList<String>();
-                list.add(fe.getDefaultMessage());
-                errorMap.put(key, list);
-            }
+            int rowStartIndex = field.indexOf("[") + 1;
+            int rowEndIndex = field.indexOf("]");
+            Integer key = Integer.parseInt(field.substring(rowStartIndex, rowEndIndex));
 
+            errorMap.computeIfAbsent(key, k -> new ArrayList<String>()).add(fe.getDefaultMessage());
         }
         return errorMap;
     }

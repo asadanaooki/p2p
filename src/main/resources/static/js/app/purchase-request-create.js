@@ -3,6 +3,8 @@ $(function () {
   const editBackups = new Map();
   let rowSequence = 0;
 
+  initializeDetails();
+
   // =========================
   // カタログモーダル
   // =========================
@@ -72,7 +74,7 @@ $(function () {
       unitName: item.unitName,
       price: Number(item.price),
       quantity: Number(item.quantity),
-      subtotal: Number(item.subtotal),
+      subtotal: calculateSubtotalValue(item.price, item.quantity),
       editing: false,
       isNew: false,
       supplierInputMode: "select",
@@ -293,6 +295,11 @@ $(function () {
   function renderDisplayRow($rows, detail, index) {
     const $row = $("<tr>");
 
+    $row.append(
+      $("<td>")
+        .addClass("pr-detail-col-no")
+        .text(index + 1),
+    );
     $row.append($("<td>").addClass("pr-detail-col-name").text(detail.itemName));
     $row.append($("<td>").addClass("pr-detail-col-kind").text(detail.kind));
     $row.append(
@@ -353,6 +360,11 @@ $(function () {
       .addClass("pr-detail-edit-row")
       .attr("data-index", index);
 
+    $row.append(
+      $("<td>")
+        .addClass("pr-detail-col-no")
+        .text(index + 1),
+    );
     $row.append($("<td>").addClass("pr-detail-col-name").text(detail.itemName));
     $row.append($("<td>").addClass("pr-detail-col-kind").text(detail.kind));
     $row.append(
@@ -417,6 +429,11 @@ $(function () {
       .val(detail.quantity)
       .addClass("pr-edit-quantity-input");
 
+    $row.append(
+      $("<td>")
+        .addClass("pr-detail-col-no")
+        .text(index + 1),
+    );
     $row.append(
       $("<td>").addClass("pr-detail-col-name").append($itemNameInput),
     );
@@ -572,11 +589,6 @@ $(function () {
         `details[${index}].quantity`,
         detail.quantity,
       );
-      appendHidden(
-        $hiddenInputs,
-        `details[${index}].subtotal`,
-        detail.subtotal,
-      );
     });
   }
 
@@ -667,5 +679,32 @@ $(function () {
     }
 
     return formatNumber(value);
+  }
+
+  function initializeDetails() {
+    const initialDetails = window.initialPurchaseRequestDetails || [];
+
+    initialDetails.forEach(function (detail) {
+      details.push({
+        rowId: createRowId(),
+        detailInputType: detail.detailInputType,
+        itemId: detail.itemId,
+        itemName: detail.itemName,
+        kind: detail.kind,
+        supplierId: detail.supplierId,
+        supplierName: detail.supplierName,
+        unitId: detail.unitId,
+        unitName: detail.unitName,
+        price: detail.price,
+        quantity: detail.quantity,
+        subtotal: calculateSubtotalValue(detail.price, detail.quantity),
+        editing: false,
+        isNew: false,
+        supplierInputMode: detail.supplierId ? "select" : "manual",
+        unitInputMode: detail.unitId ? "select" : "manual",
+      });
+    });
+
+    refreshDetailArea();
   }
 });

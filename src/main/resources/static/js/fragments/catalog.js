@@ -5,12 +5,12 @@ $(function () {
   // 検索・フィルター
   // =========================
 
-  $("#catalogKeywordSearchButton").on("click", function () {
+  $(document).on("click", "#catalogKeywordSearchButton", function () {
     $("#catalogSearchForm input[name=page]").val(1);
     searchCatalog($("#catalogSearchForm"));
   });
 
-  $("#catalogKeyword").on("keydown", function (event) {
+  $(document).on("keydown", "#catalogKeyword", function (event) {
     if (event.key === "Enter") {
       event.preventDefault();
       $("#catalogSearchForm input[name=page]").val(1);
@@ -18,12 +18,12 @@ $(function () {
     }
   });
 
-  $("#catalogFilterSubmitButton").on("click", function () {
+  $(document).on("click", "#catalogFilterSubmitButton", function () {
     $("#catalogSearchForm input[name=page]").val(1);
     searchCatalog($("#catalogSearchForm"));
   });
 
-  $("#catalogFilterResetButton").on("click", function () {
+  $(document).on("click", "#catalogFilterResetButton", function () {
     $("#catalogSearchForm select[name=kind]").val("");
     $("#catalogSearchForm select[name=supplierId]").val("");
     $("#catalogSearchForm input[name=page]").val(1);
@@ -81,22 +81,24 @@ $(function () {
       return;
     }
 
-    const existingItem = selectedItems.find((item) => item.itemId === itemId);
+    const existingItem = selectedItems.find(function (item) {
+      return item.itemId === itemId;
+    });
 
     if (existingItem) {
       existingItem.quantity += quantity;
     } else {
       selectedItems.push({
         detailInputType: "CATALOG",
-        itemId,
-        itemName,
-        kind,
-        supplierId,
-        supplierName,
-        unitId,
-        unitName,
-        price,
-        quantity,
+        itemId: itemId,
+        itemName: itemName,
+        kind: kind,
+        supplierId: supplierId,
+        supplierName: supplierName,
+        unitId: unitId,
+        unitName: unitName,
+        price: price,
+        quantity: quantity,
       });
     }
 
@@ -113,7 +115,7 @@ $(function () {
   // 追加予定の開閉
   // =========================
 
-  $("#catalogToggleSelectedAreaButton").on("click", function () {
+  $(document).on("click", "#catalogToggleSelectedAreaButton", function () {
     const isOpen = !$("#catalogSelectedArea").prop("hidden");
 
     if (isOpen) {
@@ -144,7 +146,9 @@ $(function () {
         return;
       }
 
-      const item = selectedItems.find((item) => item.itemId === itemId);
+      const item = selectedItems.find(function (item) {
+        return item.itemId === itemId;
+      });
 
       if (item) {
         item.quantity = quantity;
@@ -157,7 +161,10 @@ $(function () {
 
   $(document).on("click", ".catalog-delete-selected-button", function () {
     const itemId = String($(this).data("item-id"));
-    const index = selectedItems.findIndex((item) => item.itemId === itemId);
+
+    const index = selectedItems.findIndex(function (item) {
+      return item.itemId === itemId;
+    });
 
     if (index !== -1) {
       selectedItems.splice(index, 1);
@@ -177,7 +184,7 @@ $(function () {
   // 明細へ反映・キャンセル・閉じる
   // =========================
 
-  $("#catalogConfirmButton").on("click", function () {
+  $(document).on("click", "#catalogConfirmButton", function () {
     if (selectedItems.length === 0) {
       return;
     }
@@ -232,6 +239,8 @@ $(function () {
 
     $("#catalogSelectedCount").text(formatNumber(selectedItems.length));
     $("#catalogFooterTotalAmount").text(formatNumber(totalAmount));
+
+    $("#catalogConfirmButton").prop("disabled", selectedItems.length === 0);
   }
 
   // =========================
@@ -251,17 +260,21 @@ $(function () {
       $row.append(
         $("<td>").addClass("catalog-selected-col-name").text(item.itemName),
       );
+
       $row.append(
         $("<td>").addClass("catalog-selected-col-kind").text(item.kind),
       );
+
       $row.append(
         $("<td>")
           .addClass("catalog-selected-col-supplier")
           .text(item.supplierName),
       );
+
       $row.append(
         $("<td>").addClass("catalog-selected-col-unit").text(item.unitName),
       );
+
       $row.append(
         $("<td>")
           .addClass("catalog-selected-col-price")

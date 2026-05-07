@@ -5,10 +5,14 @@
   <link rel="stylesheet" th:href="@{/css/common.css}" />
   <link rel="stylesheet" th:href="@{/css/app/purchase-request-create.css}">
   <link rel="stylesheet" th:href="@{/css/fragments/catalog.css}" />
+
+  <script th:inline="javascript">
+    window.initialPurchaseRequestDetails = /*[[${form.details}]]*/[];
+  </script>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script defer th:src="@{/js/common.js}"></script>
   <script defer th:src="@{/js/app/purchase-request-create.js}"></script>
-  <script defer th:src="@{/js/app/catalog.js}"></script>
+  <script defer th:src="@{/js/fragments/catalog.js}"></script>
 
 </head>
 
@@ -29,8 +33,14 @@
         </div>
       </div>
 
-      <div class="pr-global-error" th:if="${#fields.hasGlobalErrors()}">
-        <p th:each="error : ${#fields.globalErrors()}" th:text="${error}"></p>
+      <div class="pr-detail-error-summary" th:if="${detailErrorMessages != null && !detailErrorMessages.isEmpty()}">
+        <div class="pr-detail-error-block" th:each="entry : ${detailErrorMessages}">
+          <div class="pr-detail-error-title" th:text="|明細${entry.key + 1}行目|"></div>
+
+          <ul class="pr-detail-error-list">
+            <li th:each="message : ${entry.value}" th:text="${message}"></li>
+          </ul>
+        </div>
       </div>
 
       <div class="pr-detail-card">
@@ -39,9 +49,9 @@
             <col class="pr-col-no">
             <col class="pr-col-name">
             <col class="pr-col-kind">
+            <col class="pr-col-supplier">
             <col class="pr-col-unit">
             <col class="pr-col-price">
-            <col class="pr-col-supplier">
             <col class="pr-col-quantity">
             <col class="pr-col-subtotal">
             <col class="pr-col-actions">
@@ -52,9 +62,9 @@
               <th>No.</th>
               <th>品名</th>
               <th>種別</th>
+              <th>仕入先</th>
               <th>単位</th>
               <th>単価</th>
-              <th>仕入先</th>
               <th>個数</th>
               <th>小計</th>
               <th>操作</th>
