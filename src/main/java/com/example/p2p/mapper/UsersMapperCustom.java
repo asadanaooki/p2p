@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.example.p2p.dto.admin.UserDetailDto;
 import com.example.p2p.dto.admin.UserListRowDto;
+import com.example.p2p.dto.app.AuthenticationUserDto;
 import com.example.p2p.dto.app.UserProfileDto;
 import com.example.p2p.form.admin.UserSearchForm;
 
@@ -21,4 +22,6 @@ public interface UsersMapperCustom {
     UserProfileDto selectUserProfile(String userId);
     
     String selectFullName(String userId);
+    
+    AuthenticationUserDto selectAuthenticationUser(String email);
 }

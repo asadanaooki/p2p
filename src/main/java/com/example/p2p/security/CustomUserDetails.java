@@ -2,11 +2,11 @@ package com.example.p2p.security;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import com.example.p2p.entity.Users;
 
 import lombok.Data;
 
@@ -19,16 +19,18 @@ public class CustomUserDetails implements UserDetails {
 
     private String email;
 
-    public CustomUserDetails(Users user) {
-        this.username = user.getUserId().toString();
-        this.password = user.getPasswordHash();
-        this.email = user.getEmail();
+    private List<SimpleGrantedAuthority> authorities;
+
+    public CustomUserDetails(String userId, String passwordHash, String email, String role) {
+        this.username = userId;
+        this.password = passwordHash;
+        this.email = email;
+        this.authorities = Collections.singletonList(new SimpleGrantedAuthority(role));
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // TODO 自動生成されたメソッド・スタブ
-        return Collections.EMPTY_LIST;
+        return this.authorities;
     }
 
 }

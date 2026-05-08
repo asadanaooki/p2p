@@ -107,4 +107,16 @@
     from users
     where user_id = #{userId}
   </select>
+  
+  <select id="selectAuthenticationUser" resultType="com.example.p2p.dto.app.AuthenticationUserDto">
+    select
+      u.user_id,
+      u.password_hash,
+      u.email,
+      r.name as role
+    from users u
+    join role r
+      on u.role_id = r.role_id
+    where u.email = #{email}
+  </select>
 </mapper>

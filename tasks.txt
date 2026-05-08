@@ -1,2 +1,1 @@
-PR作成　CSS
-PRController listのソート
+PR画面の権限制御

@@ -30,6 +30,7 @@ public class SecurityConfig {
                  "/css/**",
                  "/js/**"
                  ).permitAll()
+         .requestMatchers("/setting/**").hasAuthority("管理者")
          .anyRequest().authenticated()
          );
 //        http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
