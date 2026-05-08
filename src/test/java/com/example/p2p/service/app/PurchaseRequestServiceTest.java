@@ -118,7 +118,7 @@ class PurchaseRequestServiceTest {
             assertThat(actualHeader.getRequesterUserId()).isEqualTo(userId);
             assertThat(actualHeader.getDueDate()).isEqualTo(LocalDate.of(2027, 3, 2));
             assertThat(actualHeader.getTotalAmountExcludingTax()).isEqualTo(1960);
-            assertThat(actualHeader.getStatus()).isEqualTo(PurchaseRequestStatus.PENDING.toString());
+            assertThat(actualHeader.getStatus()).isEqualTo(PurchaseRequestStatus.PENDING);
             assertThat(actualHeader.getNote()).isEqualTo("testノート");
             assertThat(actualHeader.getCreatedAt()).isNotNull();
             assertThat(actualHeader.getUpdatedAt()).isNotNull();
@@ -134,7 +134,7 @@ class PurchaseRequestServiceTest {
             assertThat(detail.getLineNo()).isOne();
             assertThat(detail.getItemId()).isEqualTo("1bd0d872-69b1-4999-b522-ac202c481662");
             assertThat(detail.getSnapItemName()).isEqualTo("油性ボールペン 黒 10本セット");
-            assertThat(detail.getSnapKind()).isEqualTo(ItemKind.GOODS.toString());
+            assertThat(detail.getSnapKind()).isEqualTo(ItemKind.GOODS);
             assertThat(detail.getUnitId()).isEqualTo("22222222-2222-2222-2222-222222222221");
             assertThat(detail.getSnapUnitName()).isEqualTo("個");
             assertThat(detail.getSupplierId()).isEqualTo("a7f3c9d2-4b8e-41f1-9c6a-1d2e3f4a5b6c");
@@ -184,7 +184,7 @@ class PurchaseRequestServiceTest {
             assertThat(actualHeader.getDisplayNumber()).isNotNull();
             assertThat(actualHeader.getDueDate()).isNull();
             assertThat(actualHeader.getTotalAmountExcludingTax()).isEqualTo(14310);
-            assertThat(actualHeader.getStatus()).isEqualTo(PurchaseRequestStatus.PENDING.toString());
+            assertThat(actualHeader.getStatus()).isEqualTo(PurchaseRequestStatus.PENDING);
             assertThat(actualHeader.getNote()).isNull();
             
             PurchaseRequestDetailExample ex = new PurchaseRequestDetailExample();
@@ -202,7 +202,7 @@ class PurchaseRequestServiceTest {
             assertThat(second.getLineNo()).isEqualTo(2);
             assertThat(second.getItemId()).isNull();
             assertThat(second.getSnapItemName()).isEqualTo("freeテスト");
-            assertThat(second.getSnapKind()).isEqualTo(ItemKind.SERVICE.toString());
+            assertThat(second.getSnapKind()).isEqualTo(ItemKind.SERVICE);
             assertThat(second.getUnitId()).isNull();
             assertThat(second.getSnapUnitName()).isEqualTo("testユニット");
             assertThat(second.getSupplierId()).isNull();

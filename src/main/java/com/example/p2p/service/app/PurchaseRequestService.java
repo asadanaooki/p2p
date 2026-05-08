@@ -102,7 +102,7 @@ public class PurchaseRequestService {
         header.setRequesterUserId(userId);
         header.setDueDate(form.getDueDate());
         header.setTotalAmountExcludingTax(totalExcludingTax);
-        header.setStatus(PurchaseRequestStatus.PENDING.toString());
+        header.setStatus(PurchaseRequestStatus.PENDING);
         header.setNote(form.getNote());
         purchaseRequestMapper.insertSelective(header);
 
@@ -132,7 +132,7 @@ public class PurchaseRequestService {
                 CatalogItemSnapDto dto = itemMapperCustom.selectCatalogItemSnap(form.getItemId());
                 prd.setItemId(form.getItemId());
                 prd.setSnapItemName(dto.getItemName());
-                prd.setSnapKind(dto.getKind().toString());
+                prd.setSnapKind(dto.getKind());
                 prd.setUnitId(dto.getUnitId());
                 prd.setSnapUnitName(dto.getUnitName());
                 prd.setSupplierId(dto.getSupplierId());
@@ -143,7 +143,7 @@ public class PurchaseRequestService {
             else if (form.getDetailInputType() == DetailInputType.FREE) {
                 prd.setItemId(null);
                 prd.setSnapItemName(form.getItemName());
-                prd.setSnapKind(form.getKind().toString());
+                prd.setSnapKind(form.getKind());
                 prd.setUnitId(form.getUnitId());
                 prd.setSnapUnitName(form.getUnitName());
                 prd.setSupplierId(form.getSupplierId());
