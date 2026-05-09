@@ -10,7 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.context.MessageSource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,6 +28,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.p2p.form.app.PurchaseRequestCreateForm;
 import com.example.p2p.form.app.PurchaseRequestSearchForm;
+import com.example.p2p.security.CustomUserDetails;
 import com.example.p2p.service.app.PurchaseRequestService;
 
 import jakarta.servlet.ServletException;
@@ -59,9 +62,11 @@ public class PurchaseRequestController {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
 
+    @PreAuthorize("hasAuthority('PR_VIEW_ALL') or hasAuthority('PR_VIEW_SELF')")
     @GetMapping
     public String showPurchaseRequestList(@Valid @ModelAttribute("form") PurchaseRequestSearchForm form,
-            BindingResult bindingResult, Model model, HttpSession session) {
+            BindingResult bindingResult, @AuthenticationPrincipal CustomUserDetails loginUser, Model model,
+            HttpSession session) {
         logger.debug("PR一覧画面表示開始");
 
         if (bindingResult.hasErrors()) {
@@ -69,26 +74,29 @@ public class PurchaseRequestController {
                 .getAttribute(LAST_SEARCH_CONDITION);
             PurchaseRequestSearchForm formToSearch = lastCondition == null ? new PurchaseRequestSearchForm()
                     : lastCondition;
-            model.addAttribute("view", purchaseRequestService.searchPurchaseRequests(formToSearch));
+            model.addAttribute("view", purchaseRequestService.searchPurchaseRequests(formToSearch, loginUser));
             return "app/purchase-request-list";
         }
         session.setAttribute(LAST_SEARCH_CONDITION, form);
-        model.addAttribute("view", purchaseRequestService.searchPurchaseRequests(form));
+        model.addAttribute("view", purchaseRequestService.searchPurchaseRequests(form, loginUser));
 
         logger.debug("PR一覧画面表示完了");
         return "app/purchase-request-list";
     }
 
+    @PreAuthorize("hasAuthority('PR_VIEW_ALL') or hasAuthority('PR_VIEW_SELF')")
     @GetMapping("/{prId}")
-    public String showPurchaseRequestDetail(@PathVariable @NotBlank String prId, Model model) {
+    public String showPurchaseRequestDetail(@PathVariable @NotBlank String prId,
+            @AuthenticationPrincipal CustomUserDetails loginUser, Model model) {
         logger.debug("PR詳細画面表示開始");
 
-        model.addAttribute("view", purchaseRequestService.getPurchaseRequestDetail(prId));
+        model.addAttribute("view", purchaseRequestService.getPurchaseRequestDetail(prId, loginUser));
 
         logger.debug("PR詳細画面表示完了");
         return "app/purchase-request-detail";
     }
 
+    @PreAuthorize("hasAuthority('PR_CREATE')")
     @GetMapping("/create")
     public String showPurchaseRequestCreateForm(@AuthenticationPrincipal(expression = "username") String userId,
             @ModelAttribute("form") PurchaseRequestCreateForm form, Model model) {
@@ -101,11 +109,13 @@ public class PurchaseRequestController {
         return "app/purchase-request-create";
     }
 
+    @PreAuthorize("hasAuthority('PR_CREATE')")
     @PostMapping("/create")
     public String create(@AuthenticationPrincipal(expression = "username") String userId,
             @Valid @ModelAttribute("form") PurchaseRequestCreateForm form, BindingResult bindingResult, Model model,
             RedirectAttributes redirectAttributes) throws ServletException {
         logger.info("PR作成開始");
+       var s = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (bindingResult.hasErrors()) {
             logger.warn("PR作成バリデーションエラー");

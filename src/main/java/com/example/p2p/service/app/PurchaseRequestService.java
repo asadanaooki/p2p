@@ -1,14 +1,12 @@
 package com.example.p2p.service.app;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,12 +27,10 @@ import com.example.p2p.mapper.ItemMapperCustom;
 import com.example.p2p.mapper.PurchaseRequestDetailMapperCustom;
 import com.example.p2p.mapper.PurchaseRequestMapper;
 import com.example.p2p.mapper.PurchaseRequestMapperCustom;
-import com.example.p2p.mapper.SupplierMapper;
 import com.example.p2p.mapper.SupplierMapperCustom;
-import com.example.p2p.mapper.UnitMapper;
 import com.example.p2p.mapper.UnitMapperCustom;
-import com.example.p2p.mapper.UsersMapper;
 import com.example.p2p.mapper.UsersMapperCustom;
+import com.example.p2p.security.CustomUserDetails;
 import com.example.p2p.util.CommonUtil;
 
 import lombok.AllArgsConstructor;
@@ -56,31 +52,35 @@ public class PurchaseRequestService {
     private ItemMapperCustom itemMapperCustom;
 
     private UnitMapperCustom unitMapperCustom;
-    
+
     private SupplierMapperCustom supplierMapperCustom;
-    
+
     private UsersMapperCustom usersMapperCustom;
 
-    public PurchaseRequestListViewDto searchPurchaseRequests(PurchaseRequestSearchForm form) {
+    public PurchaseRequestListViewDto searchPurchaseRequests(PurchaseRequestSearchForm form,
+            CustomUserDetails loginUser) {
         logger.debug("PR一覧取得開始");
 
         int page = form.getPage();
         PurchaseRequestListViewDto dto = new PurchaseRequestListViewDto();
-        List<PurchaseRequestListRowDto> prs = purchaseRequestMapperCustom.selectPurchaseRequests(form);
+        List<PurchaseRequestListRowDto> prs = purchaseRequestMapperCustom.selectPurchaseRequests(form,
+                loginUser.getPrViewScope(), loginUser.getUsername());
         dto.setPurchaseRequests(prs);
         dto.setCurrentPage(page);
-        dto.setPageNumberList(CommonUtil.createPageNumbers(purchaseRequestMapperCustom.countPurchaseRequests(form),
-                form.getSize(), page, 2));
+        dto.setPageNumberList(CommonUtil.createPageNumbers(purchaseRequestMapperCustom.countPurchaseRequests(form,
+                loginUser.getPrViewScope(), loginUser.getUsername()), form.getSize(), page, 2));
 
         logger.debug("PR一覧取得完了");
         return dto;
     }
 
-    public PurchaseRequestDetailDto getPurchaseRequestDetail(String prId) {
+    public PurchaseRequestDetailDto getPurchaseRequestDetail(String prId, CustomUserDetails loginUser) {
         logger.debug("PR詳細取得開始");
 
-        PurchaseRequestDetailDto dto = purchaseRequestMapperCustom.selectPurchaseRequestDetailHeader(prId);
-        dto.setDetails(purchaseRequestDetailMapperCustom.selectPurchaseRequestDetailLines(prId));
+        PurchaseRequestDetailDto dto = purchaseRequestMapperCustom.selectPurchaseRequestDetailHeader(prId,
+                loginUser.getPrViewScope(), loginUser.getUsername());
+        dto.setDetails(purchaseRequestDetailMapperCustom.selectPurchaseRequestDetailLines(prId,
+                loginUser.getPrViewScope(), loginUser.getUsername()));
 
         logger.debug("PR詳細取得完了");
 
@@ -108,17 +108,17 @@ public class PurchaseRequestService {
 
         // 明細登録
         purchaseRequestDetailMapperCustom.bulkInsert(details);
-        
+
         return prId;
 
     }
-    
+
     public PurchaseRequestCreateViewDto prepareCreateView(String userId) {
         PurchaseRequestCreateViewDto dto = new PurchaseRequestCreateViewDto();
         dto.setRequester(usersMapperCustom.selectFullName(userId));
         dto.setUnitOptions(unitMapperCustom.selectUnitOptions());
         dto.setSupplierOptions(supplierMapperCustom.selectSupplierOptions());
-        
+
         return dto;
     }
 

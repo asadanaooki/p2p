@@ -36,7 +36,7 @@ import com.example.p2p.service.admin.PaymentTermService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@WithMockUser
+@WithMockUser(authorities = {"管理者"})
 class PaymentTermControllerTest {
 
     @Autowired

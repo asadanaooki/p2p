@@ -3,15 +3,20 @@
 <mapper namespace="com.example.p2p.mapper.PurchaseRequestDetailMapperCustom">
   <select id="selectPurchaseRequestDetailLines" resultType="com.example.p2p.dto.app.PurchaseRequestDetailLineDto">
     select 
-      snap_item_name as item_name,
-      snap_kind as kind,
-      snap_unit_name as unit_name,
-      snap_supplier_name as supplier_name,
-      quantity,
-      snap_unit_price as unit_price,
-      subtotal_excluding_tax
-    from purchase_request_detail
-    where pr_id = #{prId}
+      prd.snap_item_name as item_name,
+      prd.snap_kind as kind,
+      prd.snap_unit_name as unit_name,
+      prd.snap_supplier_name as supplier_name,
+      prd.quantity,
+      prd.snap_unit_price as unit_price,
+      prd.subtotal_excluding_tax
+    from purchase_request_detail prd
+    join purchase_request pr
+      on prd.pr_id = pr.pr_id
+    where prd.pr_id = #{prId}
+      <if test="prViewScope == @com.example.p2p.enums.VisibilityScope@SELF">
+        and pr.requester_user_id = #{userId}
+      </if>
   </select>
   
   <insert id="bulkInsert">

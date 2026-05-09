@@ -13,37 +13,41 @@
     join users u
       on pr.requester_user_id = u.user_id
     <where>
-      <if test="dueDateFrom != null">
-        and pr.due_date &gt;= #{dueDateFrom}
+       <if test="prViewScope == @com.example.p2p.enums.VisibilityScope@SELF">
+         pr.requester_user_id = #{userId}
+       </if>
+
+      <if test="form.dueDateFrom != null">
+        and pr.due_date &gt;= #{form.dueDateFrom}
       </if>
-      <if test="dueDateTo != null">
-        and pr.due_date &lt;= #{dueDateTo}
+      <if test="form.dueDateTo != null">
+        and pr.due_date &lt;= #{form.dueDateTo}
       </if>
-      <if test="status != null">
-        and pr.status = #{status}
+      <if test="form.status != null">
+        and pr.status = #{form.status}
       </if>
-      
-      <if test="keyword != null and keyword != ''">
+
+      <if test="form.keyword != null and form.keyword != ''">
         and ( 
-          pr.display_number::varchar ~ #{keywordRegex}
-          or normalization(lower(concat(u.last_name, u.first_name))) ~#{keywordRegex}
-          or normalization(lower(concat(u.last_name_kana, u.first_name_kana))) ~#{keywordRegex}
+          pr.display_number::varchar ~ #{form.keywordRegex}
+          or normalization(lower(concat(u.last_name, u.first_name))) ~#{form.keywordRegex}
+          or normalization(lower(concat(u.last_name_kana, u.first_name_kana))) ~#{form.keywordRegex}
         )
       </if>
     </where>
     order by
       <choose>
-        <when test="sortBy.toString().equals('NUMBER')">pr.display_number</when>
-        <when test="sortBy.toString().equals('REQUESTER')">concat(u.last_name_kana, u.first_name_kana)</when>
-        <when test="sortBy.toString().equals('DUE_DATE')">pr.due_date
+        <when test="form.sortBy.toString().equals('NUMBER')">pr.display_number</when>
+        <when test="form.sortBy.toString().equals('REQUESTER')">concat(u.last_name_kana, u.first_name_kana)</when>
+        <when test="form.sortBy.toString().equals('DUE_DATE')">pr.due_date
           <choose>
-            <when test="sortDirection.toString().equals('ASC')">asc nulls first</when>
-            <when test="sortDirection.toString().equals('DESC')">desc nulls last</when>
+            <when test="form.sortDirection.toString().equals('ASC')">asc nulls first</when>
+            <when test="form.sortDirection.toString().equals('DESC')">desc nulls last</when>
           </choose>
         </when>
         
-        <when test="sortBy.toString().equals('TOTAL')">pr.total_amount_excluding_tax</when>
-        <when test="sortBy.toString().equals('STATUS')">
+        <when test="form.sortBy.toString().equals('TOTAL')">pr.total_amount_excluding_tax</when>
+        <when test="form.sortBy.toString().equals('STATUS')">
         case pr.status
           when 'PENDING' then 1
           when 'APPROVED' then 2
@@ -52,13 +56,13 @@
         end
         </when>
       </choose>
-      <if test="!sortBy.toString().equals('DUE_DATE')">
+      <if test="!form.sortBy.toString().equals('DUE_DATE')">
         <choose>
-          <when test="sortDirection.toString().equals('ASC')">asc</when>
-          <when test="sortDirection.toString().equals('DESC')">desc</when>
+          <when test="form.sortDirection.toString().equals('ASC')">asc</when>
+          <when test="form.sortDirection.toString().equals('DESC')">desc</when>
         </choose>
       </if>
-    limit #{size} offset #{offset}
+    limit #{form.size} offset #{form.offset}
   </select>
   
   <select id="countPurchaseRequests" resultType="int">
@@ -67,21 +71,25 @@
     join users u
       on pr.requester_user_id = u.user_id
     <where>
-      <if test="dueDateFrom != null">
-        and pr.due_date &gt;= #{dueDateFrom}
+      <if test="prViewScope == @com.example.p2p.enums.VisibilityScope@SELF">
+        pr.requester_user_id = #{userId}
       </if>
-      <if test="dueDateTo != null">
-        and pr.due_date &lt;= #{dueDateTo}
+
+      <if test="form.dueDateFrom != null">
+        and pr.due_date &gt;= #{form.dueDateFrom}
       </if>
-      <if test="status != null">
-        and pr.status = #{status}
+      <if test="form.dueDateTo != null">
+        and pr.due_date &lt;= #{form.dueDateTo}
+      </if>
+      <if test="form.status != null">
+        and pr.status = #{form.status}
       </if>
       
-      <if test="keyword != null and keyword != ''">
+      <if test="form.keyword != null and form.keyword != ''">
         and ( 
-          pr.display_number::varchar ~ #{keywordRegex}
-          or normalization(lower(concat(u.last_name, u.first_name))) ~#{keywordRegex}
-          or normalization(lower(concat(u.last_name_kana, u.first_name_kana))) ~#{keywordRegex}
+          pr.display_number::varchar ~ #{form.keywordRegex}
+          or normalization(lower(concat(u.last_name, u.first_name))) ~#{form.keywordRegex}
+          or normalization(lower(concat(u.last_name_kana, u.first_name_kana))) ~#{form.keywordRegex}
         )
       </if>
     </where>
@@ -99,6 +107,10 @@
     from purchase_request pr
     join users u
       on pr.requester_user_id = u.user_id
-    where pr.pr_id = #{prId}
+    where
+      pr.pr_id = #{prId}
+      <if test="prViewScope == @com.example.p2p.enums.VisibilityScope@SELF">
+        and pr.requester_user_id = #{userId}
+      </if>
   </select>
 </mapper>
