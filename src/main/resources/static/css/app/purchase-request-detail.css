@@ -114,3 +114,17 @@
   font-size: 15px;
   white-space: pre-wrap;
 }
+
+.edit-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 84px;
+  height: 35px;
+  padding: 0 20px;
+  margin-bottom: 18px;
+  border: 1px solid #9caeab;
+  background-color: #ececea;
+  text-decoration: none;
+  color: #243534;
+}

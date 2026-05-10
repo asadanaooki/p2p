@@ -131,7 +131,7 @@
       <result property="kind" column="kind"></result>
       <result property="unitName" column="unit_name"></result>
       <result property="supplierName" column="supplier_name"></result>
-      <result property="unitPrice" column="unit_price"></result>
+      <result property="price" column="price"></result>
       <result property="quantity" column="quantity"></result>
       <result property="subtotalExcludingTax" column="subtotal_excluding_tax"></result>
     </collection>  
@@ -156,7 +156,7 @@
       prd.snap_kind as kind,
       prd.snap_unit_name as unit_name,
       prd.snap_supplier_name as supplier_name,
-      prd.snap_unit_price as unit_price,
+      prd.snap_unit_price as price,
       prd.quantity,
       prd.subtotal_excluding_tax
 

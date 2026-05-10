@@ -22,7 +22,7 @@ public class PurchaseRequestEditDetailDto {
     
     private String supplierName;
     
-    private int unitPrice;
+    private int price;
     
     private int quantity;
     

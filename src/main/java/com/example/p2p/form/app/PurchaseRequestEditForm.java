@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.hibernate.validator.constraints.Length;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -12,6 +14,7 @@ import lombok.Data;
 @Data
 public class PurchaseRequestEditForm {
     
+    @DateTimeFormat(iso = ISO.DATE)
     private LocalDate dueDate;
     
     @Length(max = 500)

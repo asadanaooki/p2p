@@ -7,29 +7,47 @@
   <link rel="stylesheet" th:href="@{/css/fragments/catalog.css}" />
 
   <script th:inline="javascript">
-    window.initialPurchaseRequestDetails = /*[[${form.details}]]*/[];
+    window.initialViewDetails = /*[[${view.details}]]*/[];
+    window.initialFormDetails = /*[[${initialDetails}]]*/ null;
+    window.initialDeletedPrDetailIds = /*[[${initialDeletedPrDetailIds}]]*/[];
   </script>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script defer th:src="@{/js/common.js}"></script>
-  <script defer th:src="@{/js/app/purchase-request-create.js}"></script>
+  <script defer th:src="@{/js/app/purchase-request-edit.js}"></script>
   <script defer th:src="@{/js/fragments/catalog.js}"></script>
 
 </head>
 
 <body>
-  <main class="pr-form-page pr-create-page">
-    <h1 class="pr-page-title">PR作成</h1>
+  <main class="pr-form-page pr-edit-page">
+    <h1 class="pr-page-title">PR編集</h1>
 
-    <form id="purchaseRequestCreateForm" th:action="@{/purchase-request/create}" th:object="${form}" method="post">
+    <form id="purchaseRequestEditForm" th:action="@{/purchase-request/{prId}/edit(prId=${prId})}" th:object="${form}"
+      method="post">
       <div class="pr-header-card">
+        <div class="pr-form-group pr-status-group">
+          <div class="pr-label">状態</div>
+          <div th:text="${view.status.label}"></div>
+        </div>
+
         <div class="pr-form-group">
-          <label for="dueDate" class="pr-label">期限日</label>
-          <input type="date" id="dueDate" th:field="*{dueDate}" class="pr-input">
+          <div class="pr-label">番号</div>
+          <div th:text="${view.displayNumber}"></div>
         </div>
 
         <div class="pr-form-group">
           <div class="pr-label">申請者</div>
           <div th:text="${view.requester}"></div>
+        </div>
+
+        <div class="pr-form-group">
+          <label for="dueDate" class="pr-label">納期</label>
+          <input type="date" id="dueDate" th:field="*{dueDate}" class="pr-input">
+        </div>
+
+        <div class="pr-form-group">
+          <div class="pr-label">作成日時</div>
+          <div th:text="${#temporals.format(view.createdAt, 'yyyy/M/d')}"></div>
         </div>
       </div>
 
@@ -103,8 +121,8 @@
       <div id="purchaseRequestDetailHiddenInputs"></div>
 
       <div class="pr-submit-area">
-        <button id="purchaseRequestSubmitButton" type="submit" class="pr-submit-button" disabled>申請</button>
-        <a th:href="@{/purchase-request}" class="pr-cancel-button">キャンセル</a>
+        <button id="purchaseRequestSubmitButton" type="submit" class="pr-submit-button" disabled>更新</button>
+        <a th:href="@{/purchase-request/{prId}(prId=${prId})}" class="pr-cancel-button">キャンセル</a>
       </div>
     </form>
 

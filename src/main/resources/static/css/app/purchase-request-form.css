@@ -1,4 +1,4 @@
-.pr-create-page {
+.pr-form-page {
   min-height: 100vh;
   padding: 20px;
 }
@@ -15,11 +15,27 @@
 
 .pr-header-card {
   display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 30px;
   border: 1px solid #d8e1e6;
   padding: 18px;
   margin-bottom: 18px;
+}
+
+.pr-create-page .pr-header-card {
+  grid-template-columns: 220px 1fr;
+  gap: 30px;
+}
+
+.pr-edit-page .pr-header-card {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.pr-edit-page .pr-status-group {
+  grid-column: 1 / -1;
+}
+
+.pr-edit-page #dueDate {
+  width: 180px;
 }
 
 .pr-form-group {
@@ -237,7 +253,7 @@
 }
 
 /* =========================
-   申請操作
+   送信操作
 ========================= */
 
 .pr-submit-area {

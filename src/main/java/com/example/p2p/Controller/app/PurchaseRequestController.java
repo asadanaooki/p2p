@@ -146,6 +146,7 @@ public class PurchaseRequestController {
      form.setDueDate(view.getDueDate());
      form.setNote(view.getNote());
      
+     model.addAttribute("prId", prId);
      model.addAttribute("view", view);
     
      logger.debug("PR編集画面表示完了");

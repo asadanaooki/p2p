@@ -346,7 +346,7 @@ class PurchaseRequestServiceTest {
         assertThat(first.getKind()).isEqualTo(ItemKind.GOODS);
         assertThat(first.getUnitName()).isEqualTo("個");
         assertThat(first.getSupplierName()).isEqualTo("神奈川文具株式会社");
-        assertThat(first.getUnitPrice()).isEqualTo(980);
+        assertThat(first.getPrice()).isEqualTo(980);
         assertThat(first.getQuantity()).isEqualTo(3);
         assertThat(first.getDetailInputType()).isEqualTo(DetailInputType.CATALOG);
         
