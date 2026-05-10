@@ -8,16 +8,21 @@ import lombok.Data;
 
 @Data
 @ValidPurchaseRequestDetail
-public class PurchaseRequestDetailForm {
-    
+public class PurchaseRequestDetailEditForm {
+
+    // 共通
+    private String prDetailId;
+
     private DetailInputType detailInputType;
 
-    // カタログ購買のみ使用
+    private Integer quantity;
+    
+    // カタログ購買のみ使用 バリデーションチェック通過のため
     private String itemId;
 
     // フリー入力のみ使用
     private ItemKind kind;
-    
+
     private String itemName;
 
     private String supplierId;
@@ -29,8 +34,5 @@ public class PurchaseRequestDetailForm {
     private String unitName;
 
     private Integer price;
-
-    // 共通
-    private Integer quantity;
 
 }

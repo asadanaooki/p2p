@@ -12,7 +12,6 @@ import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.context.MessageSource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,7 +25,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.p2p.dto.app.PurchaseRequestEditViewDto;
 import com.example.p2p.form.app.PurchaseRequestCreateForm;
+import com.example.p2p.form.app.PurchaseRequestEditForm;
 import com.example.p2p.form.app.PurchaseRequestSearchForm;
 import com.example.p2p.security.CustomUserDetails;
 import com.example.p2p.service.app.PurchaseRequestService;
@@ -115,7 +116,6 @@ public class PurchaseRequestController {
             @Valid @ModelAttribute("form") PurchaseRequestCreateForm form, BindingResult bindingResult, Model model,
             RedirectAttributes redirectAttributes) throws ServletException {
         logger.info("PR作成開始");
-       var s = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (bindingResult.hasErrors()) {
             logger.warn("PR作成バリデーションエラー");
@@ -134,6 +134,24 @@ public class PurchaseRequestController {
 
         return "redirect:/purchase-request/{prId}";
     }
+    
+    @PreAuthorize("hasAuthority('PR_CREATE')")
+     @GetMapping("/{prId}/edit")
+     public String showPurchaseRequestEditForm(@PathVariable @NotBlank String prId,
+     @ModelAttribute("form") PurchaseRequestEditForm form,
+     Model model) {
+     logger.debug("PR編集画面表示開始");
+     
+     PurchaseRequestEditViewDto view = purchaseRequestService.prepareEditView(prId);
+     form.setDueDate(view.getDueDate());
+     form.setNote(view.getNote());
+     
+     model.addAttribute("view", view);
+    
+     logger.debug("PR編集画面表示完了");
+     
+     return "app/purchase-request-edit";
+     }
 
     private Map<Integer, List<String>> createDetailErrorMessages(BindingResult bindingResult) {
         Map<Integer, List<String>> errorMap = new LinkedHashMap<Integer, List<String>>();
@@ -172,17 +190,7 @@ public class PurchaseRequestController {
         return errorMap;
     }
     //
-    // @GetMapping("/profile")
-    // public String showProfileEditForm(@AuthenticationPrincipal(expression = "username")
-    // String userId,
-    // @ModelAttribute("form") ProfileEditForm form) {
-    // logger.debug("プロフィール編集画面表示開始");
-    // UserProfileDto dto = accountService.getUserProfile(userId);
-    // modelMapper.map(dto, form);
-    //
-    // logger.debug("プロフィール編集画面表示完了");
-    // return "app/profile-edit";
-    // }
+
     //
     // @PostMapping("/profile")
     // public String updateProfile(@AuthenticationPrincipal(expression = "username")

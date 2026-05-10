@@ -113,4 +113,60 @@
         and pr.requester_user_id = #{userId}
       </if>
   </select>
+  
+  <resultMap id="prEditMap" type="com.example.p2p.dto.app.PurchaseRequestEditViewDto">
+    <id property="prId" column="pr_id"></id>
+    <result property="status" column="status"></result>
+    <result property="displayNumber" column="display_number"></result>
+    <result property="requester" column="requester"></result>
+    <result property="dueDate" column="due_date"></result>
+    <result property="createdAt" column="created_at"></result>
+    <result property="totalAmountExcludingTax" column="total_amount_excluding_tax"></result>
+    <result property="note" column="note"></result>
+    <collection property="details" ofType="com.example.p2p.dto.app.PurchaseRequestEditDetailDto">
+      <id property="prDetailId" column="pr_detail_id"></id>
+      <result property="lineNo" column="line_no"></result>
+      <result property="itemId" column="item_id"></result>
+      <result property="itemName" column="item_name"></result>
+      <result property="kind" column="kind"></result>
+      <result property="unitName" column="unit_name"></result>
+      <result property="supplierName" column="supplier_name"></result>
+      <result property="unitPrice" column="unit_price"></result>
+      <result property="quantity" column="quantity"></result>
+      <result property="subtotalExcludingTax" column="subtotal_excluding_tax"></result>
+    </collection>  
+  
+  </resultMap>
+  
+  <select id="selectPurchaseRequestEditView" resultMap="prEditMap">
+    select 
+      pr.pr_id,
+      pr.status,
+      pr.display_number,
+      CONCAT_WS(' ', u.last_name, u.first_name) as requester,
+      pr.due_date,
+      CAST(pr.created_at AS DATE) as created_at,
+      pr.total_amount_excluding_tax,
+      pr.note,
+      
+      prd.pr_detail_id,
+      prd.line_no,
+      prd.item_id,
+      prd.snap_item_name as item_name,
+      prd.snap_kind as kind,
+      prd.snap_unit_name as unit_name,
+      prd.snap_supplier_name as supplier_name,
+      prd.snap_unit_price as unit_price,
+      prd.quantity,
+      prd.subtotal_excluding_tax
+
+    from purchase_request pr
+    join users u
+      on pr.requester_user_id = u.user_id
+    join purchase_request_detail prd
+      on pr.pr_id = prd.pr_id
+    where
+      pr.pr_id = #{prId}
+    order by prd.line_no asc
+  </select>
 </mapper>

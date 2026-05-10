@@ -10,7 +10,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Data
-public class PurchaseRequestCreateForm {
+public class PurchaseRequestEditForm {
     
     private LocalDate dueDate;
     
@@ -18,6 +18,6 @@ public class PurchaseRequestCreateForm {
     private String note;
     
     @NotEmpty
-    private List<@Valid PurchaseRequestDetailCreateForm> details;
+    private List<@Valid PurchaseRequestDetailEditForm> details;
     
 }

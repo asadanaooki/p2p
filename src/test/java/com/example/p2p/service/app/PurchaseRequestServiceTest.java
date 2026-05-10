@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mockStatic;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.p2p.dto.app.AuthenticationUserDto;
 import com.example.p2p.dto.app.PurchaseRequestDetailDto;
 import com.example.p2p.dto.app.PurchaseRequestDetailLineDto;
+import com.example.p2p.dto.app.PurchaseRequestEditDetailDto;
+import com.example.p2p.dto.app.PurchaseRequestEditViewDto;
 import com.example.p2p.dto.app.PurchaseRequestListViewDto;
 import com.example.p2p.entity.PurchaseRequest;
 import com.example.p2p.entity.PurchaseRequestDetail;
@@ -26,7 +29,7 @@ import com.example.p2p.enums.ItemKind;
 import com.example.p2p.enums.PurchaseRequestStatus;
 import com.example.p2p.enums.VisibilityScope;
 import com.example.p2p.form.app.PurchaseRequestCreateForm;
-import com.example.p2p.form.app.PurchaseRequestDetailForm;
+import com.example.p2p.form.app.PurchaseRequestDetailCreateForm;
 import com.example.p2p.form.app.PurchaseRequestSearchForm;
 import com.example.p2p.mapper.PurchaseRequestDetailMapper;
 import com.example.p2p.mapper.PurchaseRequestMapper;
@@ -104,14 +107,13 @@ class PurchaseRequestServiceTest {
         authUser.setSettingManage(true);
 
         CustomUserDetails loginUser = new CustomUserDetails(authUser);
-        
-        
+
         PurchaseRequestDetailDto actual = purchaseRequestService
             .getPurchaseRequestDetail("6b2c5959-233f-4b54-8a9b-98f4a1b13c40", loginUser);
 
         assertThat(actual.getDetails()).hasSize(2);
     }
-    
+
     @Test
     void getPurchaseRequestDetail_viewSelf() {
         AuthenticationUserDto authUser = new AuthenticationUserDto();
@@ -136,7 +138,7 @@ class PurchaseRequestServiceTest {
         authUser.setSettingManage(true);
 
         CustomUserDetails loginUser = new CustomUserDetails(authUser);
-        
+
         PurchaseRequestDetailDto actual = purchaseRequestService
             .getPurchaseRequestDetail("3c4f62bf-855b-4c35-b19d-eb06acb16896", loginUser);
 
@@ -177,7 +179,7 @@ class PurchaseRequestServiceTest {
             form.setDueDate(LocalDate.of(2027, 3, 2));
             form.setNote("testノート");
 
-            PurchaseRequestDetailForm prdf = new PurchaseRequestDetailForm();
+            PurchaseRequestDetailCreateForm prdf = new PurchaseRequestDetailCreateForm();
             prdf.setDetailInputType(DetailInputType.CATALOG);
             prdf.setItemId("1bd0d872-69b1-4999-b522-ac202c481662");
             prdf.setQuantity(2);
@@ -229,12 +231,12 @@ class PurchaseRequestServiceTest {
         void create_three() {
             PurchaseRequestCreateForm form = new PurchaseRequestCreateForm();
 
-            PurchaseRequestDetailForm detailForm1 = new PurchaseRequestDetailForm();
+            PurchaseRequestDetailCreateForm detailForm1 = new PurchaseRequestDetailCreateForm();
             detailForm1.setDetailInputType(DetailInputType.CATALOG);
             detailForm1.setItemId("1bd0d872-69b1-4999-b522-ac202c481662");
             detailForm1.setQuantity(2);
 
-            PurchaseRequestDetailForm detailForm2 = new PurchaseRequestDetailForm();
+            PurchaseRequestDetailCreateForm detailForm2 = new PurchaseRequestDetailCreateForm();
             detailForm2.setDetailInputType(DetailInputType.FREE);
             detailForm2.setItemId(null);
             detailForm2.setItemName("freeテスト");
@@ -246,7 +248,7 @@ class PurchaseRequestServiceTest {
             detailForm2.setPrice(5550);
             detailForm2.setQuantity(1);
 
-            PurchaseRequestDetailForm detailForm3 = new PurchaseRequestDetailForm();
+            PurchaseRequestDetailCreateForm detailForm3 = new PurchaseRequestDetailCreateForm();
             detailForm3.setDetailInputType(DetailInputType.CATALOG);
             detailForm3.setItemId("a5c1b32a-7b01-49d3-8fef-48e0f39dc31f");
             detailForm3.setQuantity(10);
@@ -292,6 +294,64 @@ class PurchaseRequestServiceTest {
             assertThat(second.getUpdatedAt()).isNotNull();
         }
 
+    }
+
+    @Test
+    void prepareEditView() {
+        PurchaseRequestDetail detail = new PurchaseRequestDetail();
+
+        detail.setPrDetailId("fae1963c-2d5b-450a-8b12-4be480e65ecd");
+        detail.setPrId("3c4f62bf-855b-4c35-b19d-eb06acb16896");
+        detail.setItemId(null);
+        detail.setSnapItemName("A4コピー用紙 500枚");
+        detail.setSnapKind(ItemKind.SERVICE);
+        detail.setUnitId("22222222-2222-2222-2222-222222222221");
+        detail.setSnapUnitName("個");
+        detail.setSupplierId("a7f3c9d2-4b8e-41f1-9c6a-1d2e3f4a5b6c");
+        detail.setSnapSupplierName("神奈川文具株式会社");
+        detail.setQuantity(5);
+        detail.setSnapUnitPrice(680);
+        detail.setSubtotalExcludingTax(3400);
+        detail.setCreatedAt(LocalDateTime.of(2026, 4, 26, 14, 40, 21, 434_000_000));
+        detail.setUpdatedAt(LocalDateTime.of(2026, 5, 2, 19, 56, 0, 433_000_000));
+        detail.setLineNo(3);
+        
+       int row = purchaseRequestDetailMapper.updateByPrimaryKey(detail);
+        
+        PurchaseRequestEditViewDto dto = purchaseRequestService.prepareEditView("3c4f62bf-855b-4c35-b19d-eb06acb16896");
+        
+        assertThat(dto.getPrId()).isEqualTo("3c4f62bf-855b-4c35-b19d-eb06acb16896");
+        assertThat(dto.getStatus()).isEqualTo(PurchaseRequestStatus.APPROVED);
+        assertThat(dto.getDisplayNumber()).isEqualTo(3);
+        assertThat(dto.getRequester()).isEqualTo("鈴木 一郎");
+        assertThat(dto.getCreatedAt()).isEqualTo(LocalDate.of(2026, 4, 21));
+        assertThat(dto.getDueDate()).isEqualTo(LocalDate.of(2026, 5, 10));
+        
+        assertThat(dto.getTotalAmountExcludingTax()).isEqualTo(39940);
+        assertThat(dto.getNote()).isEqualTo("test");
+        
+        assertThat(dto.getDetails()).extracting(PurchaseRequestEditDetailDto::getPrDetailId)
+        .containsExactly("72a9f12f-bb87-4604-93f6-5d866542b0d8",
+                "ad3e8b17-092a-4c73-acc4-1b799a5f5e97",
+                "fae1963c-2d5b-450a-8b12-4be480e65ecd");
+        
+        assertThat(dto.getUnitOptions()).hasSize(5);
+        assertThat(dto.getSupplierOptions()).hasSize(3);
+        
+        PurchaseRequestEditDetailDto first = dto.getDetails().get(0);
+        assertThat(first.getPrDetailId()).isEqualTo("72a9f12f-bb87-4604-93f6-5d866542b0d8");
+        assertThat(first.getLineNo()).isOne();
+        assertThat(first.getItemId()).isEqualTo("1bd0d872-69b1-4999-b522-ac202c481662");
+        assertThat(first.getItemName()).isEqualTo("油性ボールペン 黒 10本セット");
+        assertThat(first.getKind()).isEqualTo(ItemKind.GOODS);
+        assertThat(first.getUnitName()).isEqualTo("個");
+        assertThat(first.getSupplierName()).isEqualTo("神奈川文具株式会社");
+        assertThat(first.getUnitPrice()).isEqualTo(980);
+        assertThat(first.getQuantity()).isEqualTo(3);
+        assertThat(first.getDetailInputType()).isEqualTo(DetailInputType.CATALOG);
+        
+        assertThat(dto.getDetails().get(2).getDetailInputType()).isEqualTo(DetailInputType.FREE);
+        
     }
 
 }

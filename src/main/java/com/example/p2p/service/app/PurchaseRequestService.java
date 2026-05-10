@@ -6,13 +6,13 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.p2p.dto.app.CatalogItemSnapDto;
 import com.example.p2p.dto.app.PurchaseRequestCreateViewDto;
 import com.example.p2p.dto.app.PurchaseRequestDetailDto;
+import com.example.p2p.dto.app.PurchaseRequestEditViewDto;
 import com.example.p2p.dto.app.PurchaseRequestListRowDto;
 import com.example.p2p.dto.app.PurchaseRequestListViewDto;
 import com.example.p2p.entity.PurchaseRequest;
@@ -20,7 +20,7 @@ import com.example.p2p.entity.PurchaseRequestDetail;
 import com.example.p2p.enums.DetailInputType;
 import com.example.p2p.enums.PurchaseRequestStatus;
 import com.example.p2p.form.app.PurchaseRequestCreateForm;
-import com.example.p2p.form.app.PurchaseRequestDetailForm;
+import com.example.p2p.form.app.PurchaseRequestDetailCreateForm;
 import com.example.p2p.form.app.PurchaseRequestSearchForm;
 import com.example.p2p.mapper.ItemMapper;
 import com.example.p2p.mapper.ItemMapperCustom;
@@ -89,6 +89,8 @@ public class PurchaseRequestService {
 
     @Transactional
     public String create(String userId, PurchaseRequestCreateForm form) {
+        logger.info("PR作成処理開始");
+        
         String prId = UUID.randomUUID().toString();
         // 明細作成
         List<PurchaseRequestDetail> details = toDetailEntities(prId, form.getDetails());
@@ -109,24 +111,41 @@ public class PurchaseRequestService {
         // 明細登録
         purchaseRequestDetailMapperCustom.bulkInsert(details);
 
+        logger.info("PR作成処理完了");
+        
         return prId;
 
     }
 
     public PurchaseRequestCreateViewDto prepareCreateView(String userId) {
+        logger.debug("PR作成画面表示情報取得開始");
+        
         PurchaseRequestCreateViewDto dto = new PurchaseRequestCreateViewDto();
         dto.setRequester(usersMapperCustom.selectFullName(userId));
         dto.setUnitOptions(unitMapperCustom.selectUnitOptions());
         dto.setSupplierOptions(supplierMapperCustom.selectSupplierOptions());
 
+        logger.debug("PR作成画面表示情報取得完了");
+        return dto;
+    }
+    
+    public PurchaseRequestEditViewDto prepareEditView(String prId) {
+        logger.debug("PR編集画面表示情報取得開始");
+        
+        PurchaseRequestEditViewDto dto = purchaseRequestMapperCustom.selectPurchaseRequestEditView(prId);
+        dto.setUnitOptions(unitMapperCustom.selectUnitOptions());
+        dto.setSupplierOptions(supplierMapperCustom.selectSupplierOptions());
+
+        logger.debug("PR編集画面表示情報取得完了");
+        
         return dto;
     }
 
-    private List<PurchaseRequestDetail> toDetailEntities(String prId, List<PurchaseRequestDetailForm> details) {
+    private List<PurchaseRequestDetail> toDetailEntities(String prId, List<PurchaseRequestDetailCreateForm> details) {
         List<PurchaseRequestDetail> list = new ArrayList<PurchaseRequestDetail>();
 
         int lineNo = 1;
-        for (PurchaseRequestDetailForm form : details) {
+        for (PurchaseRequestDetailCreateForm form : details) {
             PurchaseRequestDetail prd = new PurchaseRequestDetail();
             if (form.getDetailInputType() == DetailInputType.CATALOG) {
                 CatalogItemSnapDto dto = itemMapperCustom.selectCatalogItemSnap(form.getItemId());
