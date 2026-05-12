@@ -1,7 +1,10 @@
 package com.example.p2p.service.app;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.p2p.dto.app.AuthenticationUserDto;
@@ -30,6 +34,8 @@ import com.example.p2p.enums.PurchaseRequestStatus;
 import com.example.p2p.enums.VisibilityScope;
 import com.example.p2p.form.app.PurchaseRequestCreateForm;
 import com.example.p2p.form.app.PurchaseRequestDetailCreateForm;
+import com.example.p2p.form.app.PurchaseRequestDetailEditForm;
+import com.example.p2p.form.app.PurchaseRequestEditForm;
 import com.example.p2p.form.app.PurchaseRequestSearchForm;
 import com.example.p2p.mapper.PurchaseRequestDetailMapper;
 import com.example.p2p.mapper.PurchaseRequestMapper;
@@ -45,7 +51,7 @@ class PurchaseRequestServiceTest {
     @Autowired
     PurchaseRequestMapper purchaseRequestMapper;
 
-    @Autowired
+    @MockitoSpyBean
     PurchaseRequestDetailMapper purchaseRequestDetailMapper;
 
     @Test
@@ -315,29 +321,28 @@ class PurchaseRequestServiceTest {
         detail.setCreatedAt(LocalDateTime.of(2026, 4, 26, 14, 40, 21, 434_000_000));
         detail.setUpdatedAt(LocalDateTime.of(2026, 5, 2, 19, 56, 0, 433_000_000));
         detail.setLineNo(3);
-        
-       int row = purchaseRequestDetailMapper.updateByPrimaryKey(detail);
-        
+
+        int row = purchaseRequestDetailMapper.updateByPrimaryKey(detail);
+
         PurchaseRequestEditViewDto dto = purchaseRequestService.prepareEditView("3c4f62bf-855b-4c35-b19d-eb06acb16896");
-        
+
         assertThat(dto.getPrId()).isEqualTo("3c4f62bf-855b-4c35-b19d-eb06acb16896");
         assertThat(dto.getStatus()).isEqualTo(PurchaseRequestStatus.APPROVED);
         assertThat(dto.getDisplayNumber()).isEqualTo(3);
         assertThat(dto.getRequester()).isEqualTo("鈴木 一郎");
         assertThat(dto.getCreatedAt()).isEqualTo(LocalDate.of(2026, 4, 21));
         assertThat(dto.getDueDate()).isEqualTo(LocalDate.of(2026, 5, 10));
-        
+
         assertThat(dto.getTotalAmountExcludingTax()).isEqualTo(39940);
         assertThat(dto.getNote()).isEqualTo("test");
-        
+
         assertThat(dto.getDetails()).extracting(PurchaseRequestEditDetailDto::getPrDetailId)
-        .containsExactly("72a9f12f-bb87-4604-93f6-5d866542b0d8",
-                "ad3e8b17-092a-4c73-acc4-1b799a5f5e97",
-                "fae1963c-2d5b-450a-8b12-4be480e65ecd");
-        
+            .containsExactly("72a9f12f-bb87-4604-93f6-5d866542b0d8", "ad3e8b17-092a-4c73-acc4-1b799a5f5e97",
+                    "fae1963c-2d5b-450a-8b12-4be480e65ecd");
+
         assertThat(dto.getUnitOptions()).hasSize(5);
         assertThat(dto.getSupplierOptions()).hasSize(3);
-        
+
         PurchaseRequestEditDetailDto first = dto.getDetails().get(0);
         assertThat(first.getPrDetailId()).isEqualTo("72a9f12f-bb87-4604-93f6-5d866542b0d8");
         assertThat(first.getLineNo()).isOne();
@@ -349,27 +354,173 @@ class PurchaseRequestServiceTest {
         assertThat(first.getPrice()).isEqualTo(980);
         assertThat(first.getQuantity()).isEqualTo(3);
         assertThat(first.getDetailInputType()).isEqualTo(DetailInputType.CATALOG);
-        
+
         assertThat(dto.getDetails().get(2).getDetailInputType()).isEqualTo(DetailInputType.FREE);
-        
+
     }
-    
+
     @Nested
     class Update {
+
         @Test
-        void update_one_existing() {
-            
+        void update_existingDetail() {
+            PurchaseRequestEditForm form = new PurchaseRequestEditForm();
+            PurchaseRequestDetailEditForm detailForm = new PurchaseRequestDetailEditForm();
+            detailForm.setPrDetailId("33aaccfe-c7c4-4e37-ab48-259dbe7a7fdf");
+            detailForm.setDetailInputType(DetailInputType.CATALOG);
+            detailForm.setQuantity(2);
+            detailForm.setItemId("a5c1b32a-7b01-49d3-8fef-48e0f39dc31f");
+            detailForm.setKind(ItemKind.GOODS);
+            detailForm.setItemName("A4コピー用紙 500枚");
+            detailForm.setSupplierId("a7f3c9d2-4b8e-41f1-9c6a-1d2e3f4a5b6c");
+            detailForm.setSupplierName("神奈川文具株式会社");
+            detailForm.setUnitId("22222222-2222-2222-2222-222222222221");
+            detailForm.setUnitName("個");
+            detailForm.setPrice(680);
+            form.setDetails(List.of(detailForm));
+            form.setDueDate(LocalDate.of(2026, 5, 12));
+            form.setNote("備考");
+
+            purchaseRequestService.update("88bfbcf6-2be6-4d31-8a46-155a7b58ab93", form);
+
+            PurchaseRequest updatedHeader = purchaseRequestMapper
+                .selectByPrimaryKey("88bfbcf6-2be6-4d31-8a46-155a7b58ab93");
+            assertThat(updatedHeader.getDisplayNumber()).isOne();
+            assertThat(updatedHeader.getRequesterUserId()).isEqualTo("169f1e17-619f-45bf-b6dc-8faed08c404c");
+            assertThat(updatedHeader.getDueDate()).isEqualTo(LocalDate.of(2026, 5, 12));
+            assertThat(updatedHeader.getTotalAmountExcludingTax()).isEqualTo(1360);
+            assertThat(updatedHeader.getStatus()).isEqualTo(PurchaseRequestStatus.PENDING);
+            assertThat(updatedHeader.getCreatedAt()).isNotNull();
+            assertThat(updatedHeader.getUpdatedAt()).isNotNull();
+            assertThat(updatedHeader.getNote()).isEqualTo("備考");
+
+            PurchaseRequestDetail updatedDetail = purchaseRequestDetailMapper
+                .selectByPrimaryKey("33aaccfe-c7c4-4e37-ab48-259dbe7a7fdf");
+            assertThat(updatedDetail.getPrId()).isEqualTo("88bfbcf6-2be6-4d31-8a46-155a7b58ab93");
+            assertThat(updatedDetail.getItemId()).isEqualTo("a5c1b32a-7b01-49d3-8fef-48e0f39dc31f");
+            assertThat(updatedDetail.getSnapItemName()).isEqualTo("A4コピー用紙 500枚");
+            assertThat(updatedDetail.getSnapKind()).isEqualTo(ItemKind.GOODS);
+            assertThat(updatedDetail.getUnitId()).isEqualTo("22222222-2222-2222-2222-222222222221");
+            assertThat(updatedDetail.getSnapUnitName()).isEqualTo("個");
+            assertThat(updatedDetail.getSupplierId()).isEqualTo("a7f3c9d2-4b8e-41f1-9c6a-1d2e3f4a5b6c");
+            assertThat(updatedDetail.getSnapSupplierName()).isEqualTo("神奈川文具株式会社");
+            assertThat(updatedDetail.getQuantity()).isEqualTo(2);
+            assertThat(updatedDetail.getSnapUnitPrice()).isEqualTo(680);
+            assertThat(updatedDetail.getSubtotalExcludingTax()).isEqualTo(1360);
+
+            verify(purchaseRequestDetailMapper, never()).deleteByPrimaryKey(anyString());
         }
-        
+
         @Test
-        void update_three_upsert() {
-            
+        void update_upsert() {
+            PurchaseRequestDetail detail = new PurchaseRequestDetail();
+
+            detail.setPrDetailId("ebe68ea0-daaf-41ff-99e3-8ab109c20eae");
+            detail.setPrId("6b2c5959-233f-4b54-8a9b-98f4a1b13c40");
+            detail.setItemId(null);
+            detail.setSnapItemName("会議室プロジェクター設置作業");
+            detail.setSnapKind(ItemKind.SERVICE);
+            detail.setUnitId("22222222-2222-2222-2222-222222222224");
+            detail.setSnapUnitName("式");
+            detail.setSupplierId("b4d8e1f7-92ac-4c35-8f21-6a7b8c9d0e1f");
+            detail.setSnapSupplierName("関西オフィスサービス株式会社");
+            detail.setQuantity(2);
+            detail.setSnapUnitPrice(25000);
+            detail.setSubtotalExcludingTax(50000);
+            detail.setCreatedAt(LocalDateTime.of(2026, 4, 26, 14, 40, 21, 434_000_000));
+            detail.setUpdatedAt(LocalDateTime.of(2026, 5, 2, 19, 56, 0, 433_000_000));
+            detail.setLineNo(2);
+            purchaseRequestDetailMapper.updateByPrimaryKey(detail);
+
+            // カタログ新規行
+            PurchaseRequestDetailEditForm newCatalog = new PurchaseRequestDetailEditForm();
+            newCatalog.setDetailInputType(DetailInputType.CATALOG);
+            newCatalog.setQuantity(2);
+            newCatalog.setItemId("1bd0d872-69b1-4999-b522-ac202c481662");
+            newCatalog.setKind(ItemKind.GOODS);
+            newCatalog.setItemName("ボールペン");
+            newCatalog.setSupplierId("test");
+            newCatalog.setSupplierName("test会社");
+            newCatalog.setUnitId("22222222");
+            newCatalog.setUnitName("わあ");
+            newCatalog.setPrice(10000);
+
+            // カタログ既存行
+            PurchaseRequestDetailEditForm existingCatalog = new PurchaseRequestDetailEditForm();
+            existingCatalog.setPrDetailId("4d57ee8a-4dc6-4155-9f4b-9ee7985d4e21");
+            existingCatalog.setDetailInputType(DetailInputType.CATALOG);
+            existingCatalog.setQuantity(1);
+            existingCatalog.setItemId("2cc30fd9-9dae-4abe-a145-b280d9de2f38");
+            existingCatalog.setKind(ItemKind.SERVICE);
+            existingCatalog.setItemName("プリンター保守サポート");
+            existingCatalog.setSupplierId("c9e2a4b6-7d1f-43a8-b5c2-9f0e1d2c3b4a");
+            existingCatalog.setSupplierName("中部設備サプライ株式会社");
+            existingCatalog.setUnitId("22222222-2222-2222-2222-222222222225");
+            existingCatalog.setUnitName("時間");
+            existingCatalog.setPrice(4500);
+
+            // フリー入力既存行
+            PurchaseRequestDetailEditForm existingFree = new PurchaseRequestDetailEditForm();
+            existingFree.setPrDetailId("ebe68ea0-daaf-41ff-99e3-8ab109c20eae");
+            existingFree.setDetailInputType(DetailInputType.FREE);
+            existingFree.setQuantity(4);
+            existingFree.setItemId(null);
+            existingFree.setKind(ItemKind.GOODS);
+            existingFree.setItemName("ぬいぐるみ");
+            existingFree.setSupplierId(null);
+            existingFree.setSupplierName("ぬいぐるみ株式会社");
+            existingFree.setUnitId(null);
+            existingFree.setUnitName("ぬいぐる");
+            existingFree.setPrice(700);
+
+            PurchaseRequestEditForm form = new PurchaseRequestEditForm();
+            form.setDetails(List.of(newCatalog, existingCatalog, existingFree));
+
+            purchaseRequestService.update("6b2c5959-233f-4b54-8a9b-98f4a1b13c40", form);
+
+            PurchaseRequest updatedHeader = purchaseRequestMapper
+                .selectByPrimaryKey("6b2c5959-233f-4b54-8a9b-98f4a1b13c40");
+            assertThat(updatedHeader.getTotalAmountExcludingTax()).isEqualTo(9260);
+
+            PurchaseRequestDetailExample ex = new PurchaseRequestDetailExample();
+            ex.createCriteria().andPrIdEqualTo("6b2c5959-233f-4b54-8a9b-98f4a1b13c40");
+            ex.setOrderByClause("line_no asc");
+            List<PurchaseRequestDetail> actuals = purchaseRequestDetailMapper.selectByExample(ex);
+            assertThat(actuals).hasSize(3);
+
+            PurchaseRequestDetail first = actuals.get(0);
+            assertThat(first.getLineNo()).isEqualTo(1);
+            assertThat(first.getItemId()).isEqualTo("1bd0d872-69b1-4999-b522-ac202c481662");
+            assertThat(first.getSnapItemName()).isEqualTo("油性ボールペン 黒 10本セット");
+            assertThat(first.getQuantity()).isEqualTo(2);
+            assertThat(first.getSubtotalExcludingTax()).isEqualTo(1960);
+
+            PurchaseRequestDetail second = actuals.get(1);
+            assertThat(second.getLineNo()).isEqualTo(2);
+            assertThat(second.getQuantity()).isEqualTo(1);
+            assertThat(second.getSubtotalExcludingTax()).isEqualTo(4500);
+
+            PurchaseRequestDetail third = actuals.get(2);
+            assertThat(third.getLineNo()).isEqualTo(3);
+            assertThat(third.getSnapItemName()).isEqualTo("ぬいぐるみ");
+            assertThat(third.getSnapKind()).isEqualTo(ItemKind.GOODS);
+            assertThat(third.getQuantity()).isEqualTo(4);
+            assertThat(third.getSubtotalExcludingTax()).isEqualTo(2800);
+
         }
-        
+
         @Test
         void update_with_deleted() {
-            
+            PurchaseRequestEditForm form = new PurchaseRequestEditForm();
+            form.setDeletedPrDetailIds(List.of("4d57ee8a-4dc6-4155-9f4b-9ee7985d4e21"));
+
+            purchaseRequestService.update("6b2c5959-233f-4b54-8a9b-98f4a1b13c40", form);
+
+            PurchaseRequestDetail actual = purchaseRequestDetailMapper
+                .selectByPrimaryKey("4d57ee8a-4dc6-4155-9f4b-9ee7985d4e21");
+            assertThat(actual).isNull();
         }
+
     }
 
 }

@@ -22,7 +22,7 @@ public class PurchaseRequestEditForm {
     private String note;
     
     @NotEmpty
-    private List<@Valid PurchaseRequestDetailEditForm> details;
+    private List<@Valid PurchaseRequestDetailEditForm> details= Collections.EMPTY_LIST;
     
     private List<String> deletedPrDetailIds = Collections.EMPTY_LIST;
 }
