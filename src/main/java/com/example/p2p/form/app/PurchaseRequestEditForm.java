@@ -1,6 +1,7 @@
 package com.example.p2p.form.app;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.validator.constraints.Length;
@@ -23,4 +24,5 @@ public class PurchaseRequestEditForm {
     @NotEmpty
     private List<@Valid PurchaseRequestDetailEditForm> details;
     
+    private List<String> deletedPrDetailIds = Collections.EMPTY_LIST;
 }

@@ -17,7 +17,7 @@ public class PurchaseRequestDetailEditForm {
 
     private Integer quantity;
     
-    // カタログ購買のみ使用 バリデーションチェック通過のため
+    //バリデーションチェック通過&Mybatisのため
     private String itemId;
 
     // フリー入力のみ使用

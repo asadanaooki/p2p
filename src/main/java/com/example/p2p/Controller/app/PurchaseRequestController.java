@@ -134,25 +134,49 @@ public class PurchaseRequestController {
 
         return "redirect:/purchase-request/{prId}";
     }
-    
+
     @PreAuthorize("hasAuthority('PR_CREATE')")
-     @GetMapping("/{prId}/edit")
-     public String showPurchaseRequestEditForm(@PathVariable @NotBlank String prId,
-     @ModelAttribute("form") PurchaseRequestEditForm form,
-     Model model) {
-     logger.debug("PR編集画面表示開始");
-     
-     PurchaseRequestEditViewDto view = purchaseRequestService.prepareEditView(prId);
-     form.setDueDate(view.getDueDate());
-     form.setNote(view.getNote());
-     
-     model.addAttribute("prId", prId);
-     model.addAttribute("view", view);
-    
-     logger.debug("PR編集画面表示完了");
-     
-     return "app/purchase-request-edit";
-     }
+    @GetMapping("/{prId}/edit")
+    public String showPurchaseRequestEditForm(@PathVariable @NotBlank String prId,
+            @ModelAttribute("form") PurchaseRequestEditForm form, Model model) {
+        logger.debug("PR編集画面表示開始");
+
+        PurchaseRequestEditViewDto view = purchaseRequestService.prepareEditView(prId);
+        form.setDueDate(view.getDueDate());
+        form.setNote(view.getNote());
+
+        model.addAttribute("prId", prId);
+        model.addAttribute("view", view);
+
+        logger.debug("PR編集画面表示完了");
+
+        return "app/purchase-request-edit";
+    }
+
+    @PreAuthorize("hasAuthority('PR_CREATE')")
+    @PostMapping("/{prId}/edit")
+    public String create(@PathVariable @NotBlank String prId,
+            @Valid @ModelAttribute("form") PurchaseRequestEditForm form, BindingResult bindingResult, Model model,
+            RedirectAttributes redirectAttributes) throws ServletException {
+        logger.info("PR編集開始");
+
+        if (bindingResult.hasErrors()) {
+            logger.warn("PR編集バリデーションエラー");
+
+            model.addAttribute("view", purchaseRequestService.prepareEditView(prId));
+            model.addAttribute("detailErrorMessages", createDetailErrorMessages(bindingResult));
+            return "app/purchase-request-create";
+        }
+        purchaseRequestService.update(prId, form);
+
+        redirectAttributes.addAttribute("prId", prId);
+        redirectAttributes.addFlashAttribute("successMessage",
+                messageSource.getMessage("purchaseRequest.edit.success", null, null));
+
+        logger.info("PR編集成功");
+
+        return "redirect:/purchase-request/{prId}";
+    }
 
     private Map<Integer, List<String>> createDetailErrorMessages(BindingResult bindingResult) {
         Map<Integer, List<String>> errorMap = new LinkedHashMap<Integer, List<String>>();

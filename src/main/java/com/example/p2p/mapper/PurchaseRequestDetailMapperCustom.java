@@ -16,5 +16,7 @@ public interface PurchaseRequestDetailMapperCustom {
             @Param("prViewScope") VisibilityScope scope, @Param("userId") String userId);
 
     void bulkInsert(List<PurchaseRequestDetail> details);
+    
 
+    void bulkUpsert(List<PurchaseRequestDetail> details);
 }

@@ -1,5 +1,6 @@
 $(function () {
   const details = [];
+  const deletedPrDetailIds = [];
   const editBackups = new Map();
   let rowSequence = 0;
 
@@ -64,6 +65,7 @@ $(function () {
 
     details.push({
       rowId: createRowId(),
+      prDetailId: "",
       detailInputType: "CATALOG",
       itemId: item.itemId,
       itemName: item.itemName,
@@ -88,6 +90,7 @@ $(function () {
   $("#openFreeInputButton").on("click", function () {
     details.push({
       rowId: createRowId(),
+      prDetailId: "",
       detailInputType: "FREE",
       itemId: "",
       itemName: "",
@@ -560,6 +563,11 @@ $(function () {
     details.forEach(function (detail, index) {
       appendHidden(
         $hiddenInputs,
+        `details[${index}].prDetailId`,
+        detail.prDetailId,
+      );
+      appendHidden(
+        $hiddenInputs,
         `details[${index}].detailInputType`,
         detail.detailInputType,
       );
@@ -593,6 +601,9 @@ $(function () {
         detail.quantity,
       );
     });
+    deletedPrDetailIds.forEach(function (prDetailId, index) {
+      appendHidden($hiddenInputs, `deletedPrDetailIds[${index}]`, prDetailId);
+    });
   }
 
   function appendHidden($container, name, value) {
@@ -622,6 +633,34 @@ $(function () {
     $("#detailSubtotalAmount").text(formatNumber(totalAmountExcludingTax));
     $("#detailTaxAmount").text(formatNumber(taxAmount));
     $("#detailTotalAmount").text(formatNumber(totalAmountIncludingTax));
+  }
+
+  // =========================
+  // 初期化
+  // =========================
+
+  function initializeDeletedPrDetailIds() {
+    const initialDeletedPrDetailIds = window.initialDeletedPrDetailIds || [];
+
+    initialDeletedPrDetailIds.forEach(function (prDetailId) {
+      if (prDetailId) {
+        deletedPrDetailIds.push(prDetailId);
+      }
+    });
+  }
+
+  function initializeDetails() {
+    const sourceDetails = window.initialFormDetails ?? window.initialViewDetails ?? [];
+
+    sourceDetails.forEach(function (detail) {
+
+    });
+
+    refreshDetailArea();
+  }
+
+  function normalizeDetail(detail) {
+    
   }
 
   // =========================
@@ -664,7 +703,9 @@ $(function () {
       quantity: detail.quantity,
       subtotal: detail.subtotal,
       editing: false,
-      isNew: detail.isNew,
+      isNew: false,
+      supplierInputMode: detail.supplierInputMode,
+      unitInputMode: detail.unitInputMode,
     };
   }
 
@@ -716,6 +757,8 @@ $(function () {
         subtotal: calculateSubtotalValue(detail.price, detail.quantity),
         editing: false,
         isNew: false,
+        supplierInputMode: detail.supplierId ? "select" : "manual",
+        unitInputMode: detail.unitId ? "select" : "manual",
       });
     });
 

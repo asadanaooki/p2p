@@ -353,5 +353,23 @@ class PurchaseRequestServiceTest {
         assertThat(dto.getDetails().get(2).getDetailInputType()).isEqualTo(DetailInputType.FREE);
         
     }
+    
+    @Nested
+    class Update {
+        @Test
+        void update_one_existing() {
+            
+        }
+        
+        @Test
+        void update_three_upsert() {
+            
+        }
+        
+        @Test
+        void update_with_deleted() {
+            
+        }
+    }
 
 }

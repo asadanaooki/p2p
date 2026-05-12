@@ -53,4 +53,92 @@
       )
     </foreach>
   </insert>
+
+  <update id="bulkUpsert">
+    <foreach collection="details" item="detail" separator=";">
+      merge into purchase_request_detail as t
+      using(
+        values(
+          #{detail.prDetailId},
+          #{detail.prId},
+          #{detail.lineNo},
+          #{detail.itemId},
+          #{detail.snapItemName},
+          #{detail.snapKind},
+          #{detail.unitId},
+          #{detail.snapUnitName},
+          #{detail.supplierId},
+          #{detail.snapSupplierName},
+          #{detail.quantity},
+          #{detail.snapUnitPrice},
+          #{detail.subtotalExcludingTax}
+        ) 
+      ) as s
+      (
+        pr_detail_id,
+        pr_id,
+        line_no,
+        item_id,
+        snap_item_name,
+        snap_kind,
+        unit_id,
+        snap_unit_name,
+        supplier_id,
+        snap_supplier_name,
+        quantity,
+        snap_unit_price,
+        subtotal_excluding_tax
+      )
+      
+      on t.pr_detail_id = s.pr_detail_id
+      when matched then
+        update
+        <set> 
+          quantity = #{detail.quantity},
+          line_no = #{detail.lineNo},
+          subtotal_excluding_tax = #{detail.subtotalExcludingTax},
+          
+          <!-- フリー入力 -->
+          <if test="detail.itemId == null">
+            snap_item_name = #{detail.snapItemName},
+            snap_kind = #{detail.snapKind},
+            supplier_id = #{detail.supplierId},
+            snap_supplier_name = #{detail.snapSupplierName},
+            unit_id = #{detail.unitId},
+            snap_unit_name = #{detail.snapUnitName},
+            snap_unit_price = #{detail.snapUnitPrice}
+          </if>
+        </set>
+        
+      when not matched then
+        insert (
+          pr_id,
+          line_no,
+          item_id,
+          snap_item_name,
+          snap_kind,
+          unit_id,
+          snap_unit_name,
+          supplier_id,
+          snap_supplier_name,
+          quantity,
+          snap_unit_price,
+          subtotal_excluding_tax
+        )
+        values (
+          #{detail.prId},
+          #{detail.lineNo},
+          #{detail.itemId},
+          #{detail.snapItemName},
+          #{detail.snapKind},
+          #{detail.unitId},
+          #{detail.snapUnitName},
+          #{detail.supplierId},
+          #{detail.snapSupplierName},
+          #{detail.quantity},
+          #{detail.snapUnitPrice},
+          #{detail.subtotalExcludingTax}
+        )
+    </foreach>
+  </update>
 </mapper>

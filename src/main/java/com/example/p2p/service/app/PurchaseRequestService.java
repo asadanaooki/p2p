@@ -21,9 +21,11 @@ import com.example.p2p.enums.DetailInputType;
 import com.example.p2p.enums.PurchaseRequestStatus;
 import com.example.p2p.form.app.PurchaseRequestCreateForm;
 import com.example.p2p.form.app.PurchaseRequestDetailCreateForm;
+import com.example.p2p.form.app.PurchaseRequestDetailEditForm;
+import com.example.p2p.form.app.PurchaseRequestEditForm;
 import com.example.p2p.form.app.PurchaseRequestSearchForm;
-import com.example.p2p.mapper.ItemMapper;
 import com.example.p2p.mapper.ItemMapperCustom;
+import com.example.p2p.mapper.PurchaseRequestDetailMapper;
 import com.example.p2p.mapper.PurchaseRequestDetailMapperCustom;
 import com.example.p2p.mapper.PurchaseRequestMapper;
 import com.example.p2p.mapper.PurchaseRequestMapperCustom;
@@ -33,6 +35,7 @@ import com.example.p2p.mapper.UsersMapperCustom;
 import com.example.p2p.security.CustomUserDetails;
 import com.example.p2p.util.CommonUtil;
 
+import io.micrometer.common.util.StringUtils;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -45,9 +48,9 @@ public class PurchaseRequestService {
 
     private PurchaseRequestMapperCustom purchaseRequestMapperCustom;
 
-    private PurchaseRequestDetailMapperCustom purchaseRequestDetailMapperCustom;
+    private PurchaseRequestDetailMapper purchaseRequestDetailMapper;
 
-    private ItemMapper itemMapper;
+    private PurchaseRequestDetailMapperCustom purchaseRequestDetailMapperCustom;
 
     private ItemMapperCustom itemMapperCustom;
 
@@ -90,10 +93,10 @@ public class PurchaseRequestService {
     @Transactional
     public String create(String userId, PurchaseRequestCreateForm form) {
         logger.info("PR作成処理開始");
-        
+
         String prId = UUID.randomUUID().toString();
         // 明細作成
-        List<PurchaseRequestDetail> details = toDetailEntities(prId, form.getDetails());
+        List<PurchaseRequestDetail> details = toCreateDetailEntities(prId, form.getDetails());
 
         int totalExcludingTax = details.stream().mapToInt(i -> i.getSubtotalExcludingTax()).sum();
 
@@ -112,14 +115,14 @@ public class PurchaseRequestService {
         purchaseRequestDetailMapperCustom.bulkInsert(details);
 
         logger.info("PR作成処理完了");
-        
+
         return prId;
 
     }
 
     public PurchaseRequestCreateViewDto prepareCreateView(String userId) {
         logger.debug("PR作成画面表示情報取得開始");
-        
+
         PurchaseRequestCreateViewDto dto = new PurchaseRequestCreateViewDto();
         dto.setRequester(usersMapperCustom.selectFullName(userId));
         dto.setUnitOptions(unitMapperCustom.selectUnitOptions());
@@ -128,36 +131,57 @@ public class PurchaseRequestService {
         logger.debug("PR作成画面表示情報取得完了");
         return dto;
     }
-    
+
     public PurchaseRequestEditViewDto prepareEditView(String prId) {
         logger.debug("PR編集画面表示情報取得開始");
-        
+
         PurchaseRequestEditViewDto dto = purchaseRequestMapperCustom.selectPurchaseRequestEditView(prId);
         dto.setUnitOptions(unitMapperCustom.selectUnitOptions());
         dto.setSupplierOptions(supplierMapperCustom.selectSupplierOptions());
 
         logger.debug("PR編集画面表示情報取得完了");
-        
+
         return dto;
     }
 
-    private List<PurchaseRequestDetail> toDetailEntities(String prId, List<PurchaseRequestDetailCreateForm> details) {
+    @Transactional
+    public void update(String prId, PurchaseRequestEditForm form) {
+        logger.info("PR更新処理開始");
+
+        // 明細変換
+        List<PurchaseRequestDetail> detailEntities = toEditDetailEntities(prId, form.getDetails());
+
+        int totalExcludingTax = detailEntities.stream().mapToInt(i -> i.getSubtotalExcludingTax()).sum();
+
+        // ヘッダー更新
+        PurchaseRequest header = new PurchaseRequest();
+        header.setPrId(prId);
+        header.setDueDate(form.getDueDate());
+        header.setNote(form.getNote());
+        header.setTotalAmountExcludingTax(totalExcludingTax);
+        purchaseRequestMapper.updateByPrimaryKeySelective(header);
+
+        // 明細更新
+        purchaseRequestDetailMapperCustom.bulkUpsert(detailEntities);
+
+        // 明細削除
+        form.getDeletedPrDetailIds().forEach(id -> {
+            purchaseRequestDetailMapper.deleteByPrimaryKey(id);
+        });
+
+        logger.info("PR更新処理完了");
+
+    }
+
+    private List<PurchaseRequestDetail> toCreateDetailEntities(String prId,
+            List<PurchaseRequestDetailCreateForm> details) {
         List<PurchaseRequestDetail> list = new ArrayList<PurchaseRequestDetail>();
 
         int lineNo = 1;
         for (PurchaseRequestDetailCreateForm form : details) {
             PurchaseRequestDetail prd = new PurchaseRequestDetail();
             if (form.getDetailInputType() == DetailInputType.CATALOG) {
-                CatalogItemSnapDto dto = itemMapperCustom.selectCatalogItemSnap(form.getItemId());
-                prd.setItemId(form.getItemId());
-                prd.setSnapItemName(dto.getItemName());
-                prd.setSnapKind(dto.getKind());
-                prd.setUnitId(dto.getUnitId());
-                prd.setSnapUnitName(dto.getUnitName());
-                prd.setSupplierId(dto.getSupplierId());
-                prd.setSnapSupplierName(dto.getSupplierName());
-                prd.setSnapUnitPrice(dto.getPrice());
-
+                prd = createCatalogItemSnap(form.getItemId());
             }
             else if (form.getDetailInputType() == DetailInputType.FREE) {
                 prd.setItemId(null);
@@ -179,6 +203,62 @@ public class PurchaseRequestService {
         }
 
         return list;
+    }
+
+    private List<PurchaseRequestDetail> toEditDetailEntities(String prId, List<PurchaseRequestDetailEditForm> details) {
+        List<PurchaseRequestDetail> list = new ArrayList<PurchaseRequestDetail>();
+        int lineNo = 1;
+
+        for (PurchaseRequestDetailEditForm form : details) {
+            PurchaseRequestDetail prd = new PurchaseRequestDetail();
+
+            if (form.getDetailInputType() == DetailInputType.CATALOG) {
+                // 新規行
+                if (StringUtils.isBlank(form.getPrDetailId())) {
+                    prd = createCatalogItemSnap(form.getItemId());
+                }
+                else {
+                    prd.setItemId(form.getItemId());
+                    prd.setSnapUnitPrice(form.getPrice());
+                }
+            }
+            else if (form.getDetailInputType() == DetailInputType.FREE) {
+                prd.setItemId(null);
+                prd.setSnapItemName(form.getItemName());
+                prd.setSnapKind(form.getKind());
+                prd.setUnitId(form.getUnitId());
+                prd.setSnapUnitName(form.getUnitName());
+                prd.setSupplierId(form.getSupplierId());
+                prd.setSnapSupplierName(form.getSupplierName());
+                prd.setSnapUnitPrice(form.getPrice());
+
+            }
+            // 共通
+            prd.setPrDetailId(form.getPrDetailId());
+            prd.setPrId(prId);
+            prd.setLineNo(lineNo++);
+            prd.setQuantity(form.getQuantity());
+            prd.setSubtotalExcludingTax(prd.getQuantity() * prd.getSnapUnitPrice());
+
+            list.add(prd);
+        }
+
+        return list;
+    }
+
+    private PurchaseRequestDetail createCatalogItemSnap(String itemId) {
+        PurchaseRequestDetail prd = new PurchaseRequestDetail();
+        CatalogItemSnapDto dto = itemMapperCustom.selectCatalogItemSnap(itemId);
+        prd.setItemId(itemId);
+        prd.setSnapItemName(dto.getItemName());
+        prd.setSnapKind(dto.getKind());
+        prd.setUnitId(dto.getUnitId());
+        prd.setSnapUnitName(dto.getUnitName());
+        prd.setSupplierId(dto.getSupplierId());
+        prd.setSnapSupplierName(dto.getSupplierName());
+        prd.setSnapUnitPrice(dto.getPrice());
+
+        return prd;
     }
 
 }
