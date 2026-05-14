@@ -168,7 +168,7 @@ class RolePermissionCombinationValidatorTest {
     
     private RoleUpsertForm baseForm() {
         RoleUpsertForm form = new RoleUpsertForm();
-        form.setName("管理者");
+        form.setName("test");
         form.setPrCreate(true);
         form.setPoCreate(true);
         form.setReceiptCreate(true);

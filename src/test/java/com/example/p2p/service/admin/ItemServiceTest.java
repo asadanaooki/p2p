@@ -78,7 +78,7 @@ class ItemServiceTest {
 
                 item.setUnitId(uuid);
                 item.setName(name);
-                item.setKind(ItemKind.GOODS.toString());
+                item.setKind(ItemKind.GOODS);
                 item.setUnitId("22222222-2222-2222-2222-222222222221");
                 item.setPrice(1200);
                 item.setSupplierId("a7f3c9d2-4b8e-41f1-9c6a-1d2e3f4a5b6c");
@@ -136,7 +136,7 @@ class ItemServiceTest {
        Item updated = itemMapper.selectByPrimaryKey("a5c1b32a-7b01-49d3-8fef-48e0f39dc31f");
        
        assertThat(updated.getName()).isEqualTo("test");
-       assertThat(updated.getKind()).isEqualTo(ItemKind.SERVICE.toString());
+       assertThat(updated.getKind()).isEqualTo(ItemKind.SERVICE);
        assertThat(updated.getUnitId()).isEqualTo("22222222-2222-2222-2222-222222222222");
        assertThat(updated.getPrice()).isEqualTo(1);
        assertThat(updated.getSupplierId()).isEqualTo("b4d8e1f7-92ac-4c35-8f21-6a7b8c9d0e1f");
@@ -177,7 +177,7 @@ class ItemServiceTest {
        
        assertThat(created.getItemId()).isNotBlank();
        assertThat(created.getName()).isEqualTo("test");
-       assertThat(created.getKind()).isEqualTo(ItemKind.SERVICE.toString());
+       assertThat(created.getKind()).isEqualTo(ItemKind.SERVICE);
        assertThat(created.getUnitId()).isEqualTo("22222222-2222-2222-2222-222222222222");
        assertThat(created.getPrice()).isEqualTo(1300);
        assertThat(created.getSupplierId()).isEqualTo("b4d8e1f7-92ac-4c35-8f21-6a7b8c9d0e1f");

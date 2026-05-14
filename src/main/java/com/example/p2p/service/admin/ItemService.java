@@ -69,7 +69,7 @@ public class ItemService {
     public void update(String itemId, ItemUpsertForm form) {
         Item item = toItem(form);
         item.setItemId(itemId);
-        itemMapper.updateByPrimaryKeySelective(item);
+        itemMapperCustom.update(item);
     }
 
     public void create(ItemUpsertForm form) {
@@ -79,7 +79,7 @@ public class ItemService {
     private Item toItem(ItemUpsertForm form) {
         Item item = new Item();
         item.setName(form.getName());
-        item.setKind(form.getKind().name());
+        item.setKind(form.getKind());
         item.setUnitId(form.getUnitId());
         item.setPrice(form.getPrice());
         item.setSupplierId(form.getSupplierId());

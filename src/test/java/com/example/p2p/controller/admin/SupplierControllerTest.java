@@ -41,7 +41,7 @@ import com.example.p2p.service.admin.SupplierService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@WithMockUser
+@WithMockUser(authorities = {"管理者"})
 class SupplierControllerTest {
 
     @Autowired

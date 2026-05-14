@@ -51,6 +51,13 @@ class ItemMapperCustomTest {
 
     @Autowired
     PurchaseRequestDetailMapper purchaseRequestDetailMapper;
+    
+    @BeforeEach void setup() {
+        Item item = new Item();
+        item.setItemId("2cc30fd9-9dae-4abe-a145-b280d9de2f38");
+        item.setIsActive(false);
+        itemMapper.updateByPrimaryKeySelective(item);
+    }
 
     @Nested
     class SelectItems {
@@ -67,7 +74,7 @@ class ItemMapperCustomTest {
 
             List<ItemListItemDto> actual = itemMapperCustom.selectItems(form);
 
-            assertThat(actual).hasSize(１);
+            assertThat(actual).hasSize(1);
 
             ItemListItemDto first = actual.get(0);
             assertThat(first.getItemId()).isEqualTo("f758e462-f526-4b23-a822-8821c5c62adf");
@@ -96,7 +103,7 @@ class ItemMapperCustomTest {
             assertThat(first.getPrice()).isEqualTo(4500);
             assertThat(first.getSupplierName()).isEqualTo("中部設備サプライ株式会社");
             assertThat(first.isActive()).isFalse();
-        }
+            }
 
         @Nested
         class Filter {
@@ -171,7 +178,7 @@ class ItemMapperCustomTest {
                 String uuid = UUID.randomUUID().toString();
                 i.setItemId(uuid);
                 i.setName("test(保守)");
-                i.setKind(ItemKind.SERVICE.toString());
+                i.setKind(ItemKind.SERVICE);
                 itemMapper.insertSelective(i);
 
                 ItemSearchForm form = new ItemSearchForm();
@@ -211,7 +218,7 @@ class ItemMapperCustomTest {
                     Item i = new Item();
                     i.setItemId("a8d14c7e-2f93-46b1-b5d8-1e7a9c3f4d65");
                     i.setName("dummyItem");
-                    i.setKind(ItemKind.GOODS.toString());
+                    i.setKind(ItemKind.GOODS);
                     itemMapper.insertSelective(i);
                 }
 
@@ -226,7 +233,7 @@ class ItemMapperCustomTest {
                     i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
                     i.setName("IteM2");
                     i.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
-                    i.setKind(ItemKind.GOODS.toString());
+                    i.setKind(ItemKind.GOODS);
                     itemMapper.insertSelective(i);
 
                     ItemSearchForm form = new ItemSearchForm();
@@ -250,7 +257,7 @@ class ItemMapperCustomTest {
                     i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
                     i.setName("IteM2");
                     i.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
-                    i.setKind(ItemKind.GOODS.toString());
+                    i.setKind(ItemKind.GOODS);
                     itemMapper.insertSelective(i);
 
                     ItemSearchForm form = new ItemSearchForm();
@@ -274,7 +281,7 @@ class ItemMapperCustomTest {
                     i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
                     i.setName("たをブ漢");
                     i.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
-                    i.setKind(ItemKind.GOODS.toString());
+                    i.setKind(ItemKind.GOODS);
                     itemMapper.insertSelective(i);
 
                     ItemSearchForm form = new ItemSearchForm();
@@ -298,7 +305,7 @@ class ItemMapperCustomTest {
                     i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
                     i.setName("item2");
                     i.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
-                    i.setKind(ItemKind.GOODS.toString());
+                    i.setKind(ItemKind.GOODS);
                     itemMapper.insertSelective(i);
 
                     ItemSearchForm form = new ItemSearchForm();
@@ -323,7 +330,7 @@ class ItemMapperCustomTest {
                     i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
                     i.setName("item2");
                     i.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
-                    i.setKind(ItemKind.GOODS.toString());
+                    i.setKind(ItemKind.GOODS);
                     itemMapper.insertSelective(i);
 
                     ItemSearchForm form = new ItemSearchForm();
@@ -347,7 +354,7 @@ class ItemMapperCustomTest {
                     i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
                     i.setName("　asBDｇ( う漢８字　をカ%#ﾀ    ");
                     i.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
-                    i.setKind(ItemKind.GOODS.toString());
+                    i.setKind(ItemKind.GOODS);
                     itemMapper.insertSelective(i);
 
                     ItemSearchForm form = new ItemSearchForm();
@@ -370,7 +377,7 @@ class ItemMapperCustomTest {
                     Item i = new Item();
                     i.setName("myI");
                     i.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
-                    i.setKind(ItemKind.GOODS.toString());
+                    i.setKind(ItemKind.GOODS);
                     itemMapper.insertSelective(i);
 
                     ItemSearchForm form = new ItemSearchForm();
@@ -391,6 +398,7 @@ class ItemMapperCustomTest {
             @ParameterizedTest
             @MethodSource("createSortCases")
             void selectItems_sort(ItemSortBy sortBy, SortDirection direction, String includedId) {
+                
                 ItemSearchForm form = new ItemSearchForm();
                 form.setSortBy(sortBy);
                 form.setSortDirection(direction);
@@ -460,7 +468,7 @@ class ItemMapperCustomTest {
 
             List<CatalogListRowDto> actual = itemMapperCustom.selectCatalogItems(form);
 
-            assertThat(actual).hasSize(１);
+            assertThat(actual).hasSize(1);
 
             CatalogListRowDto first = actual.get(0);
             assertThat(first.getItemId()).isEqualTo("2cc30fd9-9dae-4abe-a145-b280d9de2f38");

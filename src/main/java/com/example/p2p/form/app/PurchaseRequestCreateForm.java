@@ -18,6 +18,6 @@ public class PurchaseRequestCreateForm {
     private String note;
     
     @NotEmpty
-    private List<@Valid PurchaseRequestDetailForm> details;
+    private List<@Valid PurchaseRequestDetailCreateForm> details;
     
 }

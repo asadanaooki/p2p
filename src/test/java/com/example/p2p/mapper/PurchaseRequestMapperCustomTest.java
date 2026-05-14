@@ -22,6 +22,7 @@ import com.example.p2p.entity.Users;
 import com.example.p2p.enums.PurchaseRequestSortBy;
 import com.example.p2p.enums.PurchaseRequestStatus;
 import com.example.p2p.enums.SortDirection;
+import com.example.p2p.enums.VisibilityScope;
 import com.example.p2p.form.app.PurchaseRequestSearchForm;
 
 @MybatisTest
@@ -34,6 +35,8 @@ class PurchaseRequestMapperCustomTest {
     @Autowired
     UsersMapper usersMapper;
 
+    String userId = "169f1e17-619f-45bf-b6dc-8faed08c404c"; // マネージャー
+
     @Nested
     class SelectPurchaseRequests {
 
@@ -45,7 +48,8 @@ class PurchaseRequestMapperCustomTest {
             form.setStatus(PurchaseRequestStatus.COMPLETED);
             form.setKeyword("山田");
 
-            List<PurchaseRequestListRowDto> actual = purchaseRequestMapperCustom.selectPurchaseRequests(form);
+            List<PurchaseRequestListRowDto> actual = purchaseRequestMapperCustom.selectPurchaseRequests(form,
+                    VisibilityScope.ALL, userId);
 
             assertThat(actual).hasSize(1);
 
@@ -57,11 +61,11 @@ class PurchaseRequestMapperCustomTest {
         @Test
         void selectPurchaseRequests_noCondition() {
             PurchaseRequestSearchForm form = new PurchaseRequestSearchForm();
-            form.setPage(2);
 
-            List<PurchaseRequestListRowDto> actual = purchaseRequestMapperCustom.selectPurchaseRequests(form);
+            List<PurchaseRequestListRowDto> actual = purchaseRequestMapperCustom.selectPurchaseRequests(form,
+                    VisibilityScope.SELF, "6fe99043-cbd1-49c0-96d4-c156c58a8e60");
 
-            assertThat(actual).hasSize(2);
+            assertThat(actual).hasSize(1);
 
             PurchaseRequestListRowDto first = actual.get(0);
             assertThat(first.getPrId()).isEqualTo("3c4f62bf-855b-4c35-b19d-eb06acb16896");
@@ -81,16 +85,15 @@ class PurchaseRequestMapperCustomTest {
                 consumer.accept(form);
                 form.setSize(100);
 
-                List<PurchaseRequestListRowDto> actual = purchaseRequestMapperCustom.selectPurchaseRequests(form);
+                List<PurchaseRequestListRowDto> actual = purchaseRequestMapperCustom.selectPurchaseRequests(form,
+                        VisibilityScope.ALL, userId);
 
                 assertThat(actual).hasSize(expected);
             }
 
             static Stream<Arguments> createFilterCaces() {
-                return Stream.of(
-                        Arguments.of(
-                                (Consumer<PurchaseRequestSearchForm>) f -> f.setDueDateFrom(LocalDate.of(2026, 5, 1)),
-                                3),
+                return Stream.of(Arguments
+                    .of((Consumer<PurchaseRequestSearchForm>) f -> f.setDueDateFrom(LocalDate.of(2026, 5, 1)), 3),
                         Arguments
                             .of((Consumer<PurchaseRequestSearchForm>) f -> f.setDueDateTo(LocalDate.of(2026, 5, 1)), 1),
                         Arguments.of((Consumer<PurchaseRequestSearchForm>) f -> {
@@ -110,7 +113,8 @@ class PurchaseRequestMapperCustomTest {
                 form.setDueDateFrom(dueDateFrom);
                 form.setDueDateTo(dueDateTo);
 
-                List<PurchaseRequestListRowDto> actual = purchaseRequestMapperCustom.selectPurchaseRequests(form);
+                List<PurchaseRequestListRowDto> actual = purchaseRequestMapperCustom.selectPurchaseRequests(form,
+                        VisibilityScope.ALL, userId);
 
                 assertThat(actual).hasSize(expected);
             }
@@ -126,7 +130,8 @@ class PurchaseRequestMapperCustomTest {
                 PurchaseRequestSearchForm form = new PurchaseRequestSearchForm();
                 form.setKeyword(keyword);
                 form.setSize(100);
-                List<PurchaseRequestListRowDto> actual = purchaseRequestMapperCustom.selectPurchaseRequests(form);
+                List<PurchaseRequestListRowDto> actual = purchaseRequestMapperCustom.selectPurchaseRequests(form,
+                        VisibilityScope.ALL, userId);
 
                 assertThat(actual).hasSize(expected);
             }
@@ -141,7 +146,8 @@ class PurchaseRequestMapperCustomTest {
                 PurchaseRequestSearchForm form = new PurchaseRequestSearchForm();
                 form.setKeyword("和孝 9");
                 form.setSize(100);
-                List<PurchaseRequestListRowDto> actual = purchaseRequestMapperCustom.selectPurchaseRequests(form);
+                List<PurchaseRequestListRowDto> actual = purchaseRequestMapperCustom.selectPurchaseRequests(form,
+                        VisibilityScope.ALL, userId);
 
                 assertThat(actual).hasSize(1);
                 assertThat(actual.get(0).getPrId()).isEqualTo("3c4f62bf-855b-4c35-b19d-eb06acb16896");
@@ -157,7 +163,8 @@ class PurchaseRequestMapperCustomTest {
                     PurchaseRequestSearchForm form = new PurchaseRequestSearchForm();
                     form.setSortBy(sortBy);
                     form.setSortDirection(direction);
-                    List<PurchaseRequestListRowDto> actual = purchaseRequestMapperCustom.selectPurchaseRequests(form);
+                    List<PurchaseRequestListRowDto> actual = purchaseRequestMapperCustom.selectPurchaseRequests(form,
+                            VisibilityScope.ALL, userId);
 
                     assertThat(actual).hasSize(2);
                     assertThat(actual).extracting(PurchaseRequestListRowDto::getPrId).contains(includedId);
@@ -183,7 +190,8 @@ class PurchaseRequestMapperCustomTest {
                     form.setPage(3);
                     form.setSortBy(PurchaseRequestSortBy.STATUS);
                     form.setSortDirection(SortDirection.DESC);
-                    List<PurchaseRequestListRowDto> actual = purchaseRequestMapperCustom.selectPurchaseRequests(form);
+                    List<PurchaseRequestListRowDto> actual = purchaseRequestMapperCustom.selectPurchaseRequests(form,
+                            VisibilityScope.ALL, userId);
 
                     assertThat(actual).hasSize(1);
                     assertThat(actual.get(0).getPrId()).isEqualTo("88bfbcf6-2be6-4d31-8a46-155a7b58ab93");

@@ -21,7 +21,7 @@ class PurchaseRequestCreateFormTest {
     Validator validator;
     
     @Test void validPurchaseRequestCreateForm_fail() {
-        PurchaseRequestDetailForm form = new PurchaseRequestDetailForm();
+        PurchaseRequestDetailCreateForm form = new PurchaseRequestDetailCreateForm();
         form.setDetailInputType(null);
         form.setItemId(UUID.randomUUID().toString());
         form.setKind(ItemKind.GOODS);

@@ -8,6 +8,7 @@ import com.example.p2p.dto.admin.ItemDetailDto;
 import com.example.p2p.dto.admin.ItemListItemDto;
 import com.example.p2p.dto.app.CatalogItemSnapDto;
 import com.example.p2p.dto.app.CatalogListRowDto;
+import com.example.p2p.entity.Item;
 import com.example.p2p.form.admin.ItemSearchForm;
 import com.example.p2p.form.app.CatalogSearchForm;
 
@@ -25,4 +26,6 @@ public interface ItemMapperCustom {
     int countCatalogItems(CatalogSearchForm form);
     
     CatalogItemSnapDto selectCatalogItemSnap(String itemId);
+    
+    int update(Item item);
 }

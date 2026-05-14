@@ -31,7 +31,7 @@ public class PaymentTermService {
                     pt.getPaymentTermId(),
                     pt.getName(),
                     pt.getDays(),
-                    DueDateType.valueOf(pt.getDueDateType()).getLabel(),
+                    pt.getDueDateType().getLabel(),
                     pt.getIsActive()))
             .toList();
     }
@@ -42,7 +42,7 @@ public class PaymentTermService {
                 pt.getPaymentTermId(),
                 pt.getName(),
                 pt.getDays(),
-                DueDateType.valueOf(pt.getDueDateType()),
+                pt.getDueDateType(),
                 pt.getIsActive());
     }
     
@@ -56,7 +56,7 @@ public class PaymentTermService {
         PaymentTerm newPaymentTerm = new PaymentTerm();
         newPaymentTerm.setName(form.getName());
         newPaymentTerm.setDays(form.getDays());
-        newPaymentTerm.setDueDateType(form.getDueDateType().toString());
+        newPaymentTerm.setDueDateType(form.getDueDateType());
         
         paymentTermMapper.insertSelective(newPaymentTerm);
     }
@@ -73,7 +73,7 @@ public class PaymentTermService {
         pt.setPaymentTermId(paymentTermId);
         pt.setName(form.getName());
         pt.setDays(form.getDays());
-        pt.setDueDateType(form.getDueDateType().toString());
+        pt.setDueDateType(form.getDueDateType());
         pt.setIsActive(form.isActive());
         paymentTermMapper.updateByPrimaryKeySelective(pt);
     }

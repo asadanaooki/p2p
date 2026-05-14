@@ -1,8 +1,10 @@
 $(function () {
   const details = [];
+  const deletedPrDetailIds = [];
   const editBackups = new Map();
   let rowSequence = 0;
 
+  initializeDeletedPrDetailIds();
   initializeDetails();
 
   // =========================
@@ -57,13 +59,16 @@ $(function () {
     if (existingDetail) {
       existingDetail.quantity =
         Number(existingDetail.quantity) + Number(item.quantity);
-      existingDetail.subtotal =
-        Number(existingDetail.price) * Number(existingDetail.quantity);
+      existingDetail.subtotal = calculateSubtotalValue(
+        existingDetail.price,
+        existingDetail.quantity,
+      );
       return;
     }
 
     details.push({
       rowId: createRowId(),
+      prDetailId: "",
       detailInputType: "CATALOG",
       itemId: item.itemId,
       itemName: item.itemName,
@@ -88,6 +93,7 @@ $(function () {
   $("#openFreeInputButton").on("click", function () {
     details.push({
       rowId: createRowId(),
+      prDetailId: "",
       detailInputType: "FREE",
       itemId: "",
       itemName: "",
@@ -154,6 +160,10 @@ $(function () {
 
     const detail = details[index];
     editBackups.delete(detail.rowId);
+
+    if (detail.prDetailId) {
+      deletedPrDetailIds.push(detail.prDetailId);
+    }
 
     details.splice(index, 1);
     refreshDetailArea();
@@ -560,6 +570,11 @@ $(function () {
     details.forEach(function (detail, index) {
       appendHidden(
         $hiddenInputs,
+        `details[${index}].prDetailId`,
+        detail.prDetailId,
+      );
+      appendHidden(
+        $hiddenInputs,
         `details[${index}].detailInputType`,
         detail.detailInputType,
       );
@@ -593,6 +608,9 @@ $(function () {
         detail.quantity,
       );
     });
+    deletedPrDetailIds.forEach(function (prDetailId, index) {
+      appendHidden($hiddenInputs, `deletedPrDetailIds[${index}]`, prDetailId);
+    });
   }
 
   function appendHidden($container, name, value) {
@@ -625,6 +643,56 @@ $(function () {
   }
 
   // =========================
+  // 初期化
+  // =========================
+
+  function initializeDeletedPrDetailIds() {
+    const initialDeletedPrDetailIds = window.initialDeletedPrDetailIds || [];
+
+    initialDeletedPrDetailIds.forEach(function (prDetailId) {
+      if (prDetailId) {
+        deletedPrDetailIds.push(prDetailId);
+      }
+    });
+  }
+
+  function initializeDetails() {
+    const sourceDetails =
+      window.initialFormDetails ?? window.initialViewDetails ?? [];
+
+    sourceDetails.forEach(function (detail) {
+      details.push(normalizeDetail(detail));
+    });
+
+    refreshDetailArea();
+  }
+
+  function normalizeDetail(detail) {
+    const price = detail.price;
+    const quantity = detail.quantity;
+
+    return {
+      rowId: createRowId(),
+      prDetailId: detail.prDetailId ?? "",
+      detailInputType: detail.detailInputType,
+      itemId: detail.itemId ?? "",
+      itemName: detail.itemName,
+      kind: detail.kind,
+      kindLabel: detail.kindLabel ?? findKindLabel(detail.kind),
+      supplierId: detail.supplierId ?? "",
+      supplierName: detail.supplierName,
+      unitId: detail.unitId ?? "",
+      unitName: detail.unitName,
+      price: price,
+      quantity: quantity,
+      subtotal:
+        detail.subtotalExcludingTax ?? calculateSubtotalValue(price, quantity),
+      editing: false,
+      isNew: false,
+    };
+  }
+
+  // =========================
   // 共通
   // =========================
 
@@ -651,6 +719,7 @@ $(function () {
   function copyDetail(detail) {
     return {
       rowId: detail.rowId,
+      prDetailId: detail.prDetailId,
       detailInputType: detail.detailInputType,
       itemId: detail.itemId,
       itemName: detail.itemName,
@@ -694,32 +763,6 @@ $(function () {
     }
 
     return $("#kindOptionsTemplate").find(`option[value="${kind}"]`).text();
-  }
-
-  function initializeDetails() {
-    const initialDetails = window.initialPurchaseRequestDetails || [];
-
-    initialDetails.forEach(function (detail) {
-      details.push({
-        rowId: createRowId(),
-        detailInputType: detail.detailInputType,
-        itemId: detail.itemId,
-        itemName: detail.itemName,
-        kind: detail.kind,
-        kindLabel: detail.kindLabel || findKindLabel(detail.kind),
-        supplierId: detail.supplierId,
-        supplierName: detail.supplierName,
-        unitId: detail.unitId,
-        unitName: detail.unitName,
-        price: detail.price,
-        quantity: detail.quantity,
-        subtotal: calculateSubtotalValue(detail.price, detail.quantity),
-        editing: false,
-        isNew: false,
-      });
-    });
-
-    refreshDetailArea();
   }
 
   function updateSubmitButtonState() {

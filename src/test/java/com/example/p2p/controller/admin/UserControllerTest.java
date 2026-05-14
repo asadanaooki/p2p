@@ -38,7 +38,7 @@ import com.example.p2p.service.admin.UserService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@WithMockUser
+@WithMockUser(authorities = {"管理者"})
 class UserControllerTest {
 
     @Autowired

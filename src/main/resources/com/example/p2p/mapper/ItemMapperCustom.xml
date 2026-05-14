@@ -184,4 +184,17 @@
       and i.is_active = true
   </select>
   
+  <update id="update">
+    update item
+    set
+      name = #{name},
+      kind = #{kind},
+      unit_id = #{unitId},
+      price = #{price},
+      supplier_id = #{supplierId},
+      description = #{description},
+      is_active = #{isActive}
+    where item_id = #{itemId}
+  </update>
+  
 </mapper>

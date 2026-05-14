@@ -3,6 +3,7 @@ package com.example.p2p.controller.app;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,6 +34,8 @@ public class CatalogController {
         binder.registerCustomEditor(String.class, "supplierId", new StringTrimmerEditor(true));
     }
 
+    
+    @PreAuthorize("hasAuthority('PR_CREATE')") // TODO: 今後、POやInvも追加？
     @GetMapping
     public String showCatalogList(@ModelAttribute("catalogSearchForm") CatalogSearchForm catalogSearchForm,
             Model model) {
@@ -45,6 +48,7 @@ public class CatalogController {
         return "fragments/catalog :: catalogContent";
     }
 
+    @PreAuthorize("hasAuthority('PR_CREATE')") // TODO: 今後、POやInvも追加？
     @GetMapping("/search")
     public String searchCatalogList(@Valid @ModelAttribute("catalogSearchForm") CatalogSearchForm catalogSearchForm,
             BindingResult bindingResult, Model model, HttpServletResponse response) {

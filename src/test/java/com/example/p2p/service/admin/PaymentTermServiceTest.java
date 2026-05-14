@@ -58,7 +58,7 @@ class PaymentTermServiceTest {
            assertThat(created.getPaymentTermId()).isNotBlank();
            assertThat(created.getName()).isEqualTo("test");
            assertThat(created.getDays()).isEqualTo(10);
-           assertThat(created.getDueDateType()).isEqualTo(DueDateType.NET_DAYS.toString());
+           assertThat(created.getDueDateType()).isEqualTo(DueDateType.NET_DAYS);
            assertThat(created.getIsActive()).isTrue();
            assertThat(created.getCreatedAt()).isNotNull();
            assertThat(created.getUpdatedAt()).isNotNull();
@@ -91,7 +91,7 @@ class PaymentTermServiceTest {
             PaymentTerm actual = paymentTermMapper.selectByPrimaryKey(paymentTermId);
             assertThat(actual.getName()).isEqualTo("test");
             assertThat(actual.getDays()).isEqualTo(31);
-            assertThat(actual.getDueDateType()).isEqualTo(DueDateType.NEXT_MONTH_DAY.toString());
+            assertThat(actual.getDueDateType()).isEqualTo(DueDateType.NEXT_MONTH_DAY);
             assertThat(actual.getIsActive()).isEqualTo(true);
         }
 
@@ -105,7 +105,7 @@ class PaymentTermServiceTest {
             PaymentTerm actual = paymentTermMapper.selectByPrimaryKey(paymentTermId);
             assertThat(actual.getName()).isEqualTo(updatedName);
             assertThat(actual.getDays()).isEqualTo(30);
-            assertThat(actual.getDueDateType()).isEqualTo(DueDateType.THIS_MONTH_DAY.toString());
+            assertThat(actual.getDueDateType()).isEqualTo(DueDateType.THIS_MONTH_DAY);
             assertThat(actual.getIsActive()).isEqualTo(false);
         }
 

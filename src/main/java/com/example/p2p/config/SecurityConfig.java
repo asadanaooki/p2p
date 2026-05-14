@@ -2,11 +2,13 @@ package com.example.p2p.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+@EnableMethodSecurity
 @Configuration
 public class SecurityConfig {
 
@@ -30,6 +32,7 @@ public class SecurityConfig {
                  "/css/**",
                  "/js/**"
                  ).permitAll()
+         .requestMatchers("/setting/**").hasAuthority("管理者")
          .anyRequest().authenticated()
          );
 //        http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth.anyRequest().permitAll());

@@ -32,7 +32,7 @@ class RoleServiceTest {
     @Test
     void update() {
         RoleUpsertForm form = new RoleUpsertForm();
-        form.setName("管理者");
+        form.setName("test-update");
         form.setPrCreate(false);
         form.setPoCreate(false);
         form.setReceiptCreate(false);
@@ -49,15 +49,15 @@ class RoleServiceTest {
         roleService.update("95daf9ce-b599-41e0-ae0d-f4687e718a2c", form);
 
         Role updated = roleMapper.selectByPrimaryKey("95daf9ce-b599-41e0-ae0d-f4687e718a2c");
-        assertThat(updated.getName()).isEqualTo("管理者");
+        assertThat(updated.getName()).isEqualTo("test-update");
         assertThat(updated.getPrCreate()).isFalse();
         assertThat(updated.getPoCreate()).isFalse();
         assertThat(updated.getReceiptCreate()).isFalse();
         assertThat(updated.getInvoiceCreate()).isFalse();
-        assertThat(updated.getPrViewScope()).isEqualTo(VisibilityScope.SELF.toString());
-        assertThat(updated.getPoViewScope()).isEqualTo(VisibilityScope.NONE.toString());
-        assertThat(updated.getReceiptViewScope()).isEqualTo(VisibilityScope.SELF.toString());
-        assertThat(updated.getInvoiceViewScope()).isEqualTo(VisibilityScope.NONE.toString());
+        assertThat(updated.getPrViewScope()).isEqualTo(VisibilityScope.SELF);
+        assertThat(updated.getPoViewScope()).isEqualTo(VisibilityScope.NONE);
+        assertThat(updated.getReceiptViewScope()).isEqualTo(VisibilityScope.SELF);
+        assertThat(updated.getInvoiceViewScope()).isEqualTo(VisibilityScope.NONE);
         assertThat(updated.getPrApprove()).isFalse();
         assertThat(updated.getPoApprove()).isFalse();
         assertThat(updated.getInvoiceApprove()).isFalse();
@@ -71,7 +71,7 @@ class RoleServiceTest {
         @Test
         void create_duplicate() {
             RoleUpsertForm form = new RoleUpsertForm();
-            form.setName("管理者");
+            form.setName(roleMapper.selectByPrimaryKey("95daf9ce-b599-41e0-ae0d-f4687e718a2c").getName());
 
             assertThatThrownBy(() -> roleService.create(form)).isInstanceOf(BusinessException.class);
         }
@@ -104,10 +104,10 @@ class RoleServiceTest {
            assertThat(created.getPoCreate()).isTrue();
            assertThat(created.getReceiptCreate()).isFalse();
            assertThat(created.getInvoiceCreate()).isFalse();
-           assertThat(created.getPrViewScope()).isEqualTo(VisibilityScope.ALL.toString());
-           assertThat(created.getPoViewScope()).isEqualTo(VisibilityScope.SELF.toString());
-           assertThat(created.getReceiptViewScope()).isEqualTo(VisibilityScope.NONE.toString());
-           assertThat(created.getInvoiceViewScope()).isEqualTo(VisibilityScope.NONE.toString());
+           assertThat(created.getPrViewScope()).isEqualTo(VisibilityScope.ALL);
+           assertThat(created.getPoViewScope()).isEqualTo(VisibilityScope.SELF);
+           assertThat(created.getReceiptViewScope()).isEqualTo(VisibilityScope.NONE);
+           assertThat(created.getInvoiceViewScope()).isEqualTo(VisibilityScope.NONE);
            assertThat(created.getPrApprove()).isTrue();
            assertThat(created.getPoApprove()).isFalse();
            assertThat(created.getInvoiceApprove()).isFalse();
