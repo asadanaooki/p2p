@@ -52,7 +52,7 @@ class CatalogServiceTest {
             assertThat(actual.getItems().size()).isEqualTo(2);
             assertThat(actual.getSupplierOptions().size()).isEqualTo(3);
             assertThat(actual.getCurrentPage()).isEqualTo(1);
-            assertThat(actual.getPageNumberList().size()).isEqualTo(2);
+            assertThat(actual.getPageNumberList().size()).isEqualTo(3);
             
             assertThat(actual.getItems().get(0).getItemId()).isEqualTo("f758e462-f526-4b23-a822-8821c5c62adf");
         }

@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 @ValidPurchaseRequestDetail
-public class PurchaseRequestDetailEditForm {
+public class PurchaseRequestDetailEditForm implements PurchaseRequestDetailForm {
 
     // 共通
     private String prDetailId;

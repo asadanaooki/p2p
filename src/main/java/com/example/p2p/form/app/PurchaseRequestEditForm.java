@@ -1,7 +1,7 @@
 package com.example.p2p.form.app;
 
 import java.time.LocalDate;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.validator.constraints.Length;
@@ -22,7 +22,7 @@ public class PurchaseRequestEditForm {
     private String note;
     
     @NotEmpty
-    private List<@Valid PurchaseRequestDetailEditForm> details= Collections.EMPTY_LIST;
+    private List<@Valid PurchaseRequestDetailEditForm> details= new ArrayList<PurchaseRequestDetailEditForm>() ;
     
-    private List<String> deletedPrDetailIds = Collections.EMPTY_LIST;
+    private List<String> deletedPrDetailIds = new ArrayList<String>();
 }

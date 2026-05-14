@@ -19,9 +19,11 @@ import com.example.p2p.entity.PurchaseRequest;
 import com.example.p2p.entity.PurchaseRequestDetail;
 import com.example.p2p.enums.DetailInputType;
 import com.example.p2p.enums.PurchaseRequestStatus;
+import com.example.p2p.exception.BusinessException;
 import com.example.p2p.form.app.PurchaseRequestCreateForm;
 import com.example.p2p.form.app.PurchaseRequestDetailCreateForm;
 import com.example.p2p.form.app.PurchaseRequestDetailEditForm;
+import com.example.p2p.form.app.PurchaseRequestDetailForm;
 import com.example.p2p.form.app.PurchaseRequestEditForm;
 import com.example.p2p.form.app.PurchaseRequestSearchForm;
 import com.example.p2p.mapper.ItemMapperCustom;
@@ -159,7 +161,10 @@ public class PurchaseRequestService {
         header.setDueDate(form.getDueDate());
         header.setNote(form.getNote());
         header.setTotalAmountExcludingTax(totalExcludingTax);
-        purchaseRequestMapper.updateByPrimaryKeySelective(header);
+        int row = purchaseRequestMapperCustom.updateForEdit(header);
+        if (row == 0) {
+            throw new BusinessException();
+        }
 
         // 明細更新
         purchaseRequestDetailMapperCustom.bulkUpsert(detailEntities);
@@ -181,18 +186,10 @@ public class PurchaseRequestService {
         for (PurchaseRequestDetailCreateForm form : details) {
             PurchaseRequestDetail prd = new PurchaseRequestDetail();
             if (form.getDetailInputType() == DetailInputType.CATALOG) {
-                prd = createCatalogItemSnap(form.getItemId());
+                applyCatalogItemSnap(prd, form.getItemId());
             }
             else if (form.getDetailInputType() == DetailInputType.FREE) {
-                prd.setItemId(null);
-                prd.setSnapItemName(form.getItemName());
-                prd.setSnapKind(form.getKind());
-                prd.setUnitId(form.getUnitId());
-                prd.setSnapUnitName(form.getUnitName());
-                prd.setSupplierId(form.getSupplierId());
-                prd.setSnapSupplierName(form.getSupplierName());
-                prd.setSnapUnitPrice(form.getPrice());
-
+                applyFreeItemSnap(prd, form);
             }
             prd.setPrId(prId);
             prd.setLineNo(lineNo++);
@@ -215,7 +212,7 @@ public class PurchaseRequestService {
             if (form.getDetailInputType() == DetailInputType.CATALOG) {
                 // 新規行
                 if (StringUtils.isBlank(form.getPrDetailId())) {
-                    prd = createCatalogItemSnap(form.getItemId());
+                    applyCatalogItemSnap(prd, form.getItemId());
                 }
                 else {
                     prd.setItemId(form.getItemId());
@@ -223,14 +220,7 @@ public class PurchaseRequestService {
                 }
             }
             else if (form.getDetailInputType() == DetailInputType.FREE) {
-                prd.setItemId(null);
-                prd.setSnapItemName(form.getItemName());
-                prd.setSnapKind(form.getKind());
-                prd.setUnitId(form.getUnitId());
-                prd.setSnapUnitName(form.getUnitName());
-                prd.setSupplierId(form.getSupplierId());
-                prd.setSnapSupplierName(form.getSupplierName());
-                prd.setSnapUnitPrice(form.getPrice());
+                applyFreeItemSnap(prd, form);
 
             }
             // 共通
@@ -246,19 +236,27 @@ public class PurchaseRequestService {
         return list;
     }
 
-    private PurchaseRequestDetail createCatalogItemSnap(String itemId) {
-        PurchaseRequestDetail prd = new PurchaseRequestDetail();
+    private void applyCatalogItemSnap(PurchaseRequestDetail detail, String itemId) {
         CatalogItemSnapDto dto = itemMapperCustom.selectCatalogItemSnap(itemId);
-        prd.setItemId(itemId);
-        prd.setSnapItemName(dto.getItemName());
-        prd.setSnapKind(dto.getKind());
-        prd.setUnitId(dto.getUnitId());
-        prd.setSnapUnitName(dto.getUnitName());
-        prd.setSupplierId(dto.getSupplierId());
-        prd.setSnapSupplierName(dto.getSupplierName());
-        prd.setSnapUnitPrice(dto.getPrice());
+        detail.setItemId(itemId);
+        detail.setSnapItemName(dto.getItemName());
+        detail.setSnapKind(dto.getKind());
+        detail.setUnitId(dto.getUnitId());
+        detail.setSnapUnitName(dto.getUnitName());
+        detail.setSupplierId(dto.getSupplierId());
+        detail.setSnapSupplierName(dto.getSupplierName());
+        detail.setSnapUnitPrice(dto.getPrice());
+    }
 
-        return prd;
+    private void applyFreeItemSnap(PurchaseRequestDetail detail, PurchaseRequestDetailForm form) {
+        detail.setItemId(null);
+        detail.setSnapItemName(form.getItemName());
+        detail.setSnapKind(form.getKind());
+        detail.setUnitId(form.getUnitId());
+        detail.setSnapUnitName(form.getUnitName());
+        detail.setSupplierId(form.getSupplierId());
+        detail.setSnapSupplierName(form.getSupplierName());
+        detail.setSnapUnitPrice(form.getPrice());
     }
 
 }

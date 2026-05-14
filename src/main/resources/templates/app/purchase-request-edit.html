@@ -22,6 +22,8 @@
   <main class="pr-form-page pr-edit-page">
     <h1 class="pr-page-title">PR編集</h1>
 
+    <div class="pr-page-error-message" th:if="${invalidStatusMessage}" th:text="${invalidStatusMessage}"></div>
+
     <form id="purchaseRequestEditForm" th:action="@{/purchase-request/{prId}/edit(prId=${prId})}" th:object="${form}"
       method="post">
       <div class="pr-header-card">

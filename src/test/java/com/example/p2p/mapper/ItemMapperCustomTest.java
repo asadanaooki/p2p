@@ -51,6 +51,13 @@ class ItemMapperCustomTest {
 
     @Autowired
     PurchaseRequestDetailMapper purchaseRequestDetailMapper;
+    
+    @BeforeEach void setup() {
+        Item item = new Item();
+        item.setItemId("2cc30fd9-9dae-4abe-a145-b280d9de2f38");
+        item.setIsActive(false);
+        itemMapper.updateByPrimaryKeySelective(item);
+    }
 
     @Nested
     class SelectItems {
@@ -96,7 +103,7 @@ class ItemMapperCustomTest {
             assertThat(first.getPrice()).isEqualTo(4500);
             assertThat(first.getSupplierName()).isEqualTo("中部設備サプライ株式会社");
             assertThat(first.isActive()).isFalse();
-        }
+            }
 
         @Nested
         class Filter {
@@ -391,6 +398,7 @@ class ItemMapperCustomTest {
             @ParameterizedTest
             @MethodSource("createSortCases")
             void selectItems_sort(ItemSortBy sortBy, SortDirection direction, String includedId) {
+                
                 ItemSearchForm form = new ItemSearchForm();
                 form.setSortBy(sortBy);
                 form.setSortDirection(direction);

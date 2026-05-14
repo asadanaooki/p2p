@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -26,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.p2p.dto.app.PurchaseRequestEditViewDto;
+import com.example.p2p.exception.BusinessException;
 import com.example.p2p.form.app.PurchaseRequestCreateForm;
 import com.example.p2p.form.app.PurchaseRequestEditForm;
 import com.example.p2p.form.app.PurchaseRequestSearchForm;
@@ -42,8 +42,6 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/purchase-request")
 @AllArgsConstructor
 public class PurchaseRequestController {
-
-    private ModelMapper modelMapper;
 
     private static final Logger logger = LoggerFactory.getLogger(PurchaseRequestController.class);
 
@@ -165,9 +163,19 @@ public class PurchaseRequestController {
 
             model.addAttribute("view", purchaseRequestService.prepareEditView(prId));
             model.addAttribute("detailErrorMessages", createDetailErrorMessages(bindingResult));
-            return "app/purchase-request-create";
+            return "app/purchase-request-edit";
         }
-        purchaseRequestService.update(prId, form);
+        try {
+            purchaseRequestService.update(prId, form);
+        }
+        catch (BusinessException e) {
+            logger.warn("PR編集不可");
+            model.addAttribute("view", purchaseRequestService.prepareEditView(prId));
+            model.addAttribute("invalidStatusMessage",
+                    messageSource.getMessage("purchaseRequest.edit.notAllowed", null, null));
+            
+            return "app/purchase-request-edit";
+        }
 
         redirectAttributes.addAttribute("prId", prId);
         redirectAttributes.addFlashAttribute("successMessage",

@@ -128,3 +128,8 @@
   text-decoration: none;
   color: #243534;
 }
+
+.edit-button.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

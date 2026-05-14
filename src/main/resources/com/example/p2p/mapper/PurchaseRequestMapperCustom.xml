@@ -169,4 +169,14 @@
       pr.pr_id = #{prId}
     order by prd.line_no asc
   </select>
+  
+  <update id="updateForEdit">
+    update purchase_request
+    set
+      due_date = #{dueDate},
+      note = #{note},
+      total_amount_excluding_tax = #{totalAmountExcludingTax}
+    where pr_id = #{prId}
+      and status in ('PENDING', 'APPROVED', 'REJECTED')
+  </update>
 </mapper>

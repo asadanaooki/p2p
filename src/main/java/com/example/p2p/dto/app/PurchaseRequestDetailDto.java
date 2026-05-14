@@ -27,12 +27,18 @@ public class PurchaseRequestDetailDto {
 
     // 明細
     private List<PurchaseRequestDetailLineDto> details;
-    
+
     public int getTaxAmount() {
         return totalAmountExcludingTax * 10 / 100;
     }
-    
+
     public int totalAmountIncludingTax() {
         return totalAmountExcludingTax + getTaxAmount();
     }
+
+    public boolean isCanEdit() {
+        return status == PurchaseRequestStatus.PENDING || status == PurchaseRequestStatus.APPROVED
+                || status == PurchaseRequestStatus.REJECTED;
+    }
+
 }

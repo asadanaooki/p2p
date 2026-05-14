@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 @ValidPurchaseRequestDetail
-public class PurchaseRequestDetailCreateForm {
+public class PurchaseRequestDetailCreateForm implements PurchaseRequestDetailForm {
     
     private DetailInputType detailInputType;
 

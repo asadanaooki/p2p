@@ -4,6 +4,7 @@ $(function () {
   const editBackups = new Map();
   let rowSequence = 0;
 
+  initializeDeletedPrDetailIds();
   initializeDetails();
 
   // =========================
@@ -58,8 +59,10 @@ $(function () {
     if (existingDetail) {
       existingDetail.quantity =
         Number(existingDetail.quantity) + Number(item.quantity);
-      existingDetail.subtotal =
-        Number(existingDetail.price) * Number(existingDetail.quantity);
+      existingDetail.subtotal = calculateSubtotalValue(
+        existingDetail.price,
+        existingDetail.quantity,
+      );
       return;
     }
 
@@ -157,6 +160,10 @@ $(function () {
 
     const detail = details[index];
     editBackups.delete(detail.rowId);
+
+    if (detail.prDetailId) {
+      deletedPrDetailIds.push(detail.prDetailId);
+    }
 
     details.splice(index, 1);
     refreshDetailArea();
@@ -650,17 +657,39 @@ $(function () {
   }
 
   function initializeDetails() {
-    const sourceDetails = window.initialFormDetails ?? window.initialViewDetails ?? [];
+    const sourceDetails =
+      window.initialFormDetails ?? window.initialViewDetails ?? [];
 
     sourceDetails.forEach(function (detail) {
-
+      details.push(normalizeDetail(detail));
     });
 
     refreshDetailArea();
   }
 
   function normalizeDetail(detail) {
-    
+    const price = detail.price;
+    const quantity = detail.quantity;
+
+    return {
+      rowId: createRowId(),
+      prDetailId: detail.prDetailId ?? "",
+      detailInputType: detail.detailInputType,
+      itemId: detail.itemId ?? "",
+      itemName: detail.itemName,
+      kind: detail.kind,
+      kindLabel: detail.kindLabel ?? findKindLabel(detail.kind),
+      supplierId: detail.supplierId ?? "",
+      supplierName: detail.supplierName,
+      unitId: detail.unitId ?? "",
+      unitName: detail.unitName,
+      price: price,
+      quantity: quantity,
+      subtotal:
+        detail.subtotalExcludingTax ?? calculateSubtotalValue(price, quantity),
+      editing: false,
+      isNew: false,
+    };
   }
 
   // =========================
@@ -690,6 +719,7 @@ $(function () {
   function copyDetail(detail) {
     return {
       rowId: detail.rowId,
+      prDetailId: detail.prDetailId,
       detailInputType: detail.detailInputType,
       itemId: detail.itemId,
       itemName: detail.itemName,
@@ -703,9 +733,7 @@ $(function () {
       quantity: detail.quantity,
       subtotal: detail.subtotal,
       editing: false,
-      isNew: false,
-      supplierInputMode: detail.supplierInputMode,
-      unitInputMode: detail.unitInputMode,
+      isNew: detail.isNew,
     };
   }
 
@@ -735,34 +763,6 @@ $(function () {
     }
 
     return $("#kindOptionsTemplate").find(`option[value="${kind}"]`).text();
-  }
-
-  function initializeDetails() {
-    const initialDetails = window.initialPurchaseRequestDetails || [];
-
-    initialDetails.forEach(function (detail) {
-      details.push({
-        rowId: createRowId(),
-        detailInputType: detail.detailInputType,
-        itemId: detail.itemId,
-        itemName: detail.itemName,
-        kind: detail.kind,
-        kindLabel: detail.kindLabel || findKindLabel(detail.kind),
-        supplierId: detail.supplierId,
-        supplierName: detail.supplierName,
-        unitId: detail.unitId,
-        unitName: detail.unitName,
-        price: detail.price,
-        quantity: detail.quantity,
-        subtotal: calculateSubtotalValue(detail.price, detail.quantity),
-        editing: false,
-        isNew: false,
-        supplierInputMode: detail.supplierId ? "select" : "manual",
-        unitInputMode: detail.unitId ? "select" : "manual",
-      });
-    });
-
-    refreshDetailArea();
   }
 
   function updateSubmitButtonState() {

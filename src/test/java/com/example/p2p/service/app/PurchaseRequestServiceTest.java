@@ -1,6 +1,7 @@
 package com.example.p2p.service.app;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
@@ -11,8 +12,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,10 +32,12 @@ import com.example.p2p.dto.app.PurchaseRequestListViewDto;
 import com.example.p2p.entity.PurchaseRequest;
 import com.example.p2p.entity.PurchaseRequestDetail;
 import com.example.p2p.entity.PurchaseRequestDetailExample;
+import com.example.p2p.entity.PurchaseRequestExample;
 import com.example.p2p.enums.DetailInputType;
 import com.example.p2p.enums.ItemKind;
 import com.example.p2p.enums.PurchaseRequestStatus;
 import com.example.p2p.enums.VisibilityScope;
+import com.example.p2p.exception.BusinessException;
 import com.example.p2p.form.app.PurchaseRequestCreateForm;
 import com.example.p2p.form.app.PurchaseRequestDetailCreateForm;
 import com.example.p2p.form.app.PurchaseRequestDetailEditForm;
@@ -361,6 +367,61 @@ class PurchaseRequestServiceTest {
 
     @Nested
     class Update {
+
+        @BeforeEach
+        void setup() {
+            PurchaseRequest pr = new PurchaseRequest();
+            pr.setPrId("6b2c5959-233f-4b54-8a9b-98f4a1b13c40");
+            pr.setStatus(PurchaseRequestStatus.PENDING);
+            purchaseRequestMapper.updateByPrimaryKeySelective(pr);
+        }
+
+        @EnumSource(value = PurchaseRequestStatus.class, names = { "CANCELLED", "COMPLETED" })
+        @ParameterizedTest
+        void update_whenInvalidStatus(PurchaseRequestStatus status) {
+            String prId = "88bfbcf6-2be6-4d31-8a46-155a7b58ab93";
+            PurchaseRequest pr = new PurchaseRequest();
+            pr.setPrId(prId);
+            pr.setStatus(status);
+            purchaseRequestMapper.updateByPrimaryKeySelective(pr);
+
+            assertThatThrownBy(() -> purchaseRequestService.update(prId, new PurchaseRequestEditForm()))
+                .isInstanceOf(BusinessException.class);
+        }
+
+        @EnumSource(value = PurchaseRequestStatus.class, names = { "PENDING", "APPROVED", "REJECTED" })
+        @ParameterizedTest
+        void update_whenValidStatus(PurchaseRequestStatus status) {
+            PurchaseRequest pr = new PurchaseRequest();
+            String prId = "88bfbcf6-2be6-4d31-8a46-155a7b58ab93";
+            pr.setPrId(prId);
+            pr.setStatus(status);
+            pr.setNote("test2");
+            pr.setDueDate(LocalDate.of(2026, 5, 2));
+            purchaseRequestMapper.updateByPrimaryKeySelective(pr);
+
+            PurchaseRequestEditForm form = new PurchaseRequestEditForm();
+            // PurchaseRequestDetailEditForm detailForm = new
+            // PurchaseRequestDetailEditForm();
+            // detailForm.setPrDetailId("33aaccfe-c7c4-4e37-ab48-259dbe7a7fdf");
+            // detailForm.setDetailInputType(DetailInputType.CATALOG);
+            // detailForm.setQuantity(2);
+            // detailForm.setItemId("a5c1b32a-7b01-49d3-8fef-48e0f39dc31f");
+            // detailForm.setKind(ItemKind.GOODS);
+            // detailForm.setItemName("A4コピー用紙 500枚");
+            // detailForm.setSupplierId("a7f3c9d2-4b8e-41f1-9c6a-1d2e3f4a5b6c");
+            // detailForm.setSupplierName("神奈川文具株式会社");
+            // detailForm.setUnitId("22222222-2222-2222-2222-222222222221");
+            // detailForm.setUnitName("個");
+            // detailForm.setPrice(680);
+
+            purchaseRequestService.update(prId, form);
+
+            PurchaseRequest actual = purchaseRequestMapper.selectByPrimaryKey(prId);
+            assertThat(actual.getNote()).isNull();
+            assertThat(actual.getDueDate()).isNull();
+
+        }
 
         @Test
         void update_existingDetail() {

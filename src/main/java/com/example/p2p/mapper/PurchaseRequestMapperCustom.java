@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import com.example.p2p.dto.app.PurchaseRequestDetailDto;
 import com.example.p2p.dto.app.PurchaseRequestEditViewDto;
 import com.example.p2p.dto.app.PurchaseRequestListRowDto;
+import com.example.p2p.entity.PurchaseRequest;
 import com.example.p2p.enums.VisibilityScope;
 import com.example.p2p.form.app.PurchaseRequestSearchForm;
 
@@ -24,5 +25,7 @@ public interface PurchaseRequestMapperCustom {
             @Param("prViewScope") VisibilityScope scope, @Param("userId") String userId);
     
     PurchaseRequestEditViewDto selectPurchaseRequestEditView(String prId);
+    
+    int updateForEdit(PurchaseRequest pr);
 
 }
