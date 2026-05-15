@@ -1,1 +1,1 @@
-PR編集serviceのステータスのテスト
+generatorConfigの設定から
