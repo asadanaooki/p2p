@@ -80,6 +80,13 @@
         typeHandler="org.apache.ibatis.type.EnumTypeHandler">
       </columnOverride>
     </table>
+    <table tableName="approval_workflow">
+      <columnOverride column="document_type" jdbcType="VARCHAR" javaType="com.example.p2p.enums.DocumentType"
+        typeHandler="org.apache.ibatis.type.EnumTypeHandler">
+      </columnOverride>
+    </table>
+    <table tableName="approval_step"></table>
+    <table tableName="approval_step_approver"></table>
 
   </context>
 </generatorConfiguration>

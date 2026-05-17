@@ -1,0 +1,89 @@
+.page {
+  min-height: 100vh;
+  padding: 24px 40px 56px;
+}
+
+.page-title {
+  margin: 0 0 30px;
+  font-weight: 400;
+  font-size: 20px;
+}
+
+.workflow-steps {
+  background-color: red;
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  padding: 24px 8px 32px;
+}
+
+.workflow-step-block {
+  width: 300px;
+  /* background-color: bisque; */
+  flex-shrink: 0;
+}
+
+.step-number {
+  width: 30px;
+  height: 30px;
+  margin: 0 auto 18px;
+  background-color: #3f66d6;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}
+
+.step-number span {
+  transform: translateY(-2.5px);
+}
+
+.step-card {
+  min-height: 160px;
+  border: 1px solid #c8d0dc;
+  border-radius: 10px;
+  background-color: #fff;
+}
+
+.step-card-header {
+  min-height: 60px;
+  padding: 0 14px;
+  border-bottom: 1px solid #e3e7ef;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.step-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.step-action-button {
+  width: 28px;
+  height: 28px;
+  border: none;
+  color: #54708f;
+  background-color: transparent;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.step-action-button:hover {
+  color: #244c9a;
+  background-color: #eef3ff;
+  border-radius: 6px;
+}
+
+.danger:hover {
+  color: #c43d3d;
+  background-color: #fff0f0;
+}

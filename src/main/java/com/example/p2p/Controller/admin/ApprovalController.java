@@ -3,7 +3,11 @@ package com.example.p2p.controller.admin;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.example.p2p.enums.DocumentType;
+import com.example.p2p.service.admin.ApprovalService;
 
 import lombok.AllArgsConstructor;
 
@@ -12,7 +16,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ApprovalController {
 
-//    private RoleService roleService;
+    private ApprovalService approvalService;
 //
 //    private MessageSource messageSource;
 //    
@@ -21,6 +25,13 @@ public class ApprovalController {
     @GetMapping("/document")
     public String showApprovalDocumentSelection() {
         return "admin/approval-document-select";
+    }
+    
+    @GetMapping("/{documentType}/workflow")
+    public String showWorkflow(@PathVariable DocumentType documentType, Model model) {
+        model.addAttribute("documentType", documentType);
+        model.addAttribute("view", approvalService.getApprovalWorkflowView(documentType));
+        return "admin/approval-workflow";
     }
 //
 //    @GetMapping("/{roleId}")

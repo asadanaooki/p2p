@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>設定</title>
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" th:href="@{/css/admin/approval-workflow.css}" />
+</head>
+
+<body>
+  <main class="page">
+    <h1 class="page-title">承認ステップ ー
+      <span th:text="${documentType.label}"></span>
+    </h1>
+
+    <form id="workflowForm" action="#" method="post">
+      <div class="workflow-steps" id="workflowSteps">
+        <div class="workflow-step-block" th:each="step : ${view.approvalSteps}" th:data-step-id="${step.approvalStepId}"
+          data-deleted="false">
+
+          <div class="step-number">
+            <span th:text="${step.stepOrder}"></span>
+          </div>
+
+          <div class="step-card">
+            <div class="step-card-header">
+              <div th:text="${step.name}"></div>
+              <div class="step-actions">
+                <button type="button" class="step-action-button js-edit-step">
+                  ✎
+                </button>
+
+                <button type="button" class="step-action-button js-approver-modal">
+                  👤
+                </button>
+
+                <button type="button" class="step-action-button danger js-delete-step">
+                  🗑
+                </button>
+              </div>
+            </div>
+
+            <div class="approver-list">
+              <div class="approver-card" th:each="approver : ${step.approvalStepApprovers}">
+                <div class="approver-name" th:text="${approver.userName}"></div>
+                <div class="approver-email" th:text="${approver.email}"></div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <div class="workflow-add-step">
+          <button type="button" class="add-step-button js-open-step-modal">
+            ＋ ステップを追加
+          </button>
+        </div>
+      </div>
+
+      <div class="workflow-footer">
+        <button type="submit" class="save-button">保存</button>
+        <a class="cancel-button" th:href="@{/setting/approval/document}">キャンセル</a>
+      </div>
+
+      <div id="hiddenFields"></div>
+
+    </form>
+
+    <!-- ステップ追加・編集モーダル -->
+    <!-- <div class="modal-overlay is-hidden" id="stepModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="stepModalTitle">ステップを追加</h2>
+          <button type="button" class="modal-close js-close-modal">×</button>
+        </div>
+
+        <div class="form-field">
+          <label for="stepName">ステップ名</label>
+          <input type="text" id="stepName" class="form-input">
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="primary-button js-save-step">決定</button>
+          <button type="button" class="secondary-button js-close-modal">キャンセル</button>
+        </div>
+      </div>
+    </div> -->
+
+    <!-- TODO: -->
+    <!-- 承認者追加モーダル -->
+    <!-- <div class="modal-overlay is-hidden" id="approverModal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title">承認者を追加</h2>
+            <button type="button" class="modal-close js-close-modal">×</button>
+          </div>
+
+          <div class="form-field">
+            <label for="approverUserId">承認者</label>
+            <select id="approverUserId" class="form-input">
+              <option value=""></option>
+
+            </select>
+
+          </div>
+
+        </div> -->
+
+    <!-- </div> -->
+
+  </main>
+
+</body>
+
+</html>
