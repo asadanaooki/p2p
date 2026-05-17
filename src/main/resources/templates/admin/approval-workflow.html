@@ -42,10 +42,9 @@
 
             <div class="approver-list">
               <div class="approver-card" th:each="approver : ${step.approvalStepApprovers}">
-                <div class="approver-name" th:text="${approver.userName}"></div>
-                <div class="approver-email" th:text="${approver.email}"></div>
+                <div th:text="${approver.userName}"></div>
+                <div th:text="${approver.email}"></div>
               </div>
-
             </div>
           </div>
 

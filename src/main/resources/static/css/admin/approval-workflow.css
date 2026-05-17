@@ -10,7 +10,6 @@
 }
 
 .workflow-steps {
-  background-color: red;
   display: flex;
   gap: 24px;
   overflow-x: auto;
@@ -19,7 +18,6 @@
 
 .workflow-step-block {
   width: 300px;
-  /* background-color: bisque; */
   flex-shrink: 0;
 }
 
@@ -36,7 +34,7 @@
 }
 
 .step-number span {
-  transform: translateY(-2.5px);
+  transform: translateY(-2px);
 }
 
 .step-card {
@@ -86,4 +84,77 @@
 .danger:hover {
   color: #c43d3d;
   background-color: #fff0f0;
+}
+
+.approver-list {
+  padding: 0 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 250px;
+
+  overflow-y: auto;
+}
+
+.approver-card {
+  padding: 10px;
+}
+
+.workflow-add-step {
+  flex-shrink: 0;
+  margin-top: 52px;
+}
+
+.add-step-button {
+  width: 240px;
+  height: 64px;
+  border: 1px dashed #9fb0c7;
+  border-radius: 10px;
+  background-color: #fff;
+  color: #244c9a;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.add-step-button:hover {
+  background-color: #f3f6ff;
+  border-color: #6f86bc;
+}
+
+.workflow-footer {
+  margin-left: 8px;
+  margin-top: 10px;
+  display: flex;
+  gap: 12px;
+}
+
+.save-button,
+.cancel-button {
+  height: 42px;
+  width: 100px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.save-button {
+  border: none;
+  color: #fff;
+  background-color: #244c9a;
+}
+
+.save-button:hover {
+  background-color: #1d3f82;
+}
+
+.cancel-button {
+  border: 1px solid #c8d0dc;
+  background-color: #ffffff;
+  color: #1f2a44;
+}
+
+.cancel-button:hover {
+  background-color: #f3f5f8;
 }
