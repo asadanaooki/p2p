@@ -1,14 +1,21 @@
 package com.example.p2p.controller.admin;
 
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.p2p.enums.DocumentType;
+import com.example.p2p.form.admin.ApprovalWorkflowCreateForm;
 import com.example.p2p.service.admin.ApprovalService;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @Controller
@@ -18,7 +25,7 @@ public class ApprovalController {
 
     private ApprovalService approvalService;
 //
-//    private MessageSource messageSource;
+    private MessageSource messageSource;
 //    
 //    private ModelMapper modelMapper;
 //
@@ -32,6 +39,23 @@ public class ApprovalController {
         model.addAttribute("documentType", documentType);
         model.addAttribute("view", approvalService.getApprovalWorkflowView(documentType));
         return "admin/approval-workflow";
+    }
+    
+    @PostMapping("/{documentType}/workflow")
+    public String createWorkflow(@PathVariable DocumentType documentType,
+            @Valid @ModelAttribute ApprovalWorkflowCreateForm form,
+            BindingResult bindingResult,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("documentType", documentType);
+            return "admin/approval-workflow";
+        }
+        approvalService.create(documentType,form);
+        
+        redirectAttributes.addFlashAttribute("successMessage",
+                messageSource.getMessage("common.create.success", null, null));
+        return "redirect:/admin/approval-workflow";
     }
 //
 //    @GetMapping("/{roleId}")
