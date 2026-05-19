@@ -15,11 +15,11 @@ public class ApprovalStepCreateForm {
     // HTMLエラー防止用
     private String approvalStepId;
 
-    @NotBlank
-    @Length(max = 100)
+    @NotBlank(message = "{error.approval.step.name.required}")
+    @Length(max = 100, message = "{error.approval.step.name.length}")
     private String name;
     
-    @NotEmpty
+    @NotEmpty(message = "{error.approval.step.approvers.required}")
     private List<@Valid ApprovalStepApproverCreateForm> approvalStepApprovers;
     
 }

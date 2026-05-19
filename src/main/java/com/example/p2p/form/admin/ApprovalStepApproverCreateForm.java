@@ -9,14 +9,14 @@ import lombok.Data;
 @Data
 public class ApprovalStepApproverCreateForm {
 
-    @NotBlank
+    @NotBlank(message = "{error.approval.approver.user.required}")
     private String userId;
 
-    @NotNull
-    @PositiveOrZero
+    @NotNull(message = "{error.approval.approver.amount.min.required}")
+    @PositiveOrZero(message = "{error.approval.approver.amount.min.positiveOrZero}")
     private Integer amountMin;
 
-    @PositiveOrZero
+    @PositiveOrZero(message = "{error.approval.approver.amount.max.positiveOrZero}")
     private Integer amountMax;
 
     // 表示用

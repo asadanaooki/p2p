@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class ApprovalWorkflowCreateForm {
     
-    @NotEmpty
+    @NotEmpty(message = "{error.approval.steps.required}")
     private List<@Valid ApprovalStepCreateForm> approvalSteps;
     
 }
