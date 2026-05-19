@@ -13,13 +13,14 @@
       <span th:text="${documentType.label}"></span>
     </h1>
 
-    <form id="workflowForm" action="#" method="post">
+    <form id="workflowForm" th:object="${form}"
+      th:action="@{/setting/approval/{documentType}/workflow(documentType=${documentType})}" method="post">
       <div class="workflow-steps" id="workflowSteps">
-        <div class="workflow-step-block" th:each="step : ${view.approvalSteps}" th:data-step-id="${step.approvalStepId}"
-          data-deleted="false">
+        <div class="workflow-step-block" th:each="step, stat : *{approvalSteps}"
+          th:data-step-id="${step.approvalStepId}" th:data-step-index="${stat.index}" data-deleted="false">
 
           <div class="step-number">
-            <span th:text="${step.stepOrder}"></span>
+            <span th:text="${stat.index + 1}"></span>
           </div>
 
           <div class="step-card">
@@ -41,7 +42,8 @@
             </div>
 
             <div class="approver-list">
-              <div class="approver-card" th:each="approver : ${step.approvalStepApprovers}">
+              <div class="approver-card" th:each="approver, stat : ${step.approvalStepApprovers}"
+                th:data-approver-index="${stat.index}">
                 <div th:text="${approver.userName}"></div>
                 <div th:text="${approver.email}"></div>
               </div>

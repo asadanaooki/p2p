@@ -10,7 +10,6 @@ import lombok.Data;
 public class ApprovalWorkflowCreateForm {
     
     @NotEmpty
-    @Valid
-    private List<ApprovalStepCreateForm> steps;
+    private List<@Valid ApprovalStepCreateForm> approvalSteps;
     
 }

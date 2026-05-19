@@ -46,7 +46,7 @@ public class ApprovalService {
         approvalWorkflowMapper.insertSelective(workflow);
 
         int stepOrder = 1;
-        for (ApprovalStepCreateForm stepForm : form.getSteps()) {
+        for (ApprovalStepCreateForm stepForm : form.getApprovalSteps()) {
             String approvalStepId = UUID.randomUUID().toString();
             ApprovalStep step = new ApprovalStep();
             step.setApprovalStepId(approvalStepId);
@@ -56,7 +56,7 @@ public class ApprovalService {
 
             approvalStepMapper.insertSelective(step);
 
-            for (ApprovalStepApproverCreateForm approverForm : stepForm.getApprovers()) {
+            for (ApprovalStepApproverCreateForm approverForm : stepForm.getApprovalStepApprovers()) {
                 String approvalStepApproverId = UUID.randomUUID().toString();
                 ApprovalStepApprover approver = new ApprovalStepApprover();
                 approver.setApprovalStepApproverId(approvalStepApproverId);

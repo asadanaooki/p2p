@@ -1,1 +1,1 @@
-workflow画面をformベースに修正
+ApprovalWorkflowCreateFormのバリデーションテスト
