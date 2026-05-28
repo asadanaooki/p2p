@@ -5,6 +5,9 @@
   <title>設定</title>
   <link rel="stylesheet" th:href="@{/css/common.css}" />
   <link rel="stylesheet" th:href="@{/css/admin/approval-workflow.css}" />
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script th:src="@{/js/common.js}"></script>
+  <script th:src="@{/js/admin/approval-workflow.js}"></script>
 </head>
 
 <body>
@@ -69,6 +72,30 @@
     </form>
 
     <!-- ステップ追加・編集モーダル -->
+    <div class="modal-overlay is-hidden" id="stepModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="stepModalTitle">ステップを追加</h2>
+          <button type="button" class="modal-close js-close-modal">×</button>
+        </div>
+
+        <div>
+          <label for="stepName">ステップ名</label>
+          <input type="text" id="stepName" class="form-input">
+
+          <div class="field-error is-hidden" id="stepNameError">
+            ステップ名を入力してください。
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="primary-button js-save-step">保存</button>
+          <button type="button" class="secondary-button js-close-modal">キャンセル</button>
+        </div>
+      </div>
+
+    </div>
+
     <!-- <div class="modal-overlay is-hidden" id="stepModal">
       <div class="modal-content">
         <div class="modal-header">
@@ -109,6 +136,36 @@
         </div> -->
 
     <!-- </div> -->
+    <template id="stepTemplate">
+      <div class="workflow-step-block" data-step-id="" data-deleted="false">
+
+        <div class="step-number"></div>
+
+        <div class="step-card">
+          <div class="step-card-header">
+            <div class="step-name"></div>
+            <div class="step-actions">
+              <button type="button" class="step-action-button js-edit-step">
+                ✎
+              </button>
+
+              <button type="button" class="step-action-button js-approver-modal">
+                👤
+              </button>
+
+              <button type="button" class="step-action-button danger js-delete-step">
+                🗑
+              </button>
+            </div>
+          </div>
+
+          <div class="approver-list">
+          </div>
+        </div>
+      </div>
+    </template>
+
+
 
   </main>
 

@@ -1,5 +1,6 @@
 package com.example.p2p.service.admin;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -33,7 +34,8 @@ public class ApprovalService {
     private ApprovalStepApproverMapper approvalStepApproverMapper;
 
     public ApprovalWorkflowDto getApprovalWorkflowView(DocumentType documentType) {
-        return approvalWorkflowMapperCustom.selectApprovalWorkflow(documentType);
+        return Optional.ofNullable(approvalWorkflowMapperCustom.selectApprovalWorkflow(documentType))
+            .orElse(new ApprovalWorkflowDto());
     }
 
     @Transactional
