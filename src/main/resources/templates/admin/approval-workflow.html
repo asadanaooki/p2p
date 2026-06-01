@@ -44,11 +44,28 @@
               </div>
             </div>
 
-            <div class="approver-list">
+            <div class="approver-list"
+              th:classappend="${!#lists.isEmpty(step.approvalStepApprovers)} ? 'has-approvers'">
               <div class="approver-card" th:each="approver, stat : ${step.approvalStepApprovers}"
-                th:data-approver-index="${stat.index}">
+                th:data-user-id="${approver.userId}" th:data-email="${approver.email}"
+                th:data-threshold-from="${approver.amountMin}" th:data-threshold-to="${approver.amountMax}">
+
+                <button type="button" class="approver-delete-button js-delete-approver">×</button>
+
                 <div th:text="${approver.userName}"></div>
                 <div th:text="${approver.email}"></div>
+
+                <div class="approver-threshold">
+                  <span>承認閾値：</span>
+                  <span th:text="${#numbers.formatInteger(approver.amountMin, 1, 'COMMA')}"></span>
+                  <span>円 ～</span>
+                  <th:block th:if="${approver.amountMax != null}">
+                    <span th:text="${#numbers.formatInteger(approver.amountMax, 1, 'COMMA')}"></span>
+                    <span>円</span>
+                  </th:block>
+
+
+                </div>
               </div>
             </div>
           </div>
@@ -96,27 +113,51 @@
 
     </div>
 
-    <!-- <div class="modal-overlay is-hidden" id="stepModal">
-      <div class="modal-content">
+    <!-- 承認者追加モーダル -->
+    <div class="modal-overlay is-hidden" id="approverModal">
+      <div class="modal-content approver-modal-content">
         <div class="modal-header">
-          <h2 class="modal-title" id="stepModalTitle">ステップを追加</h2>
+          <h2 class="modal-title">承認者を追加</h2>
           <button type="button" class="modal-close js-close-modal">×</button>
         </div>
 
         <div class="form-field">
-          <label for="stepName">ステップ名</label>
-          <input type="text" id="stepName" class="form-input">
+          <label for="approverUserId">承認者</label>
+          <select id="approverUserId" class="form-input">
+            <option value=""></option>
+            <option th:each="user : ${userOptions}" th:value="${user.userId}" th:text="${user.name}"
+              th:data-email="${user.email}">
+            </option>
+          </select>
+
+          <div class="field-error is-hidden" id="approverUserError"></div>
+
+        </div>
+
+        <div class="form-field">
+          <label>承認閾値</label>
+
+          <div class="threshold-inputs">
+            <input type="number" id="thresholdFrom" class="form-input" min="0">
+            <span>～</span>
+            <input type="number" id="thresholdTo" class="form-input" min="0">
+          </div>
+
+          <div class="field-error is-hidden" id="thresholdFromError"></div>
         </div>
 
         <div class="modal-actions">
-          <button type="button" class="primary-button js-save-step">決定</button>
+          <button type="button" class="primary-button js-save-approver">追加</button>
           <button type="button" class="secondary-button js-close-modal">キャンセル</button>
         </div>
-      </div>
-    </div> -->
 
-    <!-- TODO: -->
-    <!-- 承認者追加モーダル -->
+      </div>
+
+    </div>
+
+
+
+
     <!-- <div class="modal-overlay is-hidden" id="approverModal">
         <div class="modal-content">
           <div class="modal-header">
@@ -136,6 +177,8 @@
         </div> -->
 
     <!-- </div> -->
+
+    <!-- ステップテンプレート -->
     <template id="stepTemplate">
       <div class="workflow-step-block" data-step-id="" data-deleted="false">
 

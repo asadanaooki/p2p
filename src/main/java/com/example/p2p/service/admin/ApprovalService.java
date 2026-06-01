@@ -18,6 +18,7 @@ import com.example.p2p.mapper.ApprovalStepApproverMapper;
 import com.example.p2p.mapper.ApprovalStepMapper;
 import com.example.p2p.mapper.ApprovalWorkflowMapper;
 import com.example.p2p.mapper.ApprovalWorkflowMapperCustom;
+import com.example.p2p.mapper.UsersMapperCustom;
 
 import lombok.AllArgsConstructor;
 
@@ -32,10 +33,15 @@ public class ApprovalService {
     private ApprovalStepMapper approvalStepMapper;
 
     private ApprovalStepApproverMapper approvalStepApproverMapper;
+    
+    private UsersMapperCustom userMapperCustom;
 
     public ApprovalWorkflowDto getApprovalWorkflowView(DocumentType documentType) {
-        return Optional.ofNullable(approvalWorkflowMapperCustom.selectApprovalWorkflow(documentType))
+        ApprovalWorkflowDto dto = Optional.ofNullable(approvalWorkflowMapperCustom.selectApprovalWorkflow(documentType))
             .orElse(new ApprovalWorkflowDto());
+        dto.setUserOptions(userMapperCustom.selectUserOptions(documentType));
+        
+        return dto;
     }
 
     @Transactional

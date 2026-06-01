@@ -38,7 +38,6 @@
 }
 
 .step-card {
-  min-height: 160px;
   border: 1px solid #c8d0dc;
   border-radius: 10px;
   background-color: #fff;
@@ -87,6 +86,10 @@
 }
 
 .approver-list {
+  display: none;
+}
+
+.approver-list.has-approvers {
   padding: 0 14px;
   display: flex;
   flex-direction: column;
@@ -97,7 +100,22 @@
 }
 
 .approver-card {
+  position: relative;
   padding: 10px;
+}
+
+.approver-delete-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background-color: transparent;
+  color: #54708f;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
 }
 
 .workflow-add-step {
@@ -202,6 +220,10 @@
   padding: 15px;
 }
 
+.approver-modal-content {
+  width: 420px;
+}
+
 .modal-header {
   margin-bottom: 16px;
   display: flex;
@@ -224,6 +246,10 @@
   cursor: pointer;
 }
 
+.form-field {
+  margin-top: 16px;
+}
+
 .form-field label {
   display: block;
   font-size: 12px;
@@ -242,4 +268,10 @@
   margin-top: 25px;
   display: flex;
   gap: 10px;
+}
+
+/* 承認者モーダル */
+.threshold-inputs {
+  display: flex;
+  gap: 8px;
 }

@@ -10,5 +10,7 @@ public class ApprovalWorkflowDto {
     private String approvalWorkflowId;
 
     List<ApprovalStepDto> approvalSteps;
+    
+    List<UserOptionDto> userOptions;
 
 }

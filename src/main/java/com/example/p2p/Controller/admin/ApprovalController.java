@@ -42,6 +42,7 @@ public class ApprovalController {
         ApprovalWorkflowDto dto = approvalService.getApprovalWorkflowView(documentType);
         modelMapper.map(dto, form);
         model.addAttribute("documentType", documentType);
+        model.addAttribute("userOptions", dto.getUserOptions());
         return "admin/approval-workflow";
     }
 

@@ -131,4 +131,26 @@
       on u.role_id = r.role_id
     where u.email = #{email}
   </select>
+  
+  <select id="selectUserOptions" resultType="com.example.p2p.dto.admin.UserOptionDto">
+    select 
+      u.user_id,
+      CONCAT_WS(' ', last_name, first_name) as name,
+      u.email
+    from users u
+    join role r
+      on u.role_id = r.role_id
+    where
+    <choose>
+      <when test="documentType.toString().equals('PR')">
+        r.pr_approve = true
+      </when>
+      <when test="documentType.toString().equals('PO')">
+        r.po_approve = true
+      </when>
+      <when test="documentType.toString().equals('INVOICE')">
+        r.invoice_approve = true
+      </when>
+    </choose>
+  </select>
 </mapper>
