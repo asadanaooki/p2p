@@ -2,6 +2,7 @@ TRUNCATE TABLE purchase_request RESTART IDENTITY;
 
 INSERT INTO purchase_request (
     supplier_id,
+    pr_id,
     requester_user_id,
     due_date,
     total_amount,
@@ -9,6 +10,7 @@ INSERT INTO purchase_request (
 ) VALUES
 (
     'c9e2a4b6-7d1f-43a8-b5c2-9f0e1d2c3b4a',
+    '88bfbcf6-2be6-4d31-8a46-155a7b58ab93',
     '169f1e17-619f-45bf-b6dc-8faed08c404c',
     NULL,
     650,
@@ -16,6 +18,7 @@ INSERT INTO purchase_request (
 ),
 (
     'a7f3c9d2-4b8e-41f1-9c6a-1d2e3f4a5b6c',
+    '3a5b130e-0279-4bca-bee3-d41cddbc9192',
     '36a1d5d9-15b8-45d5-8ae7-607244bbe36e',
     '2026-04-25'::date,
     7800,
@@ -23,6 +26,7 @@ INSERT INTO purchase_request (
 ),
 (
     'b4d8e1f7-92ac-4c35-8f21-6a7b8c9d0e1f',
+    '3c4f62bf-855b-4c35-b19d-eb06acb16896',
     '6fe99043-cbd1-49c0-96d4-c156c58a8e60',
     '2026-05-10'::date,
     24800,
@@ -30,6 +34,7 @@ INSERT INTO purchase_request (
 ),
 (
     'c9e2a4b6-7d1f-43a8-b5c2-9f0e1d2c3b4a',
+    '56856dfe-8e7a-4524-9d05-9e161c6b8fc3',
     '169f1e17-619f-45bf-b6dc-8faed08c404c',
     '2026-05-20'::date,
     56300,
@@ -37,6 +42,7 @@ INSERT INTO purchase_request (
 ),
 (
     'a7f3c9d2-4b8e-41f1-9c6a-1d2e3f4a5b6c',
+    '6b2c5959-233f-4b54-8a9b-98f4a1b13c40',
     '36a1d5d9-15b8-45d5-8ae7-607244bbe36e',
     '2026-06-01'::date,
     128000,
