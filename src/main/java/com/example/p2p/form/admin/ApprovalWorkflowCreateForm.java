@@ -12,4 +12,5 @@ public class ApprovalWorkflowCreateForm {
     @NotEmpty(message = "{error.approval.steps.required}")
     private List<@Valid ApprovalStepCreateForm> approvalSteps;
     
+    int a = 1;
 }
