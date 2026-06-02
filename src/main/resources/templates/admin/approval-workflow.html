@@ -28,7 +28,7 @@
 
           <div class="step-card">
             <div class="step-card-header">
-              <div th:text="${step.name}"></div>
+              <div class="step-name" th:text="${step.name}"></div>
               <div class="step-actions">
                 <button type="button" class="step-action-button js-edit-step">
                   ✎
@@ -50,10 +50,13 @@
                 th:data-user-id="${approver.userId}" th:data-email="${approver.email}"
                 th:data-threshold-from="${approver.amountMin}" th:data-threshold-to="${approver.amountMax}">
 
-                <button type="button" class="approver-delete-button js-delete-approver">×</button>
+                <div class="approver-card-actions">
+                  <button type="button" class="approver-card-button js-edit-approver">✎</button>
+                  <button type="button" class="approver-card-button danger js-delete-approver">×</button>
+                </div>
 
-                <div th:text="${approver.userName}"></div>
-                <div th:text="${approver.email}"></div>
+                <div class="approver-name" th:text="${approver.userName}"></div>
+                <div class="approver-email" th:text="${approver.email}"></div>
 
                 <div class="approver-threshold">
                   <span>承認閾値：</span>
@@ -92,7 +95,7 @@
     <div class="modal-overlay is-hidden" id="stepModal">
       <div class="modal-content">
         <div class="modal-header">
-          <h2 class="modal-title" id="stepModalTitle">ステップを追加</h2>
+          <h2 class="modal-title" id="stepModalTitle"></h2>
           <button type="button" class="modal-close js-close-modal">×</button>
         </div>
 
@@ -117,7 +120,7 @@
     <div class="modal-overlay is-hidden" id="approverModal">
       <div class="modal-content approver-modal-content">
         <div class="modal-header">
-          <h2 class="modal-title">承認者を追加</h2>
+          <h2 id="approverModalTitle" class="modal-title"></h2>
           <button type="button" class="modal-close js-close-modal">×</button>
         </div>
 
