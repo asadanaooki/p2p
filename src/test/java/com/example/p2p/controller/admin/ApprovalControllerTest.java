@@ -104,7 +104,7 @@ class ApprovalControllerTest {
 
         Map<String, Object> model = res.getModelAndView().getModel();
         BindingResult br = (BindingResult) model.get(BindingResult.MODEL_KEY_PREFIX + "form");
-        assertThat(br.getFieldError().getDefaultMessage()).isEqualTo(expMessage);
+        assertThat(br.getFieldError(expField).getDefaultMessage()).isEqualTo(expMessage);
     }
 
     static Stream<Arguments> createOkCases() {
