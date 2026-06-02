@@ -2,6 +2,7 @@ delete from purchase_request_detail;
 
 insert into purchase_request_detail (
     pr_id,
+    pr_detail_id,
     item_id,
     snap_item_name,
     snap_kind,
@@ -16,6 +17,7 @@ insert into purchase_request_detail (
 -- PR1: モノ明細1つ
 (
     '88bfbcf6-2be6-4d31-8a46-155a7b58ab93',
+    '33aaccfe-c7c4-4e37-ab48-259dbe7a7fdf',
     'a5c1b32a-7b01-49d3-8fef-48e0f39dc31f',
     'A4コピー用紙 500枚',
     'GOODS',
@@ -31,6 +33,7 @@ insert into purchase_request_detail (
 -- PR2: サービス明細1つ
 (
     '3a5b130e-0279-4bca-bee3-d41cddbc9192',
+    '21f9f4a4-7437-4b6b-9917-67be30c41e31',
     'd21fb363-afb3-4911-a051-fac108a06658',
     '会議室プロジェクター設置作業',
     'SERVICE',
@@ -46,6 +49,7 @@ insert into purchase_request_detail (
 -- PR3: モノ明細3つ
 (
     '3c4f62bf-855b-4c35-b19d-eb06acb16896',
+    'fae1963c-2d5b-450a-8b12-4be480e65ecd',
     'a5c1b32a-7b01-49d3-8fef-48e0f39dc31f',
     'A4コピー用紙 500枚',
     'GOODS',
@@ -59,6 +63,7 @@ insert into purchase_request_detail (
 ),
 (
     '3c4f62bf-855b-4c35-b19d-eb06acb16896',
+    '72a9f12f-bb87-4604-93f6-5d866542b0d8',
     '1bd0d872-69b1-4999-b522-ac202c481662',
     '油性ボールペン 黒 10本セット',
     'GOODS',
@@ -72,6 +77,7 @@ insert into purchase_request_detail (
 ),
 (
     '3c4f62bf-855b-4c35-b19d-eb06acb16896',
+    'ad3e8b17-092a-4c73-acc4-1b799a5f5e97',
     'f758e462-f526-4b23-a822-8821c5c62adf',
     '24インチ液晶モニター',
     'GOODS',
@@ -87,6 +93,7 @@ insert into purchase_request_detail (
 -- PR4: モノ1 + サービス1
 (
     '56856dfe-8e7a-4524-9d05-9e161c6b8fc3',
+    '41f50245-3273-4a2d-8afc-0cf6e0e8d2f1',
     'f758e462-f526-4b23-a822-8821c5c62adf',
     '24インチ液晶モニター',
     'GOODS',
@@ -100,6 +107,7 @@ insert into purchase_request_detail (
 ),
 (
     '56856dfe-8e7a-4524-9d05-9e161c6b8fc3',
+    '42a23476-55c0-4efe-a711-c546b553c2d2',
     '2cc30fd9-9dae-4abe-a145-b280d9de2f38',
     'プリンター保守サポート',
     'SERVICE',
@@ -115,6 +123,7 @@ insert into purchase_request_detail (
 -- PR5: サービス明細2つ
 (
     '6b2c5959-233f-4b54-8a9b-98f4a1b13c40',
+    'ebe68ea0-daaf-41ff-99e3-8ab109c20eae',
     'd21fb363-afb3-4911-a051-fac108a06658',
     '会議室プロジェクター設置作業',
     'SERVICE',
@@ -128,6 +137,7 @@ insert into purchase_request_detail (
 ),
 (
     '6b2c5959-233f-4b54-8a9b-98f4a1b13c40',
+    '4d57ee8a-4dc6-4155-9f4b-9ee7985d4e21',
     '2cc30fd9-9dae-4abe-a145-b280d9de2f38',
     'プリンター保守サポート',
     'SERVICE',
