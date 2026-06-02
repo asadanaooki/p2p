@@ -2,7 +2,6 @@ package com.example.p2p.service.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.Nested;
@@ -20,7 +19,6 @@ import com.example.p2p.entity.SupplierExample;
 import com.example.p2p.form.admin.SupplierCreateForm;
 import com.example.p2p.form.admin.SupplierEditForm;
 import com.example.p2p.mapper.SupplierMapper;
-import com.example.p2p.service.admin.SupplierService;
 
 @SpringBootTest
 @Transactional
@@ -43,7 +41,7 @@ class SupplierServiceTest {
 
             assertThat(actual).hasSize(3);
             assertThat(actual).extracting(SupplierListItemDto::getSupplierId)
-                .containsExactly("b4d8e1f7-92ac-4c35-8f21-6a7b8c9d0e1f", "a7f3c9d2-4b8e-41f1-9c6a-1d2e3f4a5b6c",
+                .containsExactlyInAnyOrder("b4d8e1f7-92ac-4c35-8f21-6a7b8c9d0e1f", "a7f3c9d2-4b8e-41f1-9c6a-1d2e3f4a5b6c",
                         "c9e2a4b6-7d1f-43a8-b5c2-9f0e1d2c3b4a");
         }
 

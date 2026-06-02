@@ -104,7 +104,7 @@ class ApprovalControllerTest {
 
         Map<String, Object> model = res.getModelAndView().getModel();
         BindingResult br = (BindingResult) model.get(BindingResult.MODEL_KEY_PREFIX + "form");
-        assertThat(br.getFieldError().getDefaultMessage()).isEqualTo(expMessage);
+        assertThat(br.getFieldError(expField).getDefaultMessage()).isEqualTo(expMessage);
     }
 
     static Stream<Arguments> createOkCases() {
@@ -217,7 +217,7 @@ class ApprovalControllerTest {
                 // amountMax
                 Arguments.of((Consumer<ApprovalWorkflowCreateForm>) f -> {
                     ApprovalStepApproverCreateForm form = f.getApprovalSteps().get(0).getApprovalStepApprovers().get(0);
-                    form.setAmountMin(null);
+                    form.setAmountMin(1);
                     form.setAmountMax(-1);
                 }, "approvalSteps[0].approvalStepApprovers[0].amountMax", "最大金額は0以上で入力してください。"),
 
