@@ -128,6 +128,12 @@ class PurchaseRequestServiceTest {
 
     @Test
     void getPurchaseRequestDetail_viewSelf() {
+        PurchaseRequest pr = new PurchaseRequest();
+        pr.setPrId("3c4f62bf-855b-4c35-b19d-eb06acb16896");
+        pr.setNote("test");
+        pr.setCreatedAt(LocalDateTime.of(2026, 4, 21, 0, 0));
+        purchaseRequestMapper.updateByPrimaryKeySelective(pr);
+
         AuthenticationUserDto authUser = new AuthenticationUserDto();
         authUser.setUserId("6fe99043-cbd1-49c0-96d4-c156c58a8e60");
         authUser.setPasswordHash("$2a$10$dummyPasswordHash");
@@ -310,6 +316,12 @@ class PurchaseRequestServiceTest {
 
     @Test
     void prepareEditView() {
+        PurchaseRequest pr = new PurchaseRequest();
+        pr.setPrId("3c4f62bf-855b-4c35-b19d-eb06acb16896");
+        pr.setNote("test");
+        pr.setCreatedAt(LocalDateTime.of(2026, 4, 21, 0, 0));
+        purchaseRequestMapper.updateByPrimaryKeySelective(pr);
+
         PurchaseRequestDetail detail = new PurchaseRequestDetail();
 
         detail.setPrDetailId("fae1963c-2d5b-450a-8b12-4be480e65ecd");

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.p2p.mapper.ApprovalWorkflowMapperCustom">
+<resultMap id="approvalWorkflowMap" type="com.example.p2p.dto.admin.ApprovalWorkflowDto">
+    <id property="approvalWorkflowId" column="approval_workflow_id"></id>
+    <collection property="approvalSteps" ofType="com.example.p2p.dto.admin.ApprovalStepDto">
+      <id property="approvalStepId" column="approval_step_id"></id>
+      <result property="name" column="name"></result>
+      <result property="stepOrder" column="step_order"></result>
+      <collection property="approvalStepApprovers" ofType="com.example.p2p.dto.admin.ApprovalStepApproverDto">
+        <id property="approvalStepApproverId" column="approval_step_approver_id"></id>
+        <result property="userId" column="user_id"></result>
+        <result property="userName" column="userName"></result>
+        <result property="email" column="email"></result>
+        <result property="amountMin" column="amount_min"></result>
+        <result property="amountMax" column="amount_max"></result>
+      </collection> 
+    </collection>  
+  
+  </resultMap>
+  
+  <select id="selectApprovalWorkflow" resultMap="approvalWorkflowMap">
+    select 
+      aw.approval_workflow_id,
+      ast.approval_step_id,
+      ast.name,
+      ast.step_order,
+      asa.approval_step_approver_id,
+      asa.user_id,
+      asa.amount_min,
+      asa.amount_max,
+      CONCAT_WS(' ', u.last_name, u.first_name) as userName,
+      u.email
+    
+    from approval_workflow aw
+    join approval_step ast
+      on aw.approval_workflow_id = ast.approval_workflow_id
+    join approval_step_approver asa
+      on ast.approval_step_id = asa.approval_step_id
+    join users u
+      on asa.user_id = u.user_id
+    where aw.document_type = #{documentType}
+    order by ast.step_order asc, CONCAT(u.last_name_kana, u.first_name_kana) asc
+  </select>
+</mapper>

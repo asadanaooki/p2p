@@ -38,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.p2p.dto.admin.UserDetailDto;
 import com.example.p2p.dto.admin.UserListViewDto;
+import com.example.p2p.entity.ApprovalStepApproverExample;
 import com.example.p2p.entity.PurchaseRequestDetailExample;
 import com.example.p2p.entity.PurchaseRequestExample;
 import com.example.p2p.entity.UserInvitationToken;
@@ -47,6 +48,7 @@ import com.example.p2p.entity.UsersExample;
 import com.example.p2p.exception.BusinessException;
 import com.example.p2p.form.admin.UserSearchForm;
 import com.example.p2p.form.admin.UserUpsertForm;
+import com.example.p2p.mapper.ApprovalStepApproverMapper;
 import com.example.p2p.mapper.PurchaseRequestDetailMapper;
 import com.example.p2p.mapper.PurchaseRequestMapper;
 import com.example.p2p.mapper.UserInvitationTokenMapper;
@@ -71,6 +73,9 @@ class UserServiceTest {
     @Autowired
     PurchaseRequestDetailMapper purchaseRequestDetailMapper;
 
+    @Autowired
+    ApprovalStepApproverMapper approvalStepApproverMapper;
+
     @Nested
     class SearchItems {
 
@@ -81,6 +86,7 @@ class UserServiceTest {
             void setup() {
                 purchaseRequestDetailMapper.deleteByExample(new PurchaseRequestDetailExample());
                 purchaseRequestMapper.deleteByExample(new PurchaseRequestExample());
+                approvalStepApproverMapper.deleteByExample(new ApprovalStepApproverExample());
                 usersMapper.deleteByExample(new UsersExample());
             }
 
@@ -362,6 +368,7 @@ class UserServiceTest {
     void getUserDetail_canInvite(String password, boolean isActive, boolean expected) {
         purchaseRequestDetailMapper.deleteByExample(new PurchaseRequestDetailExample());
         purchaseRequestMapper.deleteByExample(new PurchaseRequestExample());
+        approvalStepApproverMapper.deleteByExample(new ApprovalStepApproverExample());
         usersMapper.deleteByExample(new UsersExample());
         Users u = new Users();
         u.setLastName("a");

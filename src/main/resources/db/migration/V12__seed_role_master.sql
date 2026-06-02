@@ -1,4 +1,5 @@
 INSERT INTO role (
+    role_id,
     name,
     pr_create,
     po_create,
@@ -14,6 +15,7 @@ INSERT INTO role (
     setting_manage
 ) VALUES
 (
+    '4dfefacd-59dc-413c-bd75-b86c8e230c2f',
     '管理者',
     true,
     true,
@@ -29,6 +31,7 @@ INSERT INTO role (
     true
 ),
 (
+    '54ec2e48-8072-4249-aa39-6cc24492f174',
     'マネージャー',
     true,
     true,
@@ -44,6 +47,7 @@ INSERT INTO role (
     false
 ),
 (
+    '44140a4d-66b0-46e6-b26e-567fd52bea87',
     '一般社員',
     true,
     true,
