@@ -17,7 +17,6 @@ import static org.mockito.Mockito.verify;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -93,6 +92,7 @@ class AccountServiceTest {
 
         @Test
         void acceptInvitation_success() {
+            Users before = usersMapper.selectByPrimaryKey(userId);
             LocalDateTime fixed = LocalDateTime.of(2025, 4, 18, 0, 0);
             try (MockedStatic<LocalDateTime> mock = mockStatic(LocalDateTime.class, CALLS_REAL_METHODS)) {
                 mock.when(() -> LocalDateTime.now()).thenReturn(fixed);
@@ -111,9 +111,8 @@ class AccountServiceTest {
             assertThat(updated.getFirstNameKana()).isEqualTo("ハナコ");
             assertThat(updated.getEmail()).isEqualTo("sato.hanako@example.com");
             assertThat(updated.getRoleId()).isEqualTo("6862542a-1954-4192-81e8-f18c583ade01");
-            assertThat(updated.getCreatedAt().truncatedTo(ChronoUnit.MILLIS))
-                .isEqualTo(LocalDateTime.of(2026, 4, 20, 12, 22, 39, 902_000_000));
-            assertThat(updated.getUpdatedAt()).isAfter(LocalDateTime.of(2026, 4, 18, 15, 3, 39, 32_000_000));
+            assertThat(updated.getCreatedAt()).isEqualTo(before.getCreatedAt());
+            assertThat(updated.getUpdatedAt()).isAfterOrEqualTo(before.getUpdatedAt());
 
         }
 

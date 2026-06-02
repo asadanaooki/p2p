@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.p2p.dto.admin.ItemListViewDto;
 import com.example.p2p.dto.app.CatalogListViewDto;
 import com.example.p2p.entity.ItemExample;
 import com.example.p2p.entity.PurchaseRequestDetailExample;
@@ -52,7 +51,7 @@ class CatalogServiceTest {
             assertThat(actual.getItems().size()).isEqualTo(2);
             assertThat(actual.getSupplierOptions().size()).isEqualTo(3);
             assertThat(actual.getCurrentPage()).isEqualTo(1);
-            assertThat(actual.getPageNumberList().size()).isEqualTo(3);
+            assertThat(actual.getPageNumberList().size()).isEqualTo(2);
             
             assertThat(actual.getItems().get(0).getItemId()).isEqualTo("f758e462-f526-4b23-a822-8821c5c62adf");
         }

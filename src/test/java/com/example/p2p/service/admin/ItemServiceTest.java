@@ -2,7 +2,6 @@ package com.example.p2p.service.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -122,6 +121,8 @@ class ItemServiceTest {
 
     @Test
     void update() {
+        Item before = itemMapper.selectByPrimaryKey("a5c1b32a-7b01-49d3-8fef-48e0f39dc31f");
+
         ItemUpsertForm form = new ItemUpsertForm();
         form.setName("test");
         form.setKind(ItemKind.SERVICE);
@@ -142,8 +143,8 @@ class ItemServiceTest {
        assertThat(updated.getSupplierId()).isEqualTo("b4d8e1f7-92ac-4c35-8f21-6a7b8c9d0e1f");
        assertThat(updated.getDescription()).isEqualTo("testdescription");
        assertThat(updated.getIsActive()).isFalse();
-       assertThat(updated.getCreatedAt().toLocalDate()).isEqualTo(LocalDate.of(2026, 3, 24));
-       assertThat(updated.getUpdatedAt().toLocalDate()).isEqualTo(LocalDate.now());
+       assertThat(updated.getCreatedAt()).isEqualTo(before.getCreatedAt());
+       assertThat(updated.getUpdatedAt()).isAfterOrEqualTo(before.getUpdatedAt());
     }
     
     @Test

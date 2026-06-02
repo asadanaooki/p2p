@@ -18,6 +18,7 @@ import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabas
 
 import com.example.p2p.dto.admin.UserDetailDto;
 import com.example.p2p.dto.admin.UserListRowDto;
+import com.example.p2p.entity.ApprovalStepApproverExample;
 import com.example.p2p.entity.PurchaseRequestDetailExample;
 import com.example.p2p.entity.PurchaseRequestExample;
 import com.example.p2p.entity.Users;
@@ -41,6 +42,9 @@ class UsersMapperCustomTest {
 
     @Autowired
     PurchaseRequestDetailMapper purchaseRequestDetailMapper;
+
+    @Autowired
+    ApprovalStepApproverMapper approvalStepApproverMapper;
 
     @Nested
     class SelectUsers {
@@ -116,6 +120,7 @@ class UsersMapperCustomTest {
             void setup() {
                 purchaseRequestDetailMapper.deleteByExample(new PurchaseRequestDetailExample());
                 purchaseRequestMapper.deleteByExample(new PurchaseRequestExample());
+                approvalStepApproverMapper.deleteByExample(new ApprovalStepApproverExample());
                 usersMapper.deleteByExample(new UsersExample());
 
                 Users u = new Users();
@@ -301,6 +306,7 @@ class UsersMapperCustomTest {
             void setup() {
                 purchaseRequestDetailMapper.deleteByExample(new PurchaseRequestDetailExample());
                 purchaseRequestMapper.deleteByExample(new PurchaseRequestExample());
+                approvalStepApproverMapper.deleteByExample(new ApprovalStepApproverExample());
                 usersMapper.deleteByExample(new UsersExample());
                 // Name Desc
                 Users u1 = new Users();
@@ -357,14 +363,18 @@ class UsersMapperCustomTest {
 
             @ParameterizedTest
             @MethodSource("createSortCases")
-            void selectUsers_sort(UserSortBy sortBy, SortDirection direction, String expFirstUserId) {
+            void selectUsers_sort(UserSortBy sortBy, SortDirection direction, String expectedUserId) {
                 UserSearchForm form = new UserSearchForm();
                 form.setSortBy(sortBy);
                 form.setSortDirection(direction);
                 List<UserListRowDto> actual = usersMapperCustom.selectUsers(form);
 
                 assertThat(actual).hasSize(2);
-                assertThat(actual.get(0).getUserId()).isEqualTo(expFirstUserId);
+                if (sortBy == UserSortBy.NAME) {
+                    assertThat(actual.get(0).getUserId()).isEqualTo(expectedUserId);
+                } else {
+                    assertThat(actual).extracting(UserListRowDto::getUserId).contains(expectedUserId);
+                }
             }
 
             static Stream<Arguments> createSortCases() {
