@@ -6,7 +6,6 @@ $(function () {
   let $editingStep = null;
   let $editingApproverCard = null;
 
-
   // ==================================================
   // ステップ関連イベント
   // ==================================================
@@ -56,21 +55,9 @@ $(function () {
 
   // ステップ削除
   $(document).on("click", ".js-delete-step", function () {
-    const $step = $(this).closest(".workflow-step-block");
-    const stepId = $step.data("step-id");
-
-    if (stepId) {
-      // DBに存在するステップは、保存時に削除対象として送るため非表示にする
-      $step.attr("data-deleted", "true");
-      $step.addClass("is-deleted");
-    } else {
-      // 新規追加した未保存ステップはDOMから削除する
-      $step.remove();
-    }
-
+    $(this).closest(".workflow-step-block").remove();
     refreshStepNumbers();
   });
-
 
   // ==================================================
   // 承認者関連イベント
@@ -156,16 +143,49 @@ $(function () {
     }
   });
 
-
   // ==================================================
   // 共通イベント
   // ==================================================
+
+  // 保存時に、現在の画面状態をhidden項目へ変換する
+  $("#workflowForm").on("submit", function () {
+    const $hiddenFields = $("#hiddenFields");
+    $hiddenFields.empty();
+
+    $(".workflow-step-block").each(function (stepIndex) {
+      const $step = $(this);
+      const stepName = $step.find(".step-name").text().trim();
+
+      appendHidden($hiddenFields, `approvalSteps[${stepIndex}].name`, stepName);
+
+      $step.find(".approver-card").each(function (approverIndex) {
+        const $approverCard = $(this);
+
+        appendHidden(
+          $hiddenFields,
+          `approvalSteps[${stepIndex}].approvalStepApprovers[${approverIndex}].userId`,
+          $approverCard.attr("data-user-id"),
+        );
+
+        appendHidden(
+          $hiddenFields,
+          `approvalSteps[${stepIndex}].approvalStepApprovers[${approverIndex}].amountMin`,
+          $approverCard.attr("data-threshold-from"),
+        );
+
+        appendHidden(
+          $hiddenFields,
+          `approvalSteps[${stepIndex}].approvalStepApprovers[${approverIndex}].amountMax`,
+          $approverCard.attr("data-threshold-to"),
+        );
+      });
+    });
+  });
 
   // モーダルを閉じる
   $(".js-close-modal").on("click", function () {
     closeModal();
   });
-
 
   // ==================================================
   // ステップ関連関数
@@ -184,15 +204,12 @@ $(function () {
   }
 
   function refreshStepNumbers() {
-    $(".workflow-step-block")
-      .not(".is-deleted")
-      .each(function (index) {
-        $(this)
-          .find(".step-number")
-          .text(index + 1);
-      });
+    $(".workflow-step-block").each(function (index) {
+      $(this)
+        .find(".step-number")
+        .text(index + 1);
+    });
   }
-
 
   // ==================================================
   // 承認者関連関数
@@ -240,7 +257,9 @@ $(function () {
 
     $approverCard.find(".approver-name").text(approver.userName);
     $approverCard.find(".approver-email").text(approver.email);
-    $approverCard.find(".approver-threshold").text(createThresholdText(approver));
+    $approverCard
+      .find(".approver-threshold")
+      .text(createThresholdText(approver));
   }
 
   function createThresholdText(approver) {
@@ -254,7 +273,6 @@ $(function () {
 
     return thresholdText;
   }
-
 
   // ==================================================
   // モーダル・エラー共通関数

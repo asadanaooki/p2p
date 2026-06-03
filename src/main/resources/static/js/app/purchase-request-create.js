@@ -595,14 +595,6 @@ $(function () {
     });
   }
 
-  function appendHidden($container, name, value) {
-    $("<input>")
-      .attr("type", "hidden")
-      .attr("name", name)
-      .val(value)
-      .appendTo($container);
-  }
-
   // =========================
   // 金額更新
   // =========================

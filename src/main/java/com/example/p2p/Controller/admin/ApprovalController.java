@@ -58,7 +58,8 @@ public class ApprovalController {
 
         redirectAttributes.addFlashAttribute("successMessage",
                 messageSource.getMessage("common.save.success", null, null));
-        return "redirect:/admin/approval-workflow";
+        redirectAttributes.addAttribute("documentType", documentType);
+        return "redirect:/setting/approval/{documentType}/workflow";
     }
     //
     // @GetMapping("/{roleId}")

@@ -47,7 +47,9 @@ $(function () {
     const currentSortDirection = $keywordSortDirection.val();
 
     if (currentSortBy === clickedSortBy) {
-      $keywordSortDirection.val(currentSortDirection === "ASC" ? "DESC" : "ASC");
+      $keywordSortDirection.val(
+        currentSortDirection === "ASC" ? "DESC" : "ASC",
+      );
     } else {
       $keywordSortBy.val(clickedSortBy);
       $keywordSortDirection.val("ASC");
@@ -74,6 +76,14 @@ $(function () {
   });
 });
 
-  function formatNumber(value) {
-    return Number(value).toLocaleString("ja-JP");
-  }
+function formatNumber(value) {
+  return Number(value).toLocaleString("ja-JP");
+}
+
+function appendHidden($container, name, value) {
+  $("<input>")
+    .attr("type", "hidden")
+    .attr("name", name)
+    .val(value)
+    .appendTo($container);
+}

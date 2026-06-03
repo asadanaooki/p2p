@@ -132,7 +132,7 @@
     where u.email = #{email}
   </select>
   
-  <select id="selectUserOptions" resultType="com.example.p2p.dto.admin.UserOptionDto">
+  <select id="selectApprovalUserOptions" resultType="com.example.p2p.dto.admin.UserOptionDto">
     select 
       u.user_id,
       CONCAT_WS(' ', last_name, first_name) as name,

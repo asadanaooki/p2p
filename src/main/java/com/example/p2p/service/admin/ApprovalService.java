@@ -10,6 +10,7 @@ import com.example.p2p.dto.admin.ApprovalWorkflowDto;
 import com.example.p2p.entity.ApprovalStep;
 import com.example.p2p.entity.ApprovalStepApprover;
 import com.example.p2p.entity.ApprovalWorkflow;
+import com.example.p2p.entity.ApprovalWorkflowExample;
 import com.example.p2p.enums.DocumentType;
 import com.example.p2p.form.admin.ApprovalStepApproverCreateForm;
 import com.example.p2p.form.admin.ApprovalStepCreateForm;
@@ -39,13 +40,19 @@ public class ApprovalService {
     public ApprovalWorkflowDto getApprovalWorkflowView(DocumentType documentType) {
         ApprovalWorkflowDto dto = Optional.ofNullable(approvalWorkflowMapperCustom.selectApprovalWorkflow(documentType))
             .orElse(new ApprovalWorkflowDto());
-        dto.setUserOptions(userMapperCustom.selectUserOptions(documentType));
+        dto.setUserOptions(userMapperCustom.selectApprovalUserOptions(documentType));
         
         return dto;
     }
 
     @Transactional
     public void create(DocumentType documentType, ApprovalWorkflowCreateForm form) {
+        // ワークフロー削除
+        ApprovalWorkflowExample ex = new ApprovalWorkflowExample();
+        ex.createCriteria().andDocumentTypeEqualTo(documentType);
+        approvalWorkflowMapper.deleteByExample(ex);
+        
+        // 作成
         String approvalWorkflowId = UUID.randomUUID().toString();
         ApprovalWorkflow workflow = new ApprovalWorkflow();
         workflow.setApprovalWorkflowId(approvalWorkflowId);

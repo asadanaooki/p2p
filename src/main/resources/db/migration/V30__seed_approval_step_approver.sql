@@ -15,7 +15,7 @@ insert into approval_step_approver (
 -- INVOICE：請求書 / 請求内容確認
 ('eeeeeeee-eeee-eeee-eeee-eeeeeeeeee01',
  'cccccccc-cccc-cccc-cccc-ccccccccccc1',
- 'e1ed196d-4f90-45ca-8f07-7fb4ba55ea62',
+ '6ad11f68-24d4-40ad-92a8-2d5855ba8235',
  0,
  null),
 
@@ -29,7 +29,7 @@ insert into approval_step_approver (
 -- PO：発注 / 発注内容確認
 ('ffffffff-ffff-ffff-ffff-ffffffffff01',
  'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb1',
- 'e1ed196d-4f90-45ca-8f07-7fb4ba55ea62',
+ '6ad11f68-24d4-40ad-92a8-2d5855ba8235',
  0,
  null),
 
@@ -51,6 +51,6 @@ insert into approval_step_approver (
 -- 300,000円以上は佐藤も追加
 ('ffffffff-ffff-ffff-ffff-ffffffffff04',
  'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb3',
- 'e1ed196d-4f90-45ca-8f07-7fb4ba55ea62',
+ '6ad11f68-24d4-40ad-92a8-2d5855ba8235',
  300000,
  null);
