@@ -62,7 +62,7 @@ class ApprovalControllerTest {
 
         mockMvc.perform(builder)
             .andExpect(model().attributeHasNoErrors())
-            .andExpect(redirectedUrl("/admin/approval-workflow"));
+            .andExpect(redirectedUrl("/setting/approval/PR/workflow"));
     }
 
     @ParameterizedTest
