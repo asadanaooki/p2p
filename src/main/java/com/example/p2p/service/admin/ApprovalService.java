@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +31,8 @@ import lombok.AllArgsConstructor;
 @Service
 public class ApprovalService {
 
+    private static final Logger logger = LoggerFactory.getLogger(ApprovalService.class);
+
     private ApprovalWorkflowMapper approvalWorkflowMapper;
 
     private ApprovalWorkflowMapperCustom approvalWorkflowMapperCustom;
@@ -40,19 +44,30 @@ public class ApprovalService {
     private UsersMapperCustom userMapperCustom;
 
     public ApprovalWorkflowDto getApprovalWorkflowView(DocumentType documentType) {
+        logger.debug("承認ワークフロー表示情報取得開始");
+
         ApprovalWorkflowDto dto = Optional.ofNullable(approvalWorkflowMapperCustom.selectApprovalWorkflow(documentType))
             .orElse(new ApprovalWorkflowDto());
         dto.setUserOptions(getApprovalUserOptions(documentType));
+
+        logger.debug("承認ワークフロー表示情報取得完了");
         
         return dto;
     }
     
     public List<UserOptionDto> getApprovalUserOptions(DocumentType documentType) {
-        return userMapperCustom.selectApprovalUserOptions(documentType);
+        logger.debug("承認ユーザー選択肢取得開始");
+
+        List<UserOptionDto> userOptions = userMapperCustom.selectApprovalUserOptions(documentType);
+
+        logger.debug("承認ユーザー選択肢取得完了");
+        return userOptions;
     }
 
     @Transactional
     public void create(DocumentType documentType, ApprovalWorkflowCreateForm form) {
+        logger.info("承認ワークフロー登録処理開始");
+
         // ワークフロー削除
         ApprovalWorkflowExample ex = new ApprovalWorkflowExample();
         ex.createCriteria().andDocumentTypeEqualTo(documentType);
@@ -89,6 +104,8 @@ public class ApprovalService {
                 approvalStepApproverMapper.insertSelective(approver);
             }
         }
+
+        logger.info("承認ワークフロー登録処理完了");
     }
 
 }

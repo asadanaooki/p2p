@@ -1,6 +1,8 @@
 package com.example.p2p.controller.admin;
 
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +27,8 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ApprovalController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ApprovalController.class);
+
     private ApprovalService approvalService;
 
     private MessageSource messageSource;
@@ -33,16 +37,23 @@ public class ApprovalController {
 
     @GetMapping("/document")
     public String showApprovalDocumentSelection() {
+        logger.debug("承認対象選択画面表示開始");
+
+        logger.debug("承認対象選択画面表示完了");
         return "admin/approval-document-select";
     }
 
     @GetMapping("/{documentType}/workflow")
     public String showWorkflow(@PathVariable DocumentType documentType,
             @ModelAttribute("form") ApprovalWorkflowCreateForm form, Model model) {
+        logger.debug("承認ワークフロー画面表示開始");
+
         ApprovalWorkflowDto dto = approvalService.getApprovalWorkflowView(documentType);
         modelMapper.map(dto, form);
         model.addAttribute("documentType", documentType);
         model.addAttribute("userOptions", dto.getUserOptions());
+
+        logger.debug("承認ワークフロー画面表示完了");
         return "admin/approval-workflow";
     }
 
@@ -50,7 +61,10 @@ public class ApprovalController {
     public String createWorkflow(@PathVariable DocumentType documentType,
             @Valid @ModelAttribute("form") ApprovalWorkflowCreateForm form, BindingResult bindingResult, Model model,
             RedirectAttributes redirectAttributes) {
+        logger.info("承認ワークフロー登録開始");
+
         if (bindingResult.hasErrors()) {
+            logger.warn("承認ワークフロー登録の入力エラー: errorCount={}", bindingResult.getErrorCount());
             model.addAttribute("documentType", documentType);
             model.addAttribute("userOptions", approvalService.getApprovalUserOptions(documentType));
             return "admin/approval-workflow";
@@ -60,6 +74,8 @@ public class ApprovalController {
         redirectAttributes.addFlashAttribute("successMessage",
                 messageSource.getMessage("common.save.success", null, null));
         redirectAttributes.addAttribute("documentType", documentType);
+
+        logger.info("承認ワークフロー登録成功");
         return "redirect:/setting/approval/{documentType}/workflow";
     }
     //
