@@ -167,6 +167,18 @@ $(function () {
           $approverCard.attr("data-user-id"),
         );
 
+      appendHidden(
+        $hiddenFields,
+        `approvalSteps[${stepIndex}].approvalStepApprovers[${approverIndex}].userName`,
+        $approverCard.attr("data-user-name")
+      );
+
+      appendHidden(
+        $hiddenFields,
+        `approvalSteps[${stepIndex}].approvalStepApprovers[${approverIndex}].email`,
+        $approverCard.attr("data-email")
+      );
+
         appendHidden(
           $hiddenFields,
           `approvalSteps[${stepIndex}].approvalStepApprovers[${approverIndex}].amountMin`,
@@ -251,6 +263,7 @@ $(function () {
 
   function updateApproverCard($approverCard, approver) {
     $approverCard.attr("data-user-id", approver.userId);
+    $approverCard.attr("data-user-name", approver.userName);
     $approverCard.attr("data-email", approver.email);
     $approverCard.attr("data-threshold-from", approver.thresholdFrom);
     $approverCard.attr("data-threshold-to", approver.thresholdTo);
