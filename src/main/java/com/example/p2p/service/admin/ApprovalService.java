@@ -1,5 +1,6 @@
 package com.example.p2p.service.admin;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -7,9 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.p2p.dto.admin.ApprovalWorkflowDto;
+import com.example.p2p.dto.admin.UserOptionDto;
 import com.example.p2p.entity.ApprovalStep;
 import com.example.p2p.entity.ApprovalStepApprover;
 import com.example.p2p.entity.ApprovalWorkflow;
+import com.example.p2p.entity.ApprovalWorkflowExample;
 import com.example.p2p.enums.DocumentType;
 import com.example.p2p.form.admin.ApprovalStepApproverCreateForm;
 import com.example.p2p.form.admin.ApprovalStepCreateForm;
@@ -39,13 +42,23 @@ public class ApprovalService {
     public ApprovalWorkflowDto getApprovalWorkflowView(DocumentType documentType) {
         ApprovalWorkflowDto dto = Optional.ofNullable(approvalWorkflowMapperCustom.selectApprovalWorkflow(documentType))
             .orElse(new ApprovalWorkflowDto());
-        dto.setUserOptions(userMapperCustom.selectUserOptions(documentType));
+        dto.setUserOptions(getApprovalUserOptions(documentType));
         
         return dto;
+    }
+    
+    public List<UserOptionDto> getApprovalUserOptions(DocumentType documentType) {
+        return userMapperCustom.selectApprovalUserOptions(documentType);
     }
 
     @Transactional
     public void create(DocumentType documentType, ApprovalWorkflowCreateForm form) {
+        // ワークフロー削除
+        ApprovalWorkflowExample ex = new ApprovalWorkflowExample();
+        ex.createCriteria().andDocumentTypeEqualTo(documentType);
+        approvalWorkflowMapper.deleteByExample(ex);
+        
+        // 作成
         String approvalWorkflowId = UUID.randomUUID().toString();
         ApprovalWorkflow workflow = new ApprovalWorkflow();
         workflow.setApprovalWorkflowId(approvalWorkflowId);

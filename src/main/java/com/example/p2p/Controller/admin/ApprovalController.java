@@ -52,13 +52,15 @@ public class ApprovalController {
             RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("documentType", documentType);
+            model.addAttribute("userOptions", approvalService.getApprovalUserOptions(documentType));
             return "admin/approval-workflow";
         }
         approvalService.create(documentType, form);
 
         redirectAttributes.addFlashAttribute("successMessage",
                 messageSource.getMessage("common.save.success", null, null));
-        return "redirect:/admin/approval-workflow";
+        redirectAttributes.addAttribute("documentType", documentType);
+        return "redirect:/setting/approval/{documentType}/workflow";
     }
     //
     // @GetMapping("/{roleId}")

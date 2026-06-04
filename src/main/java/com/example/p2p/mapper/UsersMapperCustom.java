@@ -27,5 +27,5 @@ public interface UsersMapperCustom {
     
     AuthenticationUserDto selectAuthenticationUser(String email);
     
-    List<UserOptionDto> selectUserOptions(DocumentType documentType);
+    List<UserOptionDto> selectApprovalUserOptions(DocumentType documentType);
 }

@@ -1,9 +1,35 @@
 $(function () {
+  // ==================================================
+  // 状態管理
+  // ==================================================
   let $currentStep = null;
+  let $editingStep = null;
+  let $editingApproverCard = null;
+
+  // ==================================================
+  // ステップ関連イベント
+  // ==================================================
 
   // ステップ追加モーダルを開く
   $(".js-open-step-modal").on("click", function () {
+    $editingStep = null;
+
+    $("#stepModalTitle").text("ステップを追加");
     $("#stepName").val("");
+
+    hideStepNameError();
+    openModal("#stepModal");
+  });
+
+  // ステップ編集モーダルを開く
+  $(document).on("click", ".js-edit-step", function () {
+    $editingStep = $(this).closest(".workflow-step-block");
+
+    const stepName = $editingStep.find(".step-name").text().trim();
+
+    $("#stepModalTitle").text("ステップを編集");
+    $("#stepName").val(stepName);
+
     hideStepNameError();
     openModal("#stepModal");
   });
@@ -17,17 +43,33 @@ $(function () {
       return;
     }
 
-    addStep(stepName);
-    refreshStepNumbers();
+    if ($editingStep) {
+      updateStep($editingStep, stepName);
+    } else {
+      addStep(stepName);
+      refreshStepNumbers();
+    }
+
     closeModal();
   });
+
+  // ステップ削除
+  $(document).on("click", ".js-delete-step", function () {
+    $(this).closest(".workflow-step-block").remove();
+    refreshStepNumbers();
+  });
+
+  // ==================================================
+  // 承認者関連イベント
+  // ==================================================
 
   // 承認者追加モーダルを開く
   $(document).on("click", ".js-approver-modal", function () {
     $currentStep = $(this).closest(".workflow-step-block");
+    $editingApproverCard = null;
 
+    $("#approverModalTitle").text("承認者を追加");
     $("#approverUserId").val("");
-    $("#selectedApproverEmail").text("");
     $("#thresholdFrom").val("");
     $("#thresholdTo").val("");
 
@@ -35,96 +77,131 @@ $(function () {
     openModal("#approverModal");
   });
 
-  // 承認者を選択した時にメールアドレスを補助表示
-  $("#approverUserId").on("change", function () {
-    const email = $(this).find("option:selected").data("email");
-    $("#selectedApproverEmail").text(email);
+  // 承認者編集モーダルを開く
+  $(document).on("click", ".js-edit-approver", function () {
+    $editingApproverCard = $(this).closest(".approver-card");
+
+    const userId = $editingApproverCard.attr("data-user-id");
+    const thresholdFrom = $editingApproverCard.attr("data-threshold-from");
+    const thresholdTo = $editingApproverCard.attr("data-threshold-to");
+
+    $("#approverModalTitle").text("承認者を編集");
+    $("#approverUserId").val(userId);
+    $("#thresholdFrom").val(thresholdFrom);
+    $("#thresholdTo").val(thresholdTo || "");
+
+    hideApproverErrors();
+    openModal("#approverModal");
   });
 
+  // 承認者追加・編集を確定
   $(".js-save-approver").on("click", function () {
     hideApproverErrors();
 
-    const userId = $("#approverUserId").val();
-    const thresholdFrom = $("#thresholdFrom").val();
+    const approver = getApproverFormValue();
 
     let hasError = false;
 
-    if (userId === "") {
+    if (approver.userId === "") {
       $("#approverUserId").addClass("is-error");
       $("#approverUserError")
         .text("承認者を選択してください。")
         .removeClass("is-hidden");
+
       hasError = true;
     }
 
-    if (thresholdFrom === "") {
+    if (approver.thresholdFrom === "") {
       $("#thresholdFrom").addClass("is-error");
       $("#thresholdFromError")
         .text("承認閾値の最小額を入力してください。")
         .removeClass("is-hidden");
+
       hasError = true;
     }
 
     if (hasError) {
-        return;
+      return;
     }
 
-    const approver = {
-      userId: userId,
-      userName: $("#approverUserId option:selected").text(),
-      email: $("#approverUserId option:selected").data("email"),
-      thresholdFrom: thresholdFrom,
-      thresholdTo: $("#thresholdTo").val(),
-    };
-    addApprover($currentStep, approver);
+    if ($editingApproverCard) {
+      updateApproverCard($editingApproverCard, approver);
+      closeModal();
+    } else {
+      addApprover($currentStep, approver);
+    }
   });
 
-  /**
-   *
-   * @param {JQuery<HTMLElement>} $step
-   * @param {Object} approver
-   */
-  function addApprover($step, approver) {
-    const $approverList = $step.find(".approver-list");
+  // 承認者削除
+  $(document).on("click", ".js-delete-approver", function () {
+    const $approverList = $(this).closest(".approver-list");
 
-    const $approverCard = $(`
-        <div class="approver-card">
-          <button type="button" class="approver-delete-button js-delete-approver">×</button>
+    $(this).closest(".approver-card").remove();
 
-          <div class="approver-name"></div>
-          <div class="approver-email"></div>
-          <div class="approver-threshold"></div>
-        </div>
-        `);
-
-    $approverCard.attr("data-user-id", approver.userId);
-    $approverCard.attr("data-email", approver.email);
-    $approverCard.attr("data-threshold-from", approver.thresholdFrom);
-    $approverCard.attr("data-threshold-to", approver.thresholdTo);
-
-    $approverCard.find(".approver-name").text(approver.userName);
-    $approverCard.find(".approver-email").text(approver.email);
-
-    let thresholdText =
-      "承認閾値：" + Number(approver.thresholdFrom).toLocaleString() + "円 ～";
-    if (approver.thresholdTo !== "") {
-      thresholdText +=
-        " " + Number(approver.thresholdTo).toLocaleString() + "円";
+    if ($approverList.find(".approver-card").length === 0) {
+      $approverList.removeClass("has-approvers");
     }
-    $approverCard.find(".approver-threshold").text(thresholdText);
+  });
 
-    $approverList.append($approverCard);
-    $approverList.addClass("has-approvers");
-    closeModal();
-  }
+  // ==================================================
+  // 共通イベント
+  // ==================================================
 
-  function refreshStepNumbers() {
-    $(".workflow-step-block:visible").each(function (index) {
-      $(this)
-        .find(".step-number")
-        .text(index + 1);
+  // 保存時に、現在の画面状態をhidden項目へ変換する
+  $("#workflowForm").on("submit", function () {
+    const $hiddenFields = $("#hiddenFields");
+    $hiddenFields.empty();
+
+    $(".workflow-step-block").each(function (stepIndex) {
+      const $step = $(this);
+      const stepName = $step.find(".step-name").text().trim();
+
+      appendHidden($hiddenFields, `approvalSteps[${stepIndex}].name`, stepName);
+
+      $step.find(".approver-card").each(function (approverIndex) {
+        const $approverCard = $(this);
+
+        appendHidden(
+          $hiddenFields,
+          `approvalSteps[${stepIndex}].approvalStepApprovers[${approverIndex}].userId`,
+          $approverCard.attr("data-user-id"),
+        );
+
+      appendHidden(
+        $hiddenFields,
+        `approvalSteps[${stepIndex}].approvalStepApprovers[${approverIndex}].userName`,
+        $approverCard.attr("data-user-name")
+      );
+
+      appendHidden(
+        $hiddenFields,
+        `approvalSteps[${stepIndex}].approvalStepApprovers[${approverIndex}].email`,
+        $approverCard.attr("data-email")
+      );
+
+        appendHidden(
+          $hiddenFields,
+          `approvalSteps[${stepIndex}].approvalStepApprovers[${approverIndex}].amountMin`,
+          $approverCard.attr("data-threshold-from"),
+        );
+
+        appendHidden(
+          $hiddenFields,
+          `approvalSteps[${stepIndex}].approvalStepApprovers[${approverIndex}].amountMax`,
+          $approverCard.attr("data-threshold-to"),
+        );
+      });
     });
-  }
+  });
+
+  // モーダルを閉じる
+  $(".js-close-modal").on("click", function () {
+    closeModal();
+  });
+
+  // ==================================================
+  // ステップ関連関数
+  // ==================================================
 
   function addStep(stepName) {
     const $step = $($("#stepTemplate").html());
@@ -134,20 +211,85 @@ $(function () {
     $(".workflow-add-step").before($step);
   }
 
-  $(document).on("click", ".js-delete-approver", function () {
-    const $approverList = $(this).closest(".approver-list");
+  function updateStep($step, stepName) {
+    $step.find(".step-name").text(stepName);
+  }
 
-    $(this).closest(".approver-card").remove();
+  function refreshStepNumbers() {
+    $(".workflow-step-block").each(function (index) {
+      $(this)
+        .find(".step-number")
+        .text(index + 1);
+    });
+  }
 
-    if ($approverList.find(".approver-card").length === 0) {
-        $approverList.removeClass("has-approvers");
-    }
-  })
+  // ==================================================
+  // 承認者関連関数
+  // ==================================================
 
-  // モーダルを閉じる
-  $(".js-close-modal").on("click", function () {
+  function getApproverFormValue() {
+    return {
+      userId: $("#approverUserId").val(),
+      userName: $("#approverUserId option:selected").text(),
+      email: $("#approverUserId option:selected").data("email"),
+      thresholdFrom: $("#thresholdFrom").val(),
+      thresholdTo: $("#thresholdTo").val(),
+    };
+  }
+
+  function addApprover($step, approver) {
+    const $approverList = $step.find(".approver-list");
+
+    const $approverCard = $(`
+      <div class="approver-card">
+        <div class="approver-card-actions">
+          <button type="button" class="approver-card-button js-edit-approver">✎</button>
+          <button type="button" class="approver-card-button danger js-delete-approver">×</button>
+        </div>
+
+        <div class="approver-name"></div>
+        <div class="approver-email"></div>
+        <div class="approver-threshold"></div>
+      </div>
+    `);
+
+    updateApproverCard($approverCard, approver);
+
+    $approverList.append($approverCard);
+    $approverList.addClass("has-approvers");
+
     closeModal();
-  });
+  }
+
+  function updateApproverCard($approverCard, approver) {
+    $approverCard.attr("data-user-id", approver.userId);
+    $approverCard.attr("data-user-name", approver.userName);
+    $approverCard.attr("data-email", approver.email);
+    $approverCard.attr("data-threshold-from", approver.thresholdFrom);
+    $approverCard.attr("data-threshold-to", approver.thresholdTo);
+
+    $approverCard.find(".approver-name").text(approver.userName);
+    $approverCard.find(".approver-email").text(approver.email);
+    $approverCard
+      .find(".approver-threshold")
+      .text(createThresholdText(approver));
+  }
+
+  function createThresholdText(approver) {
+    let thresholdText =
+      "承認閾値：" + Number(approver.thresholdFrom).toLocaleString() + "円 ～";
+
+    if (approver.thresholdTo !== "") {
+      thresholdText +=
+        " " + Number(approver.thresholdTo).toLocaleString() + "円";
+    }
+
+    return thresholdText;
+  }
+
+  // ==================================================
+  // モーダル・エラー共通関数
+  // ==================================================
 
   function openModal(selector) {
     $(selector).removeClass("is-hidden");
@@ -155,6 +297,9 @@ $(function () {
 
   function closeModal() {
     $(".modal-overlay").addClass("is-hidden");
+
+    $editingStep = null;
+    $editingApproverCard = null;
   }
 
   function showStepNameError() {
@@ -173,6 +318,6 @@ $(function () {
     $("#thresholdTo").removeClass("is-error");
 
     $("#approverUserError").addClass("is-hidden");
-    $("#thresholdError").addClass("is-hidden");
+    $("#thresholdFromError").addClass("is-hidden");
   }
 });
