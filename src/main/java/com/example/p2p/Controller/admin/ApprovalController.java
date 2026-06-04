@@ -52,6 +52,7 @@ public class ApprovalController {
             RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("documentType", documentType);
+            model.addAttribute("userOptions", approvalService.getApprovalUserOptions(documentType));
             return "admin/approval-workflow";
         }
         approvalService.create(documentType, form);
