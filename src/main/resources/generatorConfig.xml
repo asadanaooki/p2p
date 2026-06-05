@@ -87,6 +87,14 @@
     </table>
     <table tableName="approval_step"></table>
     <table tableName="approval_step_approver"></table>
+    <table tableName="approval_task">
+      <columnOverride column="document_type" jdbcType="VARCHAR" javaType="com.example.p2p.enums.DocumentType"
+        typeHandler="org.apache.ibatis.type.EnumTypeHandler">
+      </columnOverride>
+      <columnOverride column="status" jdbcType="VARCHAR" javaType="com.example.p2p.enums.ApprovalStatus"
+        typeHandler="org.apache.ibatis.type.EnumTypeHandler">
+      </columnOverride>
+    </table>
 
   </context>
 </generatorConfiguration>
