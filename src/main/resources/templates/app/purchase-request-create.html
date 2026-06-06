@@ -20,6 +20,9 @@
   <main class="pr-form-page pr-create-page">
     <h1 class="pr-page-title">PR作成</h1>
 
+    <div class="pr-approval-task-not-found-message" role="alert" th:if="${approvalTaskNotFoundMessage}"
+      th:text="${approvalTaskNotFoundMessage}"></div>
+
     <form id="purchaseRequestCreateForm" th:action="@{/purchase-request/create}" th:object="${form}" method="post">
       <div class="pr-header-card">
         <div class="pr-form-group">

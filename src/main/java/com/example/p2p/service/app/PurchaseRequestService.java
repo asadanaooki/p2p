@@ -8,16 +8,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
+import com.example.p2p.dto.admin.ApprovalTaskCandidateDto;
 import com.example.p2p.dto.app.CatalogItemSnapDto;
 import com.example.p2p.dto.app.PurchaseRequestCreateViewDto;
 import com.example.p2p.dto.app.PurchaseRequestDetailDto;
 import com.example.p2p.dto.app.PurchaseRequestEditViewDto;
 import com.example.p2p.dto.app.PurchaseRequestListRowDto;
 import com.example.p2p.dto.app.PurchaseRequestListViewDto;
+import com.example.p2p.entity.ApprovalTask;
+import com.example.p2p.entity.ApprovalTaskExample;
 import com.example.p2p.entity.PurchaseRequest;
 import com.example.p2p.entity.PurchaseRequestDetail;
+import com.example.p2p.enums.ApprovalStatus;
 import com.example.p2p.enums.DetailInputType;
+import com.example.p2p.enums.DocumentType;
 import com.example.p2p.enums.PurchaseRequestStatus;
 import com.example.p2p.exception.BusinessException;
 import com.example.p2p.form.app.PurchaseRequestCreateForm;
@@ -26,6 +32,9 @@ import com.example.p2p.form.app.PurchaseRequestDetailEditForm;
 import com.example.p2p.form.app.PurchaseRequestDetailForm;
 import com.example.p2p.form.app.PurchaseRequestEditForm;
 import com.example.p2p.form.app.PurchaseRequestSearchForm;
+import com.example.p2p.mapper.ApprovalTaskMapper;
+import com.example.p2p.mapper.ApprovalTaskMapperCustom;
+import com.example.p2p.mapper.ApprovalWorkflowMapperCustom;
 import com.example.p2p.mapper.ItemMapperCustom;
 import com.example.p2p.mapper.PurchaseRequestDetailMapper;
 import com.example.p2p.mapper.PurchaseRequestDetailMapperCustom;
@@ -61,6 +70,12 @@ public class PurchaseRequestService {
     private SupplierMapperCustom supplierMapperCustom;
 
     private UsersMapperCustom usersMapperCustom;
+
+    private ApprovalWorkflowMapperCustom approvalWorkflowMapperCustom;
+
+    private ApprovalTaskMapperCustom approvalTaskMapperCustom;
+    
+    private ApprovalTaskMapper approvalTaskMapper;
 
     public PurchaseRequestListViewDto searchPurchaseRequests(PurchaseRequestSearchForm form,
             CustomUserDetails loginUser) {
@@ -116,6 +131,9 @@ public class PurchaseRequestService {
         // 明細登録
         purchaseRequestDetailMapperCustom.bulkInsert(details);
 
+        // 承認タスク登録
+        registerApprovalTasks(prId, totalExcludingTax);
+
         logger.info("PR作成処理完了");
 
         return prId;
@@ -154,7 +172,6 @@ public class PurchaseRequestService {
         List<PurchaseRequestDetail> detailEntities = toEditDetailEntities(prId, form.getDetails());
 
         int totalExcludingTax = detailEntities.stream().mapToInt(i -> i.getSubtotalExcludingTax()).sum();
-
         // ヘッダー更新
         PurchaseRequest header = new PurchaseRequest();
         header.setPrId(prId);
@@ -165,7 +182,6 @@ public class PurchaseRequestService {
         if (row == 0) {
             throw new BusinessException();
         }
-
         // 明細更新
         purchaseRequestDetailMapperCustom.bulkUpsert(detailEntities);
 
@@ -174,8 +190,34 @@ public class PurchaseRequestService {
             purchaseRequestDetailMapper.deleteByPrimaryKey(id);
         });
 
+        // 承認タスク削除→登録
+        ApprovalTaskExample ex = new ApprovalTaskExample();
+        ex.createCriteria().andDocumentIdEqualTo(prId).andDocumentTypeEqualTo(DocumentType.PR);
+        approvalTaskMapper.deleteByExample(ex);
+        registerApprovalTasks(prId, totalExcludingTax);
+
         logger.info("PR更新処理完了");
 
+    }
+
+    private void registerApprovalTasks(String prId, int totalExcludingTax) {
+        List<ApprovalTaskCandidateDto> candidates = approvalWorkflowMapperCustom
+            .selectApprovalTaskCandidates(DocumentType.PR, totalExcludingTax);
+        if (CollectionUtils.isEmpty(candidates)) {
+            throw new BusinessException();
+        }
+        
+        List<ApprovalTask> approvalTasks = candidates.stream().map(c -> {
+            ApprovalTask task = new ApprovalTask();
+            task.setDocumentId(prId);
+            task.setStepOrder(c.getStepOrder());
+            task.setUserId(c.getUserId());
+            task.setDocumentType(DocumentType.PR);
+            task.setStatus(ApprovalStatus.PENDING);
+            return task;
+        }).toList();
+
+        approvalTaskMapperCustom.bulkInsert(approvalTasks);
     }
 
     private List<PurchaseRequestDetail> toCreateDetailEntities(String prId,

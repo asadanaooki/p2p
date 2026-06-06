@@ -19,6 +19,7 @@ import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabas
 import com.example.p2p.dto.admin.UserDetailDto;
 import com.example.p2p.dto.admin.UserListRowDto;
 import com.example.p2p.entity.ApprovalStepApproverExample;
+import com.example.p2p.entity.ApprovalTaskExample;
 import com.example.p2p.entity.PurchaseRequestDetailExample;
 import com.example.p2p.entity.PurchaseRequestExample;
 import com.example.p2p.entity.Users;
@@ -45,6 +46,9 @@ class UsersMapperCustomTest {
 
     @Autowired
     ApprovalStepApproverMapper approvalStepApproverMapper;
+    
+    @Autowired
+    ApprovalTaskMapper approvalTaskMapper;
 
     @Nested
     class SelectUsers {
@@ -121,6 +125,7 @@ class UsersMapperCustomTest {
                 purchaseRequestDetailMapper.deleteByExample(new PurchaseRequestDetailExample());
                 purchaseRequestMapper.deleteByExample(new PurchaseRequestExample());
                 approvalStepApproverMapper.deleteByExample(new ApprovalStepApproverExample());
+                approvalTaskMapper.deleteByExample(new ApprovalTaskExample());
                 usersMapper.deleteByExample(new UsersExample());
 
                 Users u = new Users();
@@ -307,6 +312,7 @@ class UsersMapperCustomTest {
                 purchaseRequestDetailMapper.deleteByExample(new PurchaseRequestDetailExample());
                 purchaseRequestMapper.deleteByExample(new PurchaseRequestExample());
                 approvalStepApproverMapper.deleteByExample(new ApprovalStepApproverExample());
+                approvalTaskMapper.deleteByExample(new ApprovalTaskExample());
                 usersMapper.deleteByExample(new UsersExample());
                 // Name Desc
                 Users u1 = new Users();

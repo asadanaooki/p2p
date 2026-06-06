@@ -29,10 +29,11 @@ import com.example.p2p.dto.app.PurchaseRequestDetailLineDto;
 import com.example.p2p.dto.app.PurchaseRequestEditDetailDto;
 import com.example.p2p.dto.app.PurchaseRequestEditViewDto;
 import com.example.p2p.dto.app.PurchaseRequestListViewDto;
+import com.example.p2p.entity.ApprovalTaskExample;
+import com.example.p2p.entity.ApprovalTaskKey;
 import com.example.p2p.entity.PurchaseRequest;
 import com.example.p2p.entity.PurchaseRequestDetail;
 import com.example.p2p.entity.PurchaseRequestDetailExample;
-import com.example.p2p.entity.PurchaseRequestExample;
 import com.example.p2p.enums.DetailInputType;
 import com.example.p2p.enums.ItemKind;
 import com.example.p2p.enums.PurchaseRequestStatus;
@@ -43,6 +44,7 @@ import com.example.p2p.form.app.PurchaseRequestDetailCreateForm;
 import com.example.p2p.form.app.PurchaseRequestDetailEditForm;
 import com.example.p2p.form.app.PurchaseRequestEditForm;
 import com.example.p2p.form.app.PurchaseRequestSearchForm;
+import com.example.p2p.mapper.ApprovalTaskMapper;
 import com.example.p2p.mapper.PurchaseRequestDetailMapper;
 import com.example.p2p.mapper.PurchaseRequestMapper;
 import com.example.p2p.security.CustomUserDetails;
@@ -59,6 +61,9 @@ class PurchaseRequestServiceTest {
 
     @MockitoSpyBean
     PurchaseRequestDetailMapper purchaseRequestDetailMapper;
+    
+    @Autowired
+    ApprovalTaskMapper approvalTaskMapper;
 
     @Test
     void searchPurchaseRequests() {
@@ -190,6 +195,11 @@ class PurchaseRequestServiceTest {
     class Create {
 
         String userId = "6fe99043-cbd1-49c0-96d4-c156c58a8e60";
+        
+        @BeforeEach
+        void setup() {
+            approvalTaskMapper.deleteByExample(new ApprovalTaskExample());
+        }
 
         @Test
         void create_one() {
@@ -243,6 +253,10 @@ class PurchaseRequestServiceTest {
             assertThat(detail.getSubtotalExcludingTax()).isEqualTo(1960);
             assertThat(detail.getCreatedAt()).isNotNull();
             assertThat(detail.getUpdatedAt()).isNotNull();
+            
+            ApprovalTaskExample aex = new ApprovalTaskExample();
+            aex.createCriteria().andDocumentIdEqualTo(fixedPrId.toString());
+            assertThat(approvalTaskMapper.selectByExample(aex)).hasSize(1);
         }
 
         @Test
@@ -310,6 +324,10 @@ class PurchaseRequestServiceTest {
             assertThat(second.getSubtotalExcludingTax()).isEqualTo(5550);
             assertThat(second.getCreatedAt()).isNotNull();
             assertThat(second.getUpdatedAt()).isNotNull();
+            
+            ApprovalTaskExample aex = new ApprovalTaskExample();
+            aex.createCriteria().andDocumentIdEqualTo(fixedPrId.toString());
+            assertThat(approvalTaskMapper.selectByExample(aex)).hasSize(1);
         }
 
     }

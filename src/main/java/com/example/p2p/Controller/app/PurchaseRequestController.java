@@ -122,7 +122,18 @@ public class PurchaseRequestController {
             model.addAttribute("detailErrorMessages", createDetailErrorMessages(bindingResult));
             return "app/purchase-request-create";
         }
-        String prId = purchaseRequestService.create(userId, form);
+
+        String prId = null;
+        try {
+            prId = purchaseRequestService.create(userId, form);
+        }
+        catch (BusinessException e) {
+            logger.warn("PR作成不可");
+            model.addAttribute("view", purchaseRequestService.prepareCreateView(userId));
+            model.addAttribute("approvalTaskNotFoundMessage",
+                    messageSource.getMessage("purchaseRequest.approver.notFound", null, null));
+            return "app/purchase-request-create";
+        }
 
         redirectAttributes.addAttribute("prId", prId);
         redirectAttributes.addFlashAttribute("successMessage",
@@ -153,7 +164,7 @@ public class PurchaseRequestController {
 
     @PreAuthorize("hasAuthority('PR_CREATE')")
     @PostMapping("/{prId}/edit")
-    public String create(@PathVariable @NotBlank String prId,
+    public String update(@PathVariable @NotBlank String prId,
             @Valid @ModelAttribute("form") PurchaseRequestEditForm form, BindingResult bindingResult, Model model,
             RedirectAttributes redirectAttributes) throws ServletException {
         logger.info("PR編集開始");
@@ -173,7 +184,7 @@ public class PurchaseRequestController {
             model.addAttribute("view", purchaseRequestService.prepareEditView(prId));
             model.addAttribute("invalidStatusMessage",
                     messageSource.getMessage("purchaseRequest.edit.notAllowed", null, null));
-            
+
             return "app/purchase-request-edit";
         }
 
