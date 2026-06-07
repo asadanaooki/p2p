@@ -74,7 +74,7 @@ public class PurchaseRequestService {
     private ApprovalWorkflowMapperCustom approvalWorkflowMapperCustom;
 
     private ApprovalTaskMapperCustom approvalTaskMapperCustom;
-    
+
     private ApprovalTaskMapper approvalTaskMapper;
 
     public PurchaseRequestListViewDto searchPurchaseRequests(PurchaseRequestSearchForm form,
@@ -126,6 +126,7 @@ public class PurchaseRequestService {
         header.setTotalAmountExcludingTax(totalExcludingTax);
         header.setStatus(PurchaseRequestStatus.PENDING);
         header.setNote(form.getNote());
+        header.setCurrentStepOrder(1);
         purchaseRequestMapper.insertSelective(header);
 
         // 明細登録
@@ -176,8 +177,10 @@ public class PurchaseRequestService {
         PurchaseRequest header = new PurchaseRequest();
         header.setPrId(prId);
         header.setDueDate(form.getDueDate());
+        header.setStatus(PurchaseRequestStatus.PENDING);
         header.setNote(form.getNote());
         header.setTotalAmountExcludingTax(totalExcludingTax);
+        header.setCurrentStepOrder(1);
         int row = purchaseRequestMapperCustom.updateForEdit(header);
         if (row == 0) {
             throw new BusinessException();
@@ -206,7 +209,7 @@ public class PurchaseRequestService {
         if (CollectionUtils.isEmpty(candidates)) {
             throw new BusinessException();
         }
-        
+
         List<ApprovalTask> approvalTasks = candidates.stream().map(c -> {
             ApprovalTask task = new ApprovalTask();
             task.setDocumentId(prId);

@@ -9,6 +9,7 @@
 <body>
   <main class="page">
     <div class="success-message" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <div class="page-error-message" th:if="${invalidStatusMessage}" th:text="${invalidStatusMessage}"></div>
     <h1 class="page-title">購買申請詳細</h1>
     <a class="edit-button" th:if="${view.canEdit}" th:href="@{/purchase-request/{prId}/edit(prId=${prId})}">編集</a>
     <span th:unless="${view.canEdit}" class="edit-button is-disabled">編集</span>

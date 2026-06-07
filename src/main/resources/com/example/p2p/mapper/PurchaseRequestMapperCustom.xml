@@ -175,7 +175,9 @@
     set
       due_date = #{dueDate},
       note = #{note},
-      total_amount_excluding_tax = #{totalAmountExcludingTax}
+      total_amount_excluding_tax = #{totalAmountExcludingTax},
+      status = #{status},
+      current_step_order = #{currentStepOrder}
     where pr_id = #{prId}
       and status in ('PENDING', 'APPROVED', 'REJECTED')
   </update>

@@ -30,7 +30,6 @@ import com.example.p2p.dto.app.PurchaseRequestEditDetailDto;
 import com.example.p2p.dto.app.PurchaseRequestEditViewDto;
 import com.example.p2p.dto.app.PurchaseRequestListViewDto;
 import com.example.p2p.entity.ApprovalTaskExample;
-import com.example.p2p.entity.ApprovalTaskKey;
 import com.example.p2p.entity.PurchaseRequest;
 import com.example.p2p.entity.PurchaseRequestDetail;
 import com.example.p2p.entity.PurchaseRequestDetailExample;
@@ -45,6 +44,7 @@ import com.example.p2p.form.app.PurchaseRequestDetailEditForm;
 import com.example.p2p.form.app.PurchaseRequestEditForm;
 import com.example.p2p.form.app.PurchaseRequestSearchForm;
 import com.example.p2p.mapper.ApprovalTaskMapper;
+import com.example.p2p.mapper.ApprovalWorkflowMapper;
 import com.example.p2p.mapper.PurchaseRequestDetailMapper;
 import com.example.p2p.mapper.PurchaseRequestMapper;
 import com.example.p2p.security.CustomUserDetails;
@@ -61,9 +61,12 @@ class PurchaseRequestServiceTest {
 
     @MockitoSpyBean
     PurchaseRequestDetailMapper purchaseRequestDetailMapper;
-    
+
     @Autowired
     ApprovalTaskMapper approvalTaskMapper;
+
+    @Autowired
+    ApprovalWorkflowMapper approvalWorkflowMapper;
 
     @Test
     void searchPurchaseRequests() {
@@ -195,7 +198,7 @@ class PurchaseRequestServiceTest {
     class Create {
 
         String userId = "6fe99043-cbd1-49c0-96d4-c156c58a8e60";
-        
+
         @BeforeEach
         void setup() {
             approvalTaskMapper.deleteByExample(new ApprovalTaskExample());
@@ -229,6 +232,7 @@ class PurchaseRequestServiceTest {
             assertThat(actualHeader.getTotalAmountExcludingTax()).isEqualTo(1960);
             assertThat(actualHeader.getStatus()).isEqualTo(PurchaseRequestStatus.PENDING);
             assertThat(actualHeader.getNote()).isEqualTo("testノート");
+            assertThat(actualHeader.getCurrentStepOrder()).isOne();
             assertThat(actualHeader.getCreatedAt()).isNotNull();
             assertThat(actualHeader.getUpdatedAt()).isNotNull();
 
@@ -253,7 +257,7 @@ class PurchaseRequestServiceTest {
             assertThat(detail.getSubtotalExcludingTax()).isEqualTo(1960);
             assertThat(detail.getCreatedAt()).isNotNull();
             assertThat(detail.getUpdatedAt()).isNotNull();
-            
+
             ApprovalTaskExample aex = new ApprovalTaskExample();
             aex.createCriteria().andDocumentIdEqualTo(fixedPrId.toString());
             assertThat(approvalTaskMapper.selectByExample(aex)).hasSize(1);
@@ -324,10 +328,28 @@ class PurchaseRequestServiceTest {
             assertThat(second.getSubtotalExcludingTax()).isEqualTo(5550);
             assertThat(second.getCreatedAt()).isNotNull();
             assertThat(second.getUpdatedAt()).isNotNull();
-            
+
             ApprovalTaskExample aex = new ApprovalTaskExample();
             aex.createCriteria().andDocumentIdEqualTo(fixedPrId.toString());
             assertThat(approvalTaskMapper.selectByExample(aex)).hasSize(1);
+        }
+
+        @Test
+        void create_noCandidate() {
+            approvalWorkflowMapper.deleteByPrimaryKey("11111111-1111-1111-1111-111111111111");
+
+            PurchaseRequestCreateForm form = new PurchaseRequestCreateForm();
+            form.setDueDate(LocalDate.of(2027, 3, 2));
+            form.setNote("testノート");
+
+            PurchaseRequestDetailCreateForm prdf = new PurchaseRequestDetailCreateForm();
+            prdf.setDetailInputType(DetailInputType.CATALOG);
+            prdf.setItemId("1bd0d872-69b1-4999-b522-ac202c481662");
+            prdf.setQuantity(2);
+            form.setDetails(List.of(prdf));
+
+            assertThatThrownBy(() -> purchaseRequestService.create(userId, form)).isInstanceOf(BusinessException.class);
+
         }
 
     }
@@ -428,6 +450,7 @@ class PurchaseRequestServiceTest {
             pr.setStatus(status);
             pr.setNote("test2");
             pr.setDueDate(LocalDate.of(2026, 5, 2));
+            pr.setCurrentStepOrder(2);
             purchaseRequestMapper.updateByPrimaryKeySelective(pr);
 
             PurchaseRequestEditForm form = new PurchaseRequestEditForm();
@@ -450,6 +473,8 @@ class PurchaseRequestServiceTest {
             PurchaseRequest actual = purchaseRequestMapper.selectByPrimaryKey(prId);
             assertThat(actual.getNote()).isNull();
             assertThat(actual.getDueDate()).isNull();
+            assertThat(actual.getStatus()).isEqualTo(PurchaseRequestStatus.PENDING);
+            assertThat(actual.getCurrentStepOrder()).isOne();
 
         }
 
@@ -481,6 +506,7 @@ class PurchaseRequestServiceTest {
             assertThat(updatedHeader.getDueDate()).isEqualTo(LocalDate.of(2026, 5, 12));
             assertThat(updatedHeader.getTotalAmountExcludingTax()).isEqualTo(1360);
             assertThat(updatedHeader.getStatus()).isEqualTo(PurchaseRequestStatus.PENDING);
+            assertThat(updatedHeader.getCurrentStepOrder()).isOne();
             assertThat(updatedHeader.getCreatedAt()).isNotNull();
             assertThat(updatedHeader.getUpdatedAt()).isNotNull();
             assertThat(updatedHeader.getNote()).isEqualTo("備考");
@@ -504,6 +530,11 @@ class PurchaseRequestServiceTest {
 
         @Test
         void update_upsert() {
+            PurchaseRequest approvedRequest = new PurchaseRequest();
+            approvedRequest.setPrId("6b2c5959-233f-4b54-8a9b-98f4a1b13c40");
+            approvedRequest.setStatus(PurchaseRequestStatus.APPROVED);
+            purchaseRequestMapper.updateByPrimaryKeySelective(approvedRequest);
+            
             PurchaseRequestDetail detail = new PurchaseRequestDetail();
 
             detail.setPrDetailId("ebe68ea0-daaf-41ff-99e3-8ab109c20eae");
@@ -597,6 +628,14 @@ class PurchaseRequestServiceTest {
             assertThat(third.getSnapKind()).isEqualTo(ItemKind.GOODS);
             assertThat(third.getQuantity()).isEqualTo(4);
             assertThat(third.getSubtotalExcludingTax()).isEqualTo(2800);
+            
+            PurchaseRequest pr = purchaseRequestMapper.selectByPrimaryKey("6b2c5959-233f-4b54-8a9b-98f4a1b13c40");
+            assertThat(pr.getStatus()).isEqualTo(PurchaseRequestStatus.PENDING);
+            assertThat(pr.getCurrentStepOrder()).isOne();
+
+            ApprovalTaskExample aex = new ApprovalTaskExample();
+            aex.createCriteria().andDocumentIdEqualTo("6b2c5959-233f-4b54-8a9b-98f4a1b13c40");
+            assertThat(approvalTaskMapper.selectByExample(aex)).hasSize(1);
 
         }
 
