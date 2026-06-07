@@ -23,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.p2p.dto.app.ApprovalProgressRowDto;
 import com.example.p2p.dto.app.AuthenticationUserDto;
 import com.example.p2p.dto.app.PurchaseRequestDetailDto;
 import com.example.p2p.dto.app.PurchaseRequestDetailLineDto;
@@ -33,6 +34,7 @@ import com.example.p2p.entity.ApprovalTaskExample;
 import com.example.p2p.entity.PurchaseRequest;
 import com.example.p2p.entity.PurchaseRequestDetail;
 import com.example.p2p.entity.PurchaseRequestDetailExample;
+import com.example.p2p.enums.ApprovalStatus;
 import com.example.p2p.enums.DetailInputType;
 import com.example.p2p.enums.ItemKind;
 import com.example.p2p.enums.PurchaseRequestStatus;
@@ -132,6 +134,9 @@ class PurchaseRequestServiceTest {
             .getPurchaseRequestDetail("6b2c5959-233f-4b54-8a9b-98f4a1b13c40", loginUser);
 
         assertThat(actual.getDetails()).hasSize(2);
+
+        assertThat(actual.getApprovalProgress()).hasSize(1);
+        assertThat(actual.getCurrentStepOrder()).isOne();
     }
 
     @Test
@@ -177,6 +182,7 @@ class PurchaseRequestServiceTest {
         assertThat(actual.getCreatedAt()).isEqualTo(LocalDate.of(2026, 4, 21));
 
         assertThat(actual.getDetails()).hasSize(3);
+
         assertThat(actual.getDetails()).extracting(PurchaseRequestDetailLineDto::getItemName)
             .containsExactlyInAnyOrder("24インチ液晶モニター", "A4コピー用紙 500枚", "油性ボールペン 黒 10本セット");
         PurchaseRequestDetailLineDto first = actual.getDetails()
@@ -192,6 +198,17 @@ class PurchaseRequestServiceTest {
         assertThat(first.getUnitPrice()).isEqualTo(16800);
         assertThat(first.getQuantity()).isEqualTo(2);
         assertThat(first.getSubtotalExcludingTax()).isEqualTo(33600);
+
+        assertThat(actual.getApprovalProgress()).hasSize(1);
+        assertThat(actual.getCurrentStepOrder()).isOne();
+
+        ApprovalProgressRowDto dto = actual.getApprovalProgress().get(0);
+        assertThat(dto.getStepOrder()).isOne();
+        assertThat(dto.getStepName()).isEqualTo("1段階目承認");
+        assertThat(dto.getUserName()).isEqualTo("山田 太郎");
+        assertThat(dto.getStatus()).isEqualTo(ApprovalStatus.PENDING);
+        assertThat(dto.getComment()).isNull();
+        assertThat(dto.getActedAt()).isNull();
     }
 
     @Nested
@@ -534,7 +551,7 @@ class PurchaseRequestServiceTest {
             approvedRequest.setPrId("6b2c5959-233f-4b54-8a9b-98f4a1b13c40");
             approvedRequest.setStatus(PurchaseRequestStatus.APPROVED);
             purchaseRequestMapper.updateByPrimaryKeySelective(approvedRequest);
-            
+
             PurchaseRequestDetail detail = new PurchaseRequestDetail();
 
             detail.setPrDetailId("ebe68ea0-daaf-41ff-99e3-8ab109c20eae");
@@ -628,7 +645,7 @@ class PurchaseRequestServiceTest {
             assertThat(third.getSnapKind()).isEqualTo(ItemKind.GOODS);
             assertThat(third.getQuantity()).isEqualTo(4);
             assertThat(third.getSubtotalExcludingTax()).isEqualTo(2800);
-            
+
             PurchaseRequest pr = purchaseRequestMapper.selectByPrimaryKey("6b2c5959-233f-4b54-8a9b-98f4a1b13c40");
             assertThat(pr.getStatus()).isEqualTo(PurchaseRequestStatus.PENDING);
             assertThat(pr.getCurrentStepOrder()).isOne();

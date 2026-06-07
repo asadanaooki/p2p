@@ -46,6 +46,7 @@
   <select id="selectApprovalTaskCandidates" resultType="com.example.p2p.dto.admin.ApprovalTaskCandidateDto">
     select 
       ast.step_order,
+      ast.name as step_name,
       asa.user_id
     from approval_workflow aw
     join approval_step ast

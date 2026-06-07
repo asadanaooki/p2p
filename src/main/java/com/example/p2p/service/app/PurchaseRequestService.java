@@ -102,6 +102,9 @@ public class PurchaseRequestService {
         dto.setDetails(purchaseRequestDetailMapperCustom.selectPurchaseRequestDetailLines(prId,
                 loginUser.getPrViewScope(), loginUser.getUsername()));
 
+        dto.setApprovalProgress(approvalTaskMapperCustom.selectApprovalProgress(prId));
+        dto.setCurrentStepOrder(purchaseRequestMapper.selectByPrimaryKey(prId).getCurrentStepOrder());
+
         logger.debug("PR詳細取得完了");
 
         return dto;
@@ -217,6 +220,7 @@ public class PurchaseRequestService {
             task.setUserId(c.getUserId());
             task.setDocumentType(DocumentType.PR);
             task.setStatus(ApprovalStatus.PENDING);
+            task.setStepName(prId);
             return task;
         }).toList();
 

@@ -1,0 +1,1 @@
+alter table approval_task add column acted_at timestamp;

@@ -27,6 +27,11 @@ public class PurchaseRequestDetailDto {
 
     // 明細
     private List<PurchaseRequestDetailLineDto> details;
+    
+    // 承認状況
+    private List<ApprovalProgressRowDto> approvalProgress;
+    
+    private int currentStepOrder;
 
     public int getTaxAmount() {
         return totalAmountExcludingTax * 10 / 100;

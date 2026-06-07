@@ -7,5 +7,7 @@ public class ApprovalTaskCandidateDto {
 
     private int stepOrder;
     
+    private String stepName;
+    
     private String userId;
 }
