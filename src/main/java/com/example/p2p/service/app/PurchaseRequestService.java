@@ -102,7 +102,7 @@ public class PurchaseRequestService {
         dto.setDetails(purchaseRequestDetailMapperCustom.selectPurchaseRequestDetailLines(prId,
                 loginUser.getPrViewScope(), loginUser.getUsername()));
 
-        dto.setApprovalProgress(approvalTaskMapperCustom.selectApprovalProgress(prId));
+        dto.setApprovalProgressSteps(approvalTaskMapperCustom.selectApprovalProgressSteps(prId));
         dto.setCurrentStepOrder(purchaseRequestMapper.selectByPrimaryKey(prId).getCurrentStepOrder());
 
         logger.debug("PR詳細取得完了");

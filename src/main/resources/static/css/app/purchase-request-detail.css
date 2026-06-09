@@ -142,3 +142,20 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.approval-title {
+  font-size: 14px;
+}
+
+.approval-step-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #adb5bd;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.approval-step-dot.is-current {
+  background-color: #ffc107;
+}

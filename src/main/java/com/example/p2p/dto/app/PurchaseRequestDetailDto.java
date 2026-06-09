@@ -29,7 +29,7 @@ public class PurchaseRequestDetailDto {
     private List<PurchaseRequestDetailLineDto> details;
     
     // 承認状況
-    private List<ApprovalProgressRowDto> approvalProgress;
+    private List<ApprovalProgressStepDto> approvalProgressSteps;
     
     private int currentStepOrder;
 

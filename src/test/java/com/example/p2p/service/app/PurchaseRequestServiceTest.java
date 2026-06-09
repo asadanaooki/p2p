@@ -23,7 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.p2p.dto.app.ApprovalProgressRowDto;
+import com.example.p2p.dto.app.ApprovalProgressStepDto;
 import com.example.p2p.dto.app.AuthenticationUserDto;
 import com.example.p2p.dto.app.PurchaseRequestDetailDto;
 import com.example.p2p.dto.app.PurchaseRequestDetailLineDto;
@@ -135,7 +135,8 @@ class PurchaseRequestServiceTest {
 
         assertThat(actual.getDetails()).hasSize(2);
 
-        assertThat(actual.getApprovalProgress()).hasSize(1);
+        assertThat(actual.getApprovalProgressSteps()).hasSize(1);
+        assertThat(actual.getApprovalProgressSteps().get(0).getApprovalProgressApprovers()).hasSize(1);
         assertThat(actual.getCurrentStepOrder()).isOne();
     }
 
@@ -199,16 +200,19 @@ class PurchaseRequestServiceTest {
         assertThat(first.getQuantity()).isEqualTo(2);
         assertThat(first.getSubtotalExcludingTax()).isEqualTo(33600);
 
-        assertThat(actual.getApprovalProgress()).hasSize(1);
+        assertThat(actual.getApprovalProgressSteps()).hasSize(1);
         assertThat(actual.getCurrentStepOrder()).isOne();
 
-        ApprovalProgressRowDto dto = actual.getApprovalProgress().get(0);
+        ApprovalProgressStepDto dto = actual.getApprovalProgressSteps().get(0);
         assertThat(dto.getStepOrder()).isOne();
         assertThat(dto.getStepName()).isEqualTo("1段階目承認");
-        assertThat(dto.getUserName()).isEqualTo("山田 太郎");
-        assertThat(dto.getStatus()).isEqualTo(ApprovalStatus.PENDING);
-        assertThat(dto.getComment()).isNull();
-        assertThat(dto.getActedAt()).isNull();
+        assertThat(dto.getApprovalProgressApprovers()).singleElement().satisfies(s -> {
+            assertThat(s.getUserName()).isEqualTo("山田 太郎");
+            assertThat(s.getStatus()).isEqualTo(ApprovalStatus.PENDING);
+            assertThat(s.getComment()).isNull();
+            assertThat(s.getActedAt()).isNull();
+        });
+
     }
 
     @Nested

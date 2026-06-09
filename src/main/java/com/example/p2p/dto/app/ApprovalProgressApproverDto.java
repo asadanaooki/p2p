@@ -7,12 +7,11 @@ import com.example.p2p.enums.ApprovalStatus;
 import lombok.Data;
 
 @Data
-public class ApprovalProgressRowDto {
+public class ApprovalProgressApproverDto {
     
-    private int stepOrder;
-
-    private String stepName;
-
+    // Mybatisマッピング用
+    private String userId;
+    
     private String userName;
 
     private ApprovalStatus status;
