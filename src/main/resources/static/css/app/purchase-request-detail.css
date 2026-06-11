@@ -159,3 +159,27 @@
 .approval-step-dot.is-current {
   background-color: #ffc107;
 }
+
+.approval-progress-line {
+  display: grid;
+  column-gap: 16px;
+  align-items: center;
+}
+
+.approval-step-line {
+  grid-template-columns: 260px auto;
+}
+
+.approval-approver-line {
+  grid-template-columns: 120px auto;
+  padding-left: 30px;
+}
+
+.approval-status-area {
+  display: flex;
+  align-items: center;
+}
+
+.approval-approver-status {
+  font-size: 13px;
+}

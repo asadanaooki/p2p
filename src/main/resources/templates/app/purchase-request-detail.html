@@ -88,33 +88,56 @@
         <div class="info-value" th:text="${view.note}"></div>
       </div>
 
-      <div class="card mt-4">
-        <div class="card-header p-0">
-          <h2 class="h6 mb-0 fw-normal approval-title">承認状況</h2>
-        </div>
+      <!-- 承認状況 -->
+      <div class="mt-4">
+        <h2 class="h6 mb-1 fw-normal approval-title">承認状況</h2>
 
-        <div class="card-body">
+        <div class="pt-2 ps-2">
           <!-- ステップ単位 -->
-          <div class="border rounded mb-3" th:each="step : ${view.approvalProgressSteps}">
+          <div class="mb-3" th:each="step : ${view.approvalProgressSteps}">
             <!-- ステップ見出し -->
-            <div class="d-flex align-items-center gap-3">
-              <div class="d-flex align-items-center gap-2">
+            <div class="approval-progress-line approval-step-line border-bottom pb-2 mb-1">
+              <div class="approval-name-area d-flex align-items-center gap-2">
                 <span class="approval-step-dot"
                   th:classappend="${step.stepOrder == view.currentStepOrder} ? 'is-current' : ''"></span>
-                <div class="fw-semibold" th:text="${step.stepName}"></div>
+                <div class="fw-normal" th:text="${step.stepName}"></div>
               </div>
 
-              <span th:if="${step.stepOrder &lt; view.currentStepOrder}"
-                class="badge bg-success-subtle text-success-emphasis d-inline-flex align-items-center">承認済み</span>
-              <span th:if="${step.stepOrder == view.currentStepOrder}"
-                class="badge bg-warning-subtle text-warning-emphasis d-inline-flex align-items-center">現在承認待ち</span>
-              <span th:if="${step.stepOrder &gt; view.currentStepOrder}"
-                class="badge bg-secondary-subtle text-secondary-emphasis d-inline-flex align-items-center">未処理</span>
-
+              <div class="approval-status-area">
+                <span th:if="${step.stepOrder &lt; view.currentStepOrder}"
+                  class="badge bg-success-subtle text-success-emphasis d-inline-flex align-items-center">承認済み</span>
+                <span th:if="${step.stepOrder == view.currentStepOrder}"
+                  class="badge bg-warning-subtle text-warning-emphasis d-inline-flex align-items-center">現在承認待ち</span>
+                <span th:if="${step.stepOrder &gt; view.currentStepOrder}"
+                  class="badge bg-secondary-subtle text-secondary-emphasis d-inline-flex align-items-center">未処理</span>
+              </div>
             </div>
 
-          </div>
+            <!-- 承認者一覧 -->
+            <div class="approval-progress-line approval-approver-line"
+              th:each="approver : ${step.approvalProgressApprovers}">
+              <div>
+                <div class="fw-normal" th:text="${approver.userName}"></div>
+                <div class="small text-muted mt-1" th:if="${approver.comment != null}" th:text="${approver.comment}">
+                </div>
+              </div>
 
+              <div class="approval-approver-status">
+                <span th:if="${approver.status.toString().equals('APPROVED')}">承認済み</span>
+                <span th:if="${approver.status.toString().equals('REJECTED')}">否認</span>
+                <span
+                  th:if=" ${approver.status.toString().equals('PENDING') and step.stepOrder == view.currentStepOrder}">承認待ち</span>
+                <span
+                  th:if="${approver.status.toString().equals('PENDING') and step.stepOrder &gt; view.currentStepOrder}">未処理</span>
+                <span
+                  th:if="${approver.status.toString().equals('PENDING') and step.stepOrder &lt; view.currentStepOrder}">承認不要</span>
+
+                <span class="small text-muted ms-1" th:if="${approver.actedAt != null}">
+                  (<span th:text="${#temporals.format(approver.actedAt, 'yyyy/M/d')}"></span>)
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

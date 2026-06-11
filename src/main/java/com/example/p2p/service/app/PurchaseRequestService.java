@@ -220,7 +220,7 @@ public class PurchaseRequestService {
             task.setUserId(c.getUserId());
             task.setDocumentType(DocumentType.PR);
             task.setStatus(ApprovalStatus.PENDING);
-            task.setStepName(prId);
+            task.setStepName(c.getStepName());
             return task;
         }).toList();
 
