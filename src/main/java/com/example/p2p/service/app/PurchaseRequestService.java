@@ -206,6 +206,29 @@ public class PurchaseRequestService {
 
     }
 
+    @Transactional
+    public void cancel(String prId, String reason) {
+        PurchaseRequestStatus currentStatus = purchaseRequestMapper.selectByPrimaryKey(prId).getStatus();
+        // TODO:
+        // 将来的に完了を最後のドキュメントから順にキャンセル可能にするかも？
+        if (currentStatus == PurchaseRequestStatus.CANCELLED || currentStatus == PurchaseRequestStatus.COMPLETED) {
+            throw new BusinessException();
+        }
+        // TODO:
+        // 承認済みで関連ドキュメントあるとNG
+        
+        PurchaseRequest update = new PurchaseRequest();
+        update.setPrId(prId);
+        update.setStatus(PurchaseRequestStatus.CANCELLED);
+        update.setNote(reason);
+        purchaseRequestMapper.updateByPrimaryKeySelective(update);
+        
+        ApprovalTaskExample ex = new ApprovalTaskExample();
+        ex.createCriteria().andDocumentIdEqualTo(prId);
+        approvalTaskMapper.deleteByExample(ex);
+
+    }
+
     private void registerApprovalTasks(String prId, int totalExcludingTax) {
         List<ApprovalTaskCandidateDto> candidates = approvalWorkflowMapperCustom
             .selectApprovalTaskCandidates(DocumentType.PR, totalExcludingTax);
