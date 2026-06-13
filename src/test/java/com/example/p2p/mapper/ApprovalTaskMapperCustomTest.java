@@ -27,6 +27,8 @@ class ApprovalTaskMapperCustomTest {
     
     @Test
     void bulkInsert() {
+        approvalTaskMapper.deleteByExample(new ApprovalTaskExample());
+        
         ApprovalTask step1Task = new ApprovalTask();
         step1Task.setDocumentId("6b2c5959-233f-4b54-8a9b-98f4a1b13c40");
         step1Task.setStepOrder(1);
@@ -34,6 +36,7 @@ class ApprovalTaskMapperCustomTest {
         step1Task.setDocumentType(DocumentType.PR);
         step1Task.setStatus(ApprovalStatus.PENDING);
         step1Task.setComment("testコメント");
+        step1Task.setStepName("aaaa");
         
         ApprovalTask step2Task = new ApprovalTask();
         step2Task.setDocumentId("6b2c5959-233f-4b54-8a9b-98f4a1b13c40");
@@ -41,6 +44,7 @@ class ApprovalTaskMapperCustomTest {
         step2Task.setUserId("36a1d5d9-15b8-45d5-8ae7-607244bbe36e");
         step2Task.setDocumentType(DocumentType.PR);
         step2Task.setStatus(ApprovalStatus.PENDING);
+        step2Task.setStepName("aaaa");
         
         approvalTaskMapperCustom.bulkInsert(List.of(step1Task, step2Task));
         
@@ -57,6 +61,7 @@ class ApprovalTaskMapperCustomTest {
         assertThat(saveStep1Task.getDocumentType()).isEqualTo(DocumentType.PR);
         assertThat(saveStep1Task.getStatus()).isEqualTo(ApprovalStatus.PENDING);
         assertThat(saveStep1Task.getComment()).isEqualTo("testコメント");
+        assertThat(saveStep1Task.getStepName()).isEqualTo("aaaa");
         assertThat(saveStep1Task.getCreatedAt()).isNotNull();
         assertThat(saveStep1Task.getUpdatedAt()).isNotNull();
         

@@ -208,10 +208,13 @@ public class PurchaseRequestService {
 
     @Transactional
     public void cancel(String prId, String reason) {
+        logger.info("PRキャンセル処理開始");
+
         PurchaseRequestStatus currentStatus = purchaseRequestMapper.selectByPrimaryKey(prId).getStatus();
         // TODO:
         // 将来的に完了を最後のドキュメントから順にキャンセル可能にするかも？
         if (currentStatus == PurchaseRequestStatus.CANCELLED || currentStatus == PurchaseRequestStatus.COMPLETED) {
+            logger.warn("PRキャンセル不可");
             throw new BusinessException();
         }
         // TODO:
@@ -224,8 +227,10 @@ public class PurchaseRequestService {
         purchaseRequestMapper.updateByPrimaryKeySelective(update);
         
         ApprovalTaskExample ex = new ApprovalTaskExample();
-        ex.createCriteria().andDocumentIdEqualTo(prId);
+        ex.createCriteria().andDocumentIdEqualTo(prId).andDocumentTypeEqualTo(DocumentType.PR);
         approvalTaskMapper.deleteByExample(ex);
+
+        logger.info("PRキャンセル処理完了");
 
     }
 

@@ -1,15 +1,20 @@
 package com.example.p2p.controller.app;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,11 +27,12 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import com.example.p2p.dto.app.PurchaseRequestCreateViewDto;
+import com.example.p2p.exception.BusinessException;
 import com.example.p2p.service.app.PurchaseRequestService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@WithMockUser(authorities = {"PR_CREATE"})
+@WithMockUser(authorities = { "PR_CREATE" })
 class PurchaseRequestControllerTest {
 
     @Autowired
@@ -61,25 +67,39 @@ class PurchaseRequestControllerTest {
             .getModel()
             .get("detailErrorMessages");
         assertThat(errorMessages).hasSize(3);
-        
+
         List<String> firstLineMessages = errorMessages.get(0);
         assertThat(firstLineMessages).singleElement().isEqualTo("明細情報が不正です。");
-        
+
         List<String> secondLineMessages = errorMessages.get(1);
-        assertThat(secondLineMessages).containsExactly(
-                "品名は100文字以内で入力してください。",
-                "種別を選択してください。",
-                "仕入先情報が不正です。",
-                "仕入先名は100文字以内で入力してください。",
-                "単位情報が不正です。",
-                "単位名は50文字以内で入力してください。",
-                "単価は0円以上で入力してください。",
-                "数量は1以上で入力してください。"
-                );
-        
+        assertThat(secondLineMessages).containsExactly("品名は100文字以内で入力してください。", "種別を選択してください。", "仕入先情報が不正です。",
+                "仕入先名は100文字以内で入力してください。", "単位情報が不正です。", "単位名は50文字以内で入力してください。", "単価は0円以上で入力してください。",
+                "数量は1以上で入力してください。");
+
         List<String> thirdLineMessages = errorMessages.get(2);
         assertThat(thirdLineMessages).singleElement().isEqualTo("カタログ明細のアイテム情報が不正です。");
-        
+
+    }
+
+    @Nested
+    class Cancel {
+
+        @Test
+        void cancel_failure() throws Exception {
+            doThrow(BusinessException.class).when(purchaseRequestService).cancel(anyString(), any());
+            
+            mockMvc.perform(post("/purchase-request/{prId}/void", "test").with(csrf()))
+            .andExpect(flash().attributeExists("errorMessage"))
+            .andExpect(redirectedUrl("/purchase-request/test"));
+        }
+
+        @Test
+        void cancel_success() throws Exception {
+            mockMvc.perform(post("/purchase-request/{prId}/void", "test").with(csrf()))
+            .andExpect(flash().attributeExists("successMessage"))
+            .andExpect(redirectedUrl("/purchase-request/test"));
+        }
+
     }
 
 }

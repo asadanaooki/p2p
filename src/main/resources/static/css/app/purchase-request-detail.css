@@ -138,6 +138,11 @@
   color: #243534;
 }
 
+.page-actions {
+  display: flex;
+  gap: 8px;
+}
+
 .edit-button.is-disabled {
   opacity: 0.5;
   cursor: not-allowed;

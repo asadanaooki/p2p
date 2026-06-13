@@ -17,6 +17,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -670,6 +672,46 @@ class PurchaseRequestServiceTest {
             PurchaseRequestDetail actual = purchaseRequestDetailMapper
                 .selectByPrimaryKey("4d57ee8a-4dc6-4155-9f4b-9ee7985d4e21");
             assertThat(actual).isNull();
+        }
+
+    }
+
+    @Nested
+    class Cancel {
+
+        String prId = "88bfbcf6-2be6-4d31-8a46-155a7b58ab93";
+
+        @ParameterizedTest
+        @EnumSource(value = PurchaseRequestStatus.class, names = { "CANCELLED", "COMPLETED" })
+        void cancel_statusInvalid(PurchaseRequestStatus status) {
+            PurchaseRequest pr = new PurchaseRequest();
+            pr.setStatus(status);
+            pr.setPrId(prId);
+            purchaseRequestMapper.updateByPrimaryKeySelective(pr);
+            
+            assertThatThrownBy(() -> purchaseRequestService.cancel(prId, null)).isInstanceOf(BusinessException.class);
+        }
+
+        @ParameterizedTest
+        @NullSource
+        @ValueSource(strings = { "cancelにしました" })
+        void cancel_success(String reason) {
+            purchaseRequestService.cancel(prId, reason);
+
+            ApprovalTaskExample ex = new ApprovalTaskExample();
+            ex.createCriteria().andDocumentIdEqualTo(prId);
+            assertThat(approvalTaskMapper.selectByExample(ex)).isEmpty();
+            
+           PurchaseRequest pr = purchaseRequestMapper.selectByPrimaryKey(prId);
+           assertThat(pr.getDisplayNumber()).isEqualTo(1);
+           assertThat(pr.getRequesterUserId()).isEqualTo("169f1e17-619f-45bf-b6dc-8faed08c404c");
+           assertThat(pr.getDueDate()).isNull();
+           assertThat(pr.getTotalAmountExcludingTax()).isEqualTo(6800);
+           assertThat(pr.getStatus()).isEqualTo(PurchaseRequestStatus.CANCELLED);
+           assertThat(pr.getCreatedAt()).isNotNull();
+           assertThat(pr.getUpdatedAt()).isNotNull();
+           assertThat(pr.getNote()).isEqualTo(reason);
+           assertThat(pr.getCurrentStepOrder()).isOne();
         }
 
     }

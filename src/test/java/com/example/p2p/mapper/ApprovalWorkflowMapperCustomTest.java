@@ -74,7 +74,7 @@ class ApprovalWorkflowMapperCustomTest {
             assertThat(actual).hasSize(2);
             assertThat(actual.stream()
                 .filter(d -> d.getUserId().equals("36a1d5d9-15b8-45d5-8ae7-607244bbe36e") && d.getStepOrder() == 2
-                        && d.getStepName().equals("1段階目承認"))
+                        && d.getStepName().equals("支払承認"))
                 .count()).isOne();
         }
 
