@@ -2,12 +2,16 @@ package com.example.p2p.service.app;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.p2p.entity.ApprovalTask;
@@ -35,7 +39,7 @@ class ApprovalActionServiceTest {
     @Autowired
     UsersMapper usersMapper;
 
-    @Autowired
+    @MockitoSpyBean
     PurchaseRequestMapper purchaseRequestMapper;
 
     @BeforeEach
@@ -80,8 +84,53 @@ class ApprovalActionServiceTest {
         String prId = "88bfbcf6-2be6-4d31-8a46-155a7b58ab93";
 
         String userId = "169f1e17-619f-45bf-b6dc-8faed08c404c";
+
+        @Test
+        void approve_sameStepNotFullyApproved() {
+            approvalActionService.approvePR(prId, userId);
+
+            verify(purchaseRequestMapper, never()).updateByPrimaryKeySelective(any());
+        }
+
+        @Test
+        void approve_currentStepUpdate() {
+            ApprovalTask firstStep2 = new ApprovalTask();
+            firstStep2.setDocumentId(prId);
+            firstStep2.setStepOrder(1);
+            firstStep2.setUserId("36a1d5d9-15b8-45d5-8ae7-607244bbe36e");
+            firstStep2.setStatus(ApprovalStatus.APPROVED);
+            approvalTaskMapper.updateByPrimaryKeySelective(firstStep2);
+            
+            approvalActionService.approvePR(prId, userId);
+
+            PurchaseRequest pr = purchaseRequestMapper.selectByPrimaryKey(prId);
+            assertThat(pr.getStatus()).isEqualTo(PurchaseRequestStatus.PENDING);
+            assertThat(pr.getCurrentStepOrder()).isEqualTo(2);
+            
+            verify(purchaseRequestMapper).updateByPrimaryKeySelective(any());
+        }
         
-        
+        @Test
+        void approve_prStatusUpdate() {
+            PurchaseRequest pr = new PurchaseRequest();
+            pr.setPrId(prId);
+            pr.setCurrentStepOrder(2);
+            purchaseRequestMapper.updateByPrimaryKeySelective(pr);
+            
+            ApprovalTask firstStep2 = new ApprovalTask();
+            firstStep2.setDocumentId(prId);
+            firstStep2.setStepOrder(1);
+            firstStep2.setUserId("36a1d5d9-15b8-45d5-8ae7-607244bbe36e");
+            firstStep2.setStatus(ApprovalStatus.APPROVED);
+            approvalTaskMapper.updateByPrimaryKeySelective(firstStep2);
+            
+            approvalActionService.approvePR(prId, "6fe99043-cbd1-49c0-96d4-c156c58a8e60");
+
+            PurchaseRequest actual = purchaseRequestMapper.selectByPrimaryKey(prId);
+            assertThat(actual.getStatus()).isEqualTo(PurchaseRequestStatus.APPROVED);
+            assertThat(actual.getCurrentStepOrder()).isEqualTo(2);
+            
+        }
 
         @Test
         void approve_documentStatusInvalid() {
