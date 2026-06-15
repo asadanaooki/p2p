@@ -33,10 +33,73 @@ public class ApprovalActionService {
     @Transactional
     public void approvePR(String prId, String userId) {
         logger.info("PR承認処理開始");
+        
+        ApprovalTask approverTask = validateAndGetActionablePRTask(prId, userId);
+        // 以下承認者の承認ステップ＝ドキュメントの現在の承認ステップ
+        // 承認状況と承認処理日時更新
+        ApprovalTask updateTask = new ApprovalTask();
+        updateTask.setDocumentId(prId);
+        updateTask.setStepOrder(approverTask.getStepOrder());
+        updateTask.setUserId(approverTask.getUserId());
+        updateTask.setStatus(ApprovalStatus.APPROVED);
+        updateTask.setActedAt(LocalDateTime.now());
+        approvalTaskMapper.updateByPrimaryKeySelective(updateTask);
 
+        // 最新の承認タスクを再取得
+        ApprovalTaskExample ex = new ApprovalTaskExample();
+        ex.createCriteria().andDocumentIdEqualTo(prId);
+        List<ApprovalTask> latestTasks = approvalTaskMapper.selectByExample(ex);
+
+        if (!isSameStepFullyApproved(latestTasks, approverTask)) {
+            logger.info("PR承認処理完了");
+            return;
+        }
+        // 現在のステップ更新
+        if (nextApprovalStepExists(latestTasks, approverTask)) {
+            PurchaseRequest step = new PurchaseRequest();
+            step.setPrId(prId);
+            step.setCurrentStepOrder(approverTask.getStepOrder() + 1);
+            purchaseRequestMapper.updateByPrimaryKeySelective(step);
+            logger.info("PR承認ステップ更新");
+        }
+        // ドキュメントステータス更新
+        else {
+            PurchaseRequest status = new PurchaseRequest();
+            status.setPrId(prId);
+            status.setStatus(PurchaseRequestStatus.APPROVED);
+            purchaseRequestMapper.updateByPrimaryKeySelective(status);
+            logger.info("PR承認ステータス更新");
+        }
+        logger.info("PR承認処理完了");
+    }
+
+    @Transactional
+    public void rejectPR(String prId, String userId, String reason) {
+        logger.info("PR否認処理開始");
+        
+        ApprovalTask approverTask = validateAndGetActionablePRTask(prId, userId);
+
+        ApprovalTask updateTask = new ApprovalTask();
+        updateTask.setDocumentId(prId);
+        updateTask.setStepOrder(approverTask.getStepOrder());
+        updateTask.setUserId(approverTask.getUserId());
+        updateTask.setStatus(ApprovalStatus.REJECTED);
+        updateTask.setActedAt(LocalDateTime.now());
+        updateTask.setComment(reason);
+        approvalTaskMapper.updateByPrimaryKeySelective(updateTask);
+
+        PurchaseRequest pr = new PurchaseRequest();
+        pr.setPrId(prId);
+        pr.setStatus(PurchaseRequestStatus.REJECTED);
+        purchaseRequestMapper.updateByPrimaryKeySelective(pr);
+        
+        logger.info("PR否認処理完了");
+    }
+
+    private ApprovalTask validateAndGetActionablePRTask(String prId, String userId) {
         PurchaseRequest pr = purchaseRequestMapper.selectByPrimaryKey(prId);
         if (pr.getStatus() != PurchaseRequestStatus.PENDING) {
-            logger.warn("PR承認不可");
+            logger.warn("PR承認/否認不可");
             throw new BusinessException(BusinessErrorCode.PURCHASE_REQUEST_NOT_PENDING);
         }
         // ドキュメントの現在の承認ステップ
@@ -56,40 +119,8 @@ public class ApprovalActionService {
             logger.warn("PR承認ステップ不一致");
             throw new BusinessException(BusinessErrorCode.APPROVAL_NOT_CURRENT_STEP);
         }
-        // 以下承認者の承認ステップ＝ドキュメントの現在の承認ステップ
-        // 承認状況と承認処理日時更新
-        ApprovalTask updateTask = new ApprovalTask();
-        updateTask.setDocumentId(prId);
-        updateTask.setStepOrder(approverTask.getStepOrder());
-        updateTask.setUserId(approverTask.getUserId());
-        updateTask.setStatus(ApprovalStatus.APPROVED);
-        updateTask.setActedAt(LocalDateTime.now());
-        approvalTaskMapper.updateByPrimaryKeySelective(updateTask);
 
-        // 最新の承認タスクを再取得
-        List<ApprovalTask> latestTasks = approvalTaskMapper.selectByExample(ex);
-
-        if (!isSameStepFullyApproved(latestTasks, approverTask)) {
-            logger.info("PR承認処理完了");
-            return;
-        }
-        // 現在のステップ更新
-        if (nextApprovalStepExists(latestTasks, approverTask)) {
-            PurchaseRequest step = new PurchaseRequest();
-            step.setPrId(prId);
-            step.setCurrentStepOrder(currentStep + 1);
-            purchaseRequestMapper.updateByPrimaryKeySelective(step);
-            logger.info("PR承認ステップ更新");
-        }
-        // ドキュメントステータス更新
-        else {
-            PurchaseRequest status = new PurchaseRequest();
-            status.setPrId(prId);
-            status.setStatus(PurchaseRequestStatus.APPROVED);
-            purchaseRequestMapper.updateByPrimaryKeySelective(status);
-            logger.info("PR承認ステータス更新");
-        }
-        logger.info("PR承認処理完了");
+        return approverTask;
     }
 
     private boolean isSameStepFullyApproved(List<ApprovalTask> tasks, ApprovalTask approverTask) {

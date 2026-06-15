@@ -15,6 +15,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.p2p.entity.ApprovalTask;
+import com.example.p2p.entity.ApprovalTaskKey;
 import com.example.p2p.entity.PurchaseRequest;
 import com.example.p2p.entity.Users;
 import com.example.p2p.enums.ApprovalStatus;
@@ -41,6 +42,8 @@ class ApprovalActionServiceTest {
 
     @MockitoSpyBean
     PurchaseRequestMapper purchaseRequestMapper;
+    
+    
 
     @BeforeEach
     void setup() {
@@ -88,6 +91,14 @@ class ApprovalActionServiceTest {
         @Test
         void approve_sameStepNotFullyApproved() {
             approvalActionService.approvePR(prId, userId);
+            
+            ApprovalTaskKey key = new ApprovalTaskKey();
+            key.setDocumentId(prId);
+            key.setStepOrder(1);
+            key.setUserId(userId);
+           ApprovalTask actual = approvalTaskMapper.selectByPrimaryKey(key);
+           assertThat(actual.getStatus()).isEqualTo(ApprovalStatus.APPROVED);
+           assertThat(actual.getActedAt()).isNotNull();
 
             verify(purchaseRequestMapper, never()).updateByPrimaryKeySelective(any());
         }
@@ -173,6 +184,26 @@ class ApprovalActionServiceTest {
                 });
         }
 
+    }
+    
+    @Test
+    void rejectPR() {
+        String prId = "88bfbcf6-2be6-4d31-8a46-155a7b58ab93";
+        String userId = "169f1e17-619f-45bf-b6dc-8faed08c404c";
+        
+        approvalActionService.rejectPR(prId, userId, "不適切");
+        
+        ApprovalTaskKey key = new ApprovalTaskKey();
+        key.setDocumentId(prId);
+        key.setStepOrder(1);
+        key.setUserId(userId);
+       ApprovalTask actual = approvalTaskMapper.selectByPrimaryKey(key);
+       assertThat(actual.getStatus()).isEqualTo(ApprovalStatus.REJECTED);
+       assertThat(actual.getActedAt()).isNotNull();
+       assertThat(actual.getComment()).isEqualTo("不適切");
+       
+       PurchaseRequest pr = purchaseRequestMapper.selectByPrimaryKey(prId);
+       assertThat(pr.getStatus()).isEqualTo(PurchaseRequestStatus.REJECTED);
     }
 
 }

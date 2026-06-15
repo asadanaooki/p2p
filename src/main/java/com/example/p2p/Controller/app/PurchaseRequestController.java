@@ -247,6 +247,30 @@ public class PurchaseRequestController {
 
     }
 
+    @PreAuthorize("hasAuthority('PR_APPROVE')")
+    @PostMapping("/{prId}/reject")
+    public String reject(@PathVariable String prId, @AuthenticationPrincipal(expression = "username") String userId,
+            @RequestParam(required = false) String reason, RedirectAttributes redirectAttributes) {
+        logger.info("PR否認開始");
+
+        redirectAttributes.addAttribute("prId", prId);
+        try {
+            approvalActionService.rejectPR(prId, userId, reason);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    messageSource.getMessage("purchaseRequest.reject.success", null, null));
+
+            logger.info("PR否認成功");
+        }
+        catch (BusinessException e) {
+            logger.warn("PR否認不可: {}", e.getErrorCode());
+
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    messageSource.getMessage("purchaseRequest.reject.notAllowed", null, null));
+        }
+        return "redirect:/purchase-request/{prId}";
+
+    }
+
     private Map<Integer, List<String>> createDetailErrorMessages(BindingResult bindingResult) {
         Map<Integer, List<String>> errorMap = new LinkedHashMap<Integer, List<String>>();
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
