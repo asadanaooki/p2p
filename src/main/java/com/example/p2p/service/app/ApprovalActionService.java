@@ -3,6 +3,8 @@ package com.example.p2p.service.app;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,14 +24,19 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ApprovalActionService {
 
+    private static final Logger logger = LoggerFactory.getLogger(ApprovalActionService.class);
+
     private PurchaseRequestMapper purchaseRequestMapper;
 
     private ApprovalTaskMapper approvalTaskMapper;
 
     @Transactional
     public void approvePR(String prId, String userId) {
+        logger.info("PR承認処理開始");
+
         PurchaseRequest pr = purchaseRequestMapper.selectByPrimaryKey(prId);
         if (pr.getStatus() != PurchaseRequestStatus.PENDING) {
+            logger.warn("PR承認不可");
             throw new BusinessException(BusinessErrorCode.PURCHASE_REQUEST_NOT_PENDING);
         }
         // ドキュメントの現在の承認ステップ
@@ -42,9 +49,11 @@ public class ApprovalActionService {
         // 承認者の承認ステップ
         ApprovalTask approverTask = tasks.stream().filter(t -> t.getUserId().equals(userId)).findFirst().orElseThrow();
         if (approverTask.getStatus() == ApprovalStatus.APPROVED) {
+            logger.warn("PR承認済みタスクの再承認");
             throw new BusinessException(BusinessErrorCode.APPROVAL_ALREADY_PROCESSED);
         }
         if (approverTask.getStepOrder() != currentStep) {
+            logger.warn("PR承認ステップ不一致");
             throw new BusinessException(BusinessErrorCode.APPROVAL_NOT_CURRENT_STEP);
         }
         // 以下承認者の承認ステップ＝ドキュメントの現在の承認ステップ
@@ -61,6 +70,7 @@ public class ApprovalActionService {
         List<ApprovalTask> latestTasks = approvalTaskMapper.selectByExample(ex);
 
         if (!isSameStepFullyApproved(latestTasks, approverTask)) {
+            logger.info("PR承認処理完了");
             return;
         }
         // 現在のステップ更新
@@ -69,6 +79,7 @@ public class ApprovalActionService {
             step.setPrId(prId);
             step.setCurrentStepOrder(currentStep + 1);
             purchaseRequestMapper.updateByPrimaryKeySelective(step);
+            logger.info("PR承認ステップ更新");
         }
         // ドキュメントステータス更新
         else {
@@ -76,7 +87,9 @@ public class ApprovalActionService {
             status.setPrId(prId);
             status.setStatus(PurchaseRequestStatus.APPROVED);
             purchaseRequestMapper.updateByPrimaryKeySelective(status);
+            logger.info("PR承認ステータス更新");
         }
+        logger.info("PR承認処理完了");
     }
 
     private boolean isSameStepFullyApproved(List<ApprovalTask> tasks, ApprovalTask approverTask) {

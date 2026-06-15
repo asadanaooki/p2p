@@ -31,6 +31,7 @@ import com.example.p2p.form.app.PurchaseRequestCreateForm;
 import com.example.p2p.form.app.PurchaseRequestEditForm;
 import com.example.p2p.form.app.PurchaseRequestSearchForm;
 import com.example.p2p.security.CustomUserDetails;
+import com.example.p2p.service.app.ApprovalActionService;
 import com.example.p2p.service.app.PurchaseRequestService;
 
 import jakarta.servlet.ServletException;
@@ -56,6 +57,8 @@ public class PurchaseRequestController {
             Map.entry("detailInputType", 1), Map.entry("itemId", 2), Map.entry("itemName", 3), Map.entry("kind", 4),
             Map.entry("supplierId", 5), Map.entry("supplierName", 6), Map.entry("unitId", 7), Map.entry("unitName", 8),
             Map.entry("price", 9), Map.entry("quantity", 10));
+
+    private ApprovalActionService approvalActionService;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -183,8 +186,7 @@ public class PurchaseRequestController {
         catch (BusinessException e) {
             logger.warn("PR編集不可");
             model.addAttribute("view", purchaseRequestService.prepareEditView(prId));
-            model.addAttribute("errorMessage",
-                    messageSource.getMessage("purchaseRequest.edit.notAllowed", null, null));
+            model.addAttribute("errorMessage", messageSource.getMessage("purchaseRequest.edit.notAllowed", null, null));
 
             return "app/purchase-request-edit";
         }
@@ -203,7 +205,7 @@ public class PurchaseRequestController {
     public String cancel(@PathVariable String prId, @RequestParam(required = false) String reason,
             RedirectAttributes redirectAttributes) {
         logger.info("PR無効化開始");
-        
+
         redirectAttributes.addAttribute("prId", prId);
         try {
             purchaseRequestService.cancel(prId, reason);
@@ -216,6 +218,30 @@ public class PurchaseRequestController {
             logger.warn("PR無効化不可");
             redirectAttributes.addFlashAttribute("errorMessage",
                     messageSource.getMessage("purchaseRequest.void.notAllowed", null, null));
+        }
+        return "redirect:/purchase-request/{prId}";
+
+    }
+
+    @PreAuthorize("hasAuthority('PR_APPROVE')")
+    @PostMapping("/{prId}/approve")
+    public String approve(@PathVariable String prId, @AuthenticationPrincipal(expression = "username") String userId,
+            RedirectAttributes redirectAttributes) {
+        logger.info("PR承認開始");
+
+        redirectAttributes.addAttribute("prId", prId);
+        try {
+            approvalActionService.approvePR(prId, userId);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    messageSource.getMessage("purchaseRequest.approve.success", null, null));
+
+            logger.info("PR承認成功");
+        }
+        catch (BusinessException e) {
+            logger.warn("PR承認不可: {}", e.getErrorCode());
+
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    messageSource.getMessage("purchaseRequest.approve.notAllowed", null, null));
         }
         return "redirect:/purchase-request/{prId}";
 
