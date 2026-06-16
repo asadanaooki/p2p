@@ -121,8 +121,14 @@
               <div class="approval-status-area">
                 <span th:if="${step.stepOrder &lt; view.currentStepOrder}"
                   class="badge bg-success-subtle text-success-emphasis d-inline-flex align-items-center">承認済み</span>
-                <span th:if="${step.stepOrder == view.currentStepOrder}"
+
+                <span
+                  th:if="${step.stepOrder == view.currentStepOrder and view.currentApprovalStepStatus.toString().equals('PENDING')}"
                   class="badge bg-warning-subtle text-warning-emphasis d-inline-flex align-items-center">現在承認待ち</span>
+                <span
+                  th:if="${step.stepOrder == view.currentStepOrder and view.currentApprovalStepStatus.toString().equals('REJECTED')}"
+                  class="badge bg-danger-subtle text-danger-emphasis d-inline-flex align-items-center">否認</span>
+
                 <span th:if="${step.stepOrder &gt; view.currentStepOrder}"
                   class="badge bg-secondary-subtle text-secondary-emphasis d-inline-flex align-items-center">未処理</span>
               </div>
@@ -144,8 +150,6 @@
                   th:if=" ${approver.status.toString().equals('PENDING') and step.stepOrder == view.currentStepOrder}">承認待ち</span>
                 <span
                   th:if="${approver.status.toString().equals('PENDING') and step.stepOrder &gt; view.currentStepOrder}">未処理</span>
-                <span
-                  th:if="${approver.status.toString().equals('PENDING') and step.stepOrder &lt; view.currentStepOrder}">承認不要</span>
 
                 <span class="small text-muted ms-1" th:if="${approver.actedAt != null}">
                   (<span th:text="${#temporals.format(approver.actedAt, 'yyyy/M/d')}"></span>)
