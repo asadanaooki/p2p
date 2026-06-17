@@ -26,6 +26,8 @@ public class PurchaseRequestDetailDto {
 
     private LocalDate createdAt;
 
+    private String userId;
+
     // 明細
     private List<PurchaseRequestDetailLineDto> details;
 
@@ -34,12 +36,23 @@ public class PurchaseRequestDetailDto {
 
     private int currentStepOrder;
 
+    // 承認/否認ボタン表示判定
+    public boolean isApprovalActionButtonVisible() {
+        if (status != PurchaseRequestStatus.PENDING) {
+            return false;
+        }
+        return approvalProgressSteps.stream()
+            .filter(s -> s.getStepOrder() == currentStepOrder)
+            .flatMap(s -> s.getApprovalProgressApprovers().stream())
+            .anyMatch(a -> a.getUserId().equals(userId) && a.getStatus() == ApprovalStatus.PENDING);
+    }
+
     public ApprovalStatus getCurrentApprovalStepStatus() {
         boolean rejected = approvalProgressSteps.stream()
             .filter(s -> s.getStepOrder() == currentStepOrder)
             .flatMap(s -> s.getApprovalProgressApprovers().stream())
             .anyMatch(a -> a.getStatus() == ApprovalStatus.REJECTED);
-        
+
         return rejected ? ApprovalStatus.REJECTED : ApprovalStatus.PENDING;
     }
 

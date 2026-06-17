@@ -28,7 +28,19 @@
           </li>
         </ul>
       </div>
+
+      <div class="ms-5" th:if="${view.approvalActionButtonVisible}">
+        <form class="d-flex gap-2" th:action="@{/purchase-request/{prId}/approve(prId=${prId})}" method="post">
+          <button type="submit" class="btn btn-success px-4">承認</button>
+          <button type="button" class="btn btn-outline-danger px-4" data-bs-toggle="modal"
+            data-bs-target="#rejectModal">否認</button>
+        </form>
+
+      </div>
     </div>
+
+
+
 
 
     <div class="summary-grid">
@@ -179,6 +191,30 @@
             </div>
           </form>
         </div>
+      </div>
+
+    </div>
+
+    <!-- 否認モーダル -->
+    <div class="modal fade" id="rejectModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <button type="button" class="btn-close align-self-end m-2 mb-0" data-bs-dismiss="modal"></button>
+
+          <form th:action="@{/purchase-request/{prId}/reject(prId=${prId})}" method="post">
+            <div class="modal-body">
+              <label for="rejectReason" class="form-label">否認理由（任意）</label>
+              <textarea id="rejectReason" name="reason" class="form-control" rows="4"></textarea>
+            </div>
+
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-danger">否認</button>
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">戻る</button>
+
+            </div>
+          </form>
+        </div>
+
       </div>
 
     </div>
