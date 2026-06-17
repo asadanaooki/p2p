@@ -42,4 +42,20 @@
     where aw.document_type = #{documentType}
     order by ast.step_order asc, CONCAT(u.last_name_kana, u.first_name_kana) asc
   </select>
+  
+  <select id="selectApprovalTaskCandidates" resultType="com.example.p2p.dto.admin.ApprovalTaskCandidateDto">
+    select 
+      ast.step_order,
+      ast.name as step_name,
+      asa.user_id
+    from approval_workflow aw
+    join approval_step ast
+      on aw.approval_workflow_id = ast.approval_workflow_id
+    join approval_step_approver asa
+      on ast.approval_step_id = asa.approval_step_id
+    where 
+      aw.document_type = #{documentType}
+      and #{totalAmountExcludingTax} &gt;= asa.amount_min
+        and (asa.amount_max is null or #{totalAmountExcludingTax} &lt;= asa.amount_max)
+  </select>
 </mapper>

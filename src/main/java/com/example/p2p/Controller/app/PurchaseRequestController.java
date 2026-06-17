@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.p2p.dto.app.PurchaseRequestEditViewDto;
@@ -30,6 +31,7 @@ import com.example.p2p.form.app.PurchaseRequestCreateForm;
 import com.example.p2p.form.app.PurchaseRequestEditForm;
 import com.example.p2p.form.app.PurchaseRequestSearchForm;
 import com.example.p2p.security.CustomUserDetails;
+import com.example.p2p.service.app.ApprovalActionService;
 import com.example.p2p.service.app.PurchaseRequestService;
 
 import jakarta.servlet.ServletException;
@@ -55,6 +57,8 @@ public class PurchaseRequestController {
             Map.entry("detailInputType", 1), Map.entry("itemId", 2), Map.entry("itemName", 3), Map.entry("kind", 4),
             Map.entry("supplierId", 5), Map.entry("supplierName", 6), Map.entry("unitId", 7), Map.entry("unitName", 8),
             Map.entry("price", 9), Map.entry("quantity", 10));
+
+    private ApprovalActionService approvalActionService;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -122,7 +126,18 @@ public class PurchaseRequestController {
             model.addAttribute("detailErrorMessages", createDetailErrorMessages(bindingResult));
             return "app/purchase-request-create";
         }
-        String prId = purchaseRequestService.create(userId, form);
+
+        String prId = null;
+        try {
+            prId = purchaseRequestService.create(userId, form);
+        }
+        catch (BusinessException e) {
+            logger.warn("PR作成不可");
+            model.addAttribute("view", purchaseRequestService.prepareCreateView(userId));
+            model.addAttribute("approvalTaskNotFoundMessage",
+                    messageSource.getMessage("purchaseRequest.approver.notFound", null, null));
+            return "app/purchase-request-create";
+        }
 
         redirectAttributes.addAttribute("prId", prId);
         redirectAttributes.addFlashAttribute("successMessage",
@@ -153,7 +168,7 @@ public class PurchaseRequestController {
 
     @PreAuthorize("hasAuthority('PR_CREATE')")
     @PostMapping("/{prId}/edit")
-    public String create(@PathVariable @NotBlank String prId,
+    public String update(@PathVariable @NotBlank String prId,
             @Valid @ModelAttribute("form") PurchaseRequestEditForm form, BindingResult bindingResult, Model model,
             RedirectAttributes redirectAttributes) throws ServletException {
         logger.info("PR編集開始");
@@ -171,9 +186,8 @@ public class PurchaseRequestController {
         catch (BusinessException e) {
             logger.warn("PR編集不可");
             model.addAttribute("view", purchaseRequestService.prepareEditView(prId));
-            model.addAttribute("invalidStatusMessage",
-                    messageSource.getMessage("purchaseRequest.edit.notAllowed", null, null));
-            
+            model.addAttribute("errorMessage", messageSource.getMessage("purchaseRequest.edit.notAllowed", null, null));
+
             return "app/purchase-request-edit";
         }
 
@@ -184,6 +198,77 @@ public class PurchaseRequestController {
         logger.info("PR編集成功");
 
         return "redirect:/purchase-request/{prId}";
+    }
+
+    @PreAuthorize("hasAuthority('PR_CREATE')")
+    @PostMapping("/{prId}/void")
+    public String cancel(@PathVariable String prId, @RequestParam(required = false) String reason,
+            RedirectAttributes redirectAttributes) {
+        logger.info("PR無効化開始");
+
+        redirectAttributes.addAttribute("prId", prId);
+        try {
+            purchaseRequestService.cancel(prId, reason);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    messageSource.getMessage("purchaseRequest.void.success", null, null));
+
+            logger.info("PR無効化成功");
+        }
+        catch (BusinessException e) {
+            logger.warn("PR無効化不可");
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    messageSource.getMessage("purchaseRequest.void.notAllowed", null, null));
+        }
+        return "redirect:/purchase-request/{prId}";
+
+    }
+
+    @PreAuthorize("hasAuthority('PR_APPROVE')")
+    @PostMapping("/{prId}/approve")
+    public String approve(@PathVariable String prId, @AuthenticationPrincipal(expression = "username") String userId,
+            RedirectAttributes redirectAttributes) {
+        logger.info("PR承認開始");
+
+        redirectAttributes.addAttribute("prId", prId);
+        try {
+            approvalActionService.approvePR(prId, userId);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    messageSource.getMessage("purchaseRequest.approve.success", null, null));
+
+            logger.info("PR承認成功");
+        }
+        catch (BusinessException e) {
+            logger.warn("PR承認不可: {}", e.getErrorCode());
+
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    messageSource.getMessage("purchaseRequest.approve.notAllowed", null, null));
+        }
+        return "redirect:/purchase-request/{prId}";
+
+    }
+
+    @PreAuthorize("hasAuthority('PR_APPROVE')")
+    @PostMapping("/{prId}/reject")
+    public String reject(@PathVariable String prId, @AuthenticationPrincipal(expression = "username") String userId,
+            @RequestParam(required = false) String reason, RedirectAttributes redirectAttributes) {
+        logger.info("PR否認開始");
+
+        redirectAttributes.addAttribute("prId", prId);
+        try {
+            approvalActionService.rejectPR(prId, userId, reason);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    messageSource.getMessage("purchaseRequest.reject.success", null, null));
+
+            logger.info("PR否認成功");
+        }
+        catch (BusinessException e) {
+            logger.warn("PR否認不可: {}", e.getErrorCode());
+
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    messageSource.getMessage("purchaseRequest.reject.notAllowed", null, null));
+        }
+        return "redirect:/purchase-request/{prId}";
+
     }
 
     private Map<Integer, List<String>> createDetailErrorMessages(BindingResult bindingResult) {

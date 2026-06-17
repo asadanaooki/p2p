@@ -4,14 +4,13 @@
 <generatorConfiguration>
   <context id="PostgresTables" targetRuntime="MyBatis3">
     <!-- MapperにMapperアノテーションを付与 -->
-    <plugin
-      type="org.mybatis.generator.plugins.MapperAnnotationPlugin" />
-
+    <plugin type="org.mybatis.generator.plugins.MapperAnnotationPlugin" />
 
     <!-- TODO PWとID別の場所へ -->
     <!-- スキーマ情報を取得する DB への接続設定 -->
     <jdbcConnection driverClass="org.postgresql.Driver"
-      connectionURL="jdbc:postgresql://localhost/p2p" userId="postgres"
+      connectionURL="jdbc:postgresql://localhost/p2p"
+      userId="postgres"
       password="softeni0926">
     </jdbcConnection>
 
@@ -33,6 +32,7 @@
       targetProject="src/main/resources">
       <property name="enableSubPackages" value="false" />
     </sqlMapGenerator>
+
     <!-- マッパークラスを生成する設定 -->
     <javaClientGenerator type="XMLMAPPER"
       targetPackage="com.example.p2p.mapper"
@@ -42,51 +42,98 @@
 
     <!-- コードを生成するテーブルを指定 -->
     <table tableName="users"></table>
+
     <table tableName="unit"></table>
+
     <table tableName="payment_term">
-      <columnOverride column="due_date_type" jdbcType="VARCHAR" javaType="com.example.p2p.enums.DueDateType"
-        typeHandler="org.apache.ibatis.type.EnumTypeHandler">
+      <columnOverride
+        column="due_date_type"
+        jdbcType="VARCHAR"
+        javaType="com.example.p2p.enums.DueDateType">
       </columnOverride>
     </table>
+
     <table tableName="supplier"></table>
+
     <table tableName="item">
-      <columnOverride column="kind" jdbcType="VARCHAR" javaType="com.example.p2p.enums.ItemKind"
-        typeHandler="org.apache.ibatis.type.EnumTypeHandler">
+      <columnOverride
+        column="kind"
+        jdbcType="VARCHAR"
+        javaType="com.example.p2p.enums.ItemKind">
       </columnOverride>
     </table>
+
     <table tableName="role">
-      <columnOverride column="pr_view_scope" jdbcType="VARCHAR" javaType="com.example.p2p.enums.VisibilityScope"
-        typeHandler="org.apache.ibatis.type.EnumTypeHandler">
+      <columnOverride
+        column="pr_view_scope"
+        jdbcType="VARCHAR"
+        javaType="com.example.p2p.enums.VisibilityScope">
       </columnOverride>
-      <columnOverride column="po_view_scope" jdbcType="VARCHAR" javaType="com.example.p2p.enums.VisibilityScope"
-        typeHandler="org.apache.ibatis.type.EnumTypeHandler">
+
+      <columnOverride
+        column="po_view_scope"
+        jdbcType="VARCHAR"
+        javaType="com.example.p2p.enums.VisibilityScope">
       </columnOverride>
-      <columnOverride column="receipt_view_scope" jdbcType="VARCHAR" javaType="com.example.p2p.enums.VisibilityScope"
-        typeHandler="org.apache.ibatis.type.EnumTypeHandler">
+
+      <columnOverride
+        column="receipt_view_scope"
+        jdbcType="VARCHAR"
+        javaType="com.example.p2p.enums.VisibilityScope">
       </columnOverride>
-      <columnOverride column="invoice_view_scope" jdbcType="VARCHAR" javaType="com.example.p2p.enums.VisibilityScope"
-        typeHandler="org.apache.ibatis.type.EnumTypeHandler">
+
+      <columnOverride
+        column="invoice_view_scope"
+        jdbcType="VARCHAR"
+        javaType="com.example.p2p.enums.VisibilityScope">
       </columnOverride>
     </table>
+
     <table tableName="user_invitation_token"></table>
+
     <table tableName="purchase_request">
-      <columnOverride column="status" jdbcType="VARCHAR" javaType="com.example.p2p.enums.PurchaseRequestStatus"
-        typeHandler="org.apache.ibatis.type.EnumTypeHandler">
+      <columnOverride
+        column="status"
+        jdbcType="VARCHAR"
+        javaType="com.example.p2p.enums.PurchaseRequestStatus">
       </columnOverride>
     </table>
+
     <table tableName="email_change_request"></table>
+
     <table tableName="purchase_request_detail">
-      <columnOverride column="snap_kind" jdbcType="VARCHAR" javaType="com.example.p2p.enums.ItemKind"
-        typeHandler="org.apache.ibatis.type.EnumTypeHandler">
+      <columnOverride
+        column="snap_kind"
+        jdbcType="VARCHAR"
+        javaType="com.example.p2p.enums.ItemKind">
       </columnOverride>
     </table>
+
     <table tableName="approval_workflow">
-      <columnOverride column="document_type" jdbcType="VARCHAR" javaType="com.example.p2p.enums.DocumentType"
-        typeHandler="org.apache.ibatis.type.EnumTypeHandler">
+      <columnOverride
+        column="document_type"
+        jdbcType="VARCHAR"
+        javaType="com.example.p2p.enums.DocumentType">
       </columnOverride>
     </table>
+
     <table tableName="approval_step"></table>
+
     <table tableName="approval_step_approver"></table>
+
+    <table tableName="approval_task">
+      <columnOverride
+        column="document_type"
+        jdbcType="VARCHAR"
+        javaType="com.example.p2p.enums.DocumentType">
+      </columnOverride>
+
+      <columnOverride
+        column="status"
+        jdbcType="VARCHAR"
+        javaType="com.example.p2p.enums.ApprovalStatus">
+      </columnOverride>
+    </table>
 
   </context>
 </generatorConfiguration>
