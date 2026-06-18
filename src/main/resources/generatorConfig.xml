@@ -134,6 +134,16 @@
         javaType="com.example.p2p.enums.ApprovalStatus">
       </columnOverride>
     </table>
+    
+    <table tableName="purchase_order">
+      <columnOverride
+        column="status"
+        jdbcType="VARCHAR"
+        javaType="com.example.p2p.enums.PurchaseOrderStatus">
+      </columnOverride>
+    </table>
+    
+    <table tableName="purchase_request_purchase_order"></table>
 
   </context>
 </generatorConfiguration>
