@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.p2p.mapper.PurchaseOrderMapperCustom">
+  <select id="selectPurchaseOrders" resultType="com.example.p2p.dto.app.PurchaseOrderListRowDto">
+    select 
+      po.po_id,
+      po.order_type,
+      po.display_number,
+      CONCAT_WS(' ', u.last_name, u.first_name) as purchaser,
+      po.due_date,
+      po.snap_supplier_name,
+      po.total_amount_excluding_tax,
+      po.status
+    from purchase_order po
+    join users u
+      on po.purchaser_user_id = u.user_id
+    <where>
+       <if test="poViewScope == @com.example.p2p.enums.VisibilityScope@SELF">
+         po.purchaser_user_id = #{userId}
+       </if>
+
+      <if test="form.dueDateFrom != null">
+        and po.due_date &gt;= #{form.dueDateFrom}
+      </if>
+      <if test="form.dueDateTo != null">
+        and po.due_date &lt;= #{form.dueDateTo}
+      </if>
+      <if test="form.status != null">
+        and po.status = #{form.status}
+      </if>
+
+      <if test="form.keyword != null and form.keyword != ''">
+        and ( 
+          po.display_number::varchar ~ #{form.keywordRegex}
+          or normalization(lower(concat(u.last_name, u.first_name))) ~#{form.keywordRegex}
+          or normalization(lower(concat(u.last_name_kana, u.first_name_kana))) ~#{form.keywordRegex}
+        )
+      </if>
+    </where>
+    order by
+      <choose>
+        <when test="form.sortBy.toString().equals('NUMBER')">pr.display_number</when>
+        <when test="form.sortBy.toString().equals('REQUESTER')">concat(u.last_name_kana, u.first_name_kana)</when>
+        <when test="form.sortBy.toString().equals('DUE_DATE')">pr.due_date
+          <choose>
+            <when test="form.sortDirection.toString().equals('ASC')">asc nulls first</when>
+            <when test="form.sortDirection.toString().equals('DESC')">desc nulls last</when>
+          </choose>
+        </when>
+        
+        <when test="form.sortBy.toString().equals('TOTAL')">pr.total_amount_excluding_tax</when>
+        <when test="form.sortBy.toString().equals('STATUS')">
+        case pr.status
+          when 'PENDING' then 1
+          when 'APPROVED' then 2
+          when 'REJECTED' then 3
+          when 'COMPLETED' then 4
+        end
+        </when>
+      </choose>
+      <if test="!form.sortBy.toString().equals('DUE_DATE')">
+        <choose>
+          <when test="form.sortDirection.toString().equals('ASC')">asc</when>
+          <when test="form.sortDirection.toString().equals('DESC')">desc</when>
+        </choose>
+      </if>
+    limit #{form.size} offset #{form.offset}
+  </select>
+  
+  <select id="countPurchaseOrders" resultType="int">
+    select count(*)
+    from purchase_request pr
+    join users u
+      on pr.requester_user_id = u.user_id
+    <where>
+      <if test="prViewScope == @com.example.p2p.enums.VisibilityScope@SELF">
+        pr.requester_user_id = #{userId}
+      </if>
+
+      <if test="form.dueDateFrom != null">
+        and pr.due_date &gt;= #{form.dueDateFrom}
+      </if>
+      <if test="form.dueDateTo != null">
+        and pr.due_date &lt;= #{form.dueDateTo}
+      </if>
+      <if test="form.status != null">
+        and pr.status = #{form.status}
+      </if>
+      
+      <if test="form.keyword != null and form.keyword != ''">
+        and ( 
+          pr.display_number::varchar ~ #{form.keywordRegex}
+          or normalization(lower(concat(u.last_name, u.first_name))) ~#{form.keywordRegex}
+          or normalization(lower(concat(u.last_name_kana, u.first_name_kana))) ~#{form.keywordRegex}
+        )
+      </if>
+    </where>
+  </select>
+</mapper>

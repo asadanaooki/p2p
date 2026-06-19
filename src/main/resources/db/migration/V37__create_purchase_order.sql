@@ -1,6 +1,7 @@
 create table purchase_order (
     po_id char(36) primary key,
     display_number SERIAL not null unique,
+    order_type varchar(10) not null check(order_type in ('STANDARD', 'SERVICE')),
     purchaser_user_id char(36) not null,
     due_date date,
     supplier_id char(36) not null,

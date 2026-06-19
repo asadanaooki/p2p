@@ -1,0 +1,1 @@
+alter table purchase_order rename column total_amount to total_amount_excluding_tax;
