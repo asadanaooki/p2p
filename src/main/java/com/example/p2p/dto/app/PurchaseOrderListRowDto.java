@@ -2,15 +2,15 @@ package com.example.p2p.dto.app;
 
 import java.time.LocalDate;
 
+import com.example.p2p.enums.PurchaseOrderStatus;
 import com.example.p2p.enums.PurchaseOrderType;
-import com.example.p2p.enums.PurchaseRequestStatus;
 
 import lombok.Data;
 
 @Data
 public class PurchaseOrderListRowDto {
 
-    private String prId;
+    private String poId;
     
     private int displayNumber;
     
@@ -24,5 +24,5 @@ public class PurchaseOrderListRowDto {
     
     private int totalAmountExcludingTax;
     
-    private PurchaseRequestStatus status;
+    private PurchaseOrderStatus status;
 }
