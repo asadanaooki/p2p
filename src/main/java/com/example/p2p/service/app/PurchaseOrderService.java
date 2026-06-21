@@ -11,6 +11,7 @@ import com.example.p2p.dto.app.PurchaseOrderListViewDto;
 import com.example.p2p.dto.app.PurchaseRequestListViewDto;
 import com.example.p2p.form.app.PurchaseOrderSearchForm;
 import com.example.p2p.mapper.PurchaseOrderMapperCustom;
+import com.example.p2p.mapper.SupplierMapperCustom;
 import com.example.p2p.security.CustomUserDetails;
 import com.example.p2p.util.CommonUtil;
 
@@ -24,7 +25,9 @@ public class PurchaseOrderService {
     
     private PurchaseOrderMapperCustom purchaseOrderMapperCustom;
     
-    public PurchaseRequestListViewDto searchPurchaseOrders(PurchaseOrderSearchForm form,
+    private SupplierMapperCustom supplierMapperCustom;
+    
+    public PurchaseOrderListViewDto searchPurchaseOrders(PurchaseOrderSearchForm form,
             CustomUserDetails loginUser) {
         logger.debug("発注一覧取得開始");
 
@@ -33,6 +36,7 @@ public class PurchaseOrderService {
         List<PurchaseOrderListRowDto> pos = purchaseOrderMapperCustom.selectPurchaseOrders(form,
                 loginUser.getPrViewScope(), loginUser.getUsername());
         dto.setPurchaseOrders(pos);
+        dto.setSupplierOptions(supplierMapperCustom.selectSupplierOptions());
         dto.setCurrentPage(page);
         dto.setPageNumberList(CommonUtil.createPageNumbers(purchaseOrderMapperCustom.countPurchaseOrders(form,
                 loginUser.getPrViewScope(), loginUser.getUsername()), form.getSize(), page, 2));
