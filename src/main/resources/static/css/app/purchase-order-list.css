@@ -82,10 +82,6 @@
   min-width: 0;
 }
 
-.date-range-separator {
-  color: #243238;
-}
-
 .filter-actions {
   margin-top: 36px;
   display: flex;
@@ -102,9 +98,7 @@
 ========================= */
 .table-box {
   border: 1px solid #d8dfdd;
-  border-radius: 8px;
   background: #fff;
-  overflow: hidden;
 }
 
 .purchase-order-table {
@@ -115,7 +109,7 @@
 .purchase-order-table thead th {
   background: #9fb3b2;
   color: #1f2c30;
-  font-weight: 600;
+  font-weight: 400;
   border-right: 1px solid #c7d1ce;
   white-space: nowrap;
 }

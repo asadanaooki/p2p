@@ -75,8 +75,96 @@
             <a th:href="@{/purchase-order}" class="btn btn-outline-secondary">リセット</a>
           </div>
         </div>
-
       </div>
+
+      <div class="table-box">
+        <table class="table table-hover purchase-order-table">
+          <thead>
+            <tr>
+              <th class="col-number">
+                <button type="button" class="js-sort sort-button" data-sort-by="NUMBER">
+                  <span>番号</span>
+                  <span class="sort-icon" th:if="${form.sortBy.name().equals('NUMBER')}"
+                    th:text="${form.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
+                </button>
+              </th>
+
+              <th class="col-type">
+                <button type="button" class="js-sort sort-button" data-sort-by="TYPE">
+                  <span>種別</span>
+                  <span class="sort-icon" th:if="${form.sortBy.name().equals('TYPE')}"
+                    th:text="${form.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
+                </button>
+              </th>
+
+              <th class="col-purchaser">
+                <button type="button" class="js-sort sort-button" data-sort-by="PURCHASER">
+                  <span>発注者</span>
+                  <span class="sort-icon" th:if="${form.sortBy.name().equals('PURCHASER')}"
+                    th:text="${form.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
+                </button>
+              </th>
+
+              <th class="col-due-date">
+                <button type="button" class="js-sort sort-button" data-sort-by="DUE_DATE">
+                  <span>納期</span>
+                  <span class="sort-icon" th:if="${form.sortBy.name().equals('DUE_DATE')}"
+                    th:text="${form.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
+                </button>
+              </th>
+
+              <th class="col-supplier">
+                <button type="button" class="js-sort sort-button" data-sort-by="SUPPLIER">
+                  <span>仕入先</span>
+                  <span class="sort-icon" th:if="${form.sortBy.name().equals('SUPPLIER')}"
+                    th:text="${form.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
+                </button>
+              </th>
+
+              <th class="col-total text-end">
+                <button type="button" class="sort-button justify-content-end js-sort" data-sort-by="TOTAL">
+                  <span>合計（税抜）</span>
+                  <span class="sort-icon" th:if="${form.sortBy != null and form.sortBy.name().equals('TOTAL')}"
+                    th:text="${form.sortDirection != null and form.sortDirection.name().equals('ASC') ? '▲' : '▼'}">
+                  </span>
+                </button>
+              </th>
+
+              <th class="col-status">
+                <button type="button" class="js-sort sort-button" data-sort-by="STATUS">
+                  <span>状態</span>
+                  <span class="sort-icon" th:if="${form.sortBy.name().equals('STATUS')}"
+                    th:text="${form.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
+                </button>
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr th:each="po : ${view.purchaseOrders}" class="js-row-link"
+              th:data-href="@{/purchase-order/{poId}(poId=${po.poId})}">
+              <td class="col-number">
+                <a class="purchase-order-link js-row-link-a" th:text="${po.displayNumber}"
+                  th:href="@{/purchase-order/{poId}(poId=${po.poId})}"></a>
+              </td>
+
+              <td class="col-type" th:text="${po.orderType.label}"></td>
+              <td class="col-purchaser" th:text="${po.purchaser}"></td>
+              <td class="col-due-date" th:text="${#temporals.format(po.dueDate, 'yyyy/M/d')}"></td>
+              <td class="col-supplier" th:text="${po.supplierName}"></td>
+              <td class="col-total text-end"
+                th:text="${#numbers.formatInteger(po.totalAmountExcludingTax, 1, 'COMMA')}"></td>
+
+              <td class="col-status">
+                <span class="badge text-bg-light border rounded-pill po-status-badge" th:text="${po.status.label}">
+                </span>
+
+              </td>
+            </tr>
+          </tbody>
+
+        </table>
+
       </div>
     </form>
 

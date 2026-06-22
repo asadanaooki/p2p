@@ -63,7 +63,7 @@
           <when test="form.sortDirection.toString().equals('DESC')">desc</when>
         </choose>
       </if>
-      , po.display_number
+      , pr.display_number
         <choose>
           <when test="form.sortDirection.toString().equals('ASC')">asc</when>
           <when test="form.sortDirection.toString().equals('DESC')">desc</when>
