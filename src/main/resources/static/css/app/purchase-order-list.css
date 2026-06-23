@@ -3,7 +3,7 @@
 ========================= */
 .page {
   min-height: 100vh;
-  padding: 24px;
+  padding: 32px;
 }
 
 .page-title {
@@ -47,7 +47,7 @@
    フィルター
 ========================= */
 .filter-panel {
-  /* display: none; */
+  display: none;
   margin-bottom: 24px;
 }
 
@@ -104,6 +104,7 @@
 .purchase-order-table {
   table-layout: fixed;
   background: #fff;
+  border-collapse: collapse;
 }
 
 .purchase-order-table thead th {

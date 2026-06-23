@@ -14,7 +14,7 @@
     join purchase_request pr
       on prd.pr_id = pr.pr_id
     where prd.pr_id = #{prId}
-      <if test="prViewScope == @com.example.p2p.enums.VisibilityScope@SELF">
+      <if test="prViewScope.toString().equals('SELF')">
         and pr.requester_user_id = #{userId}
       </if>
   </select>

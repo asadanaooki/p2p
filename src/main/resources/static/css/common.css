@@ -6,6 +6,10 @@ body {
   margin: 0;
 }
 
+html {
+  overflow-y: scroll;
+}
+
 .filter-bar {
   padding: 18px 24px 24px;
   background-color: #dfe4e1;

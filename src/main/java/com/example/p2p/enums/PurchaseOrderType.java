@@ -5,8 +5,8 @@ import lombok.Getter;
 @Getter
 public enum PurchaseOrderType {
     
-    STANDARD("物品発注"),
-    SERVICE("サービス発注");
+    STANDARD("物品"),
+    SERVICE("サービス");
     
     private String label;
     

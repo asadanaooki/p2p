@@ -9,7 +9,7 @@
 
   <!-- JS -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script th:src="@{/js/app/purchase-order-list.js}"></script>
+  <script th:src="@{/js/common.js}"></script>
 </head>
 
 <body>
@@ -21,7 +21,8 @@
     <div class="success-message" th:if="${successMessage}" th:text="${successMessage}"></div>
     <h1 class="page-title">発注一覧</h1>
 
-    <form id="purchaseOrderSearchForm" th:action="@{/purchase-order}" th:object="${form}" method="get">
+    <form id="purchaseOrderSearchForm" class="keyword-search-form" th:action="@{/purchase-order}" th:object="${form}"
+      method="get">
       <input type="hidden" th:field="*{sortBy}">
       <input type="hidden" th:field="*{sortDirection}">
 
@@ -39,7 +40,7 @@
         </div>
       </div>
 
-      <div id="filterPanel" class="filter-panel">
+      <div id="filterPanel" class="filter-panel" th:classappend="${filterActive} ? ' is-open' : ''">
         <div class="filter-box">
           <div class="filter-grid">
             <div class="filter-item">
@@ -62,7 +63,7 @@
 
             <div class="filter-item">
               <label for="status" class="form-label">状態</label>
-              <select id="status" th:field="*{supplierId}" class="form-select">
+              <select id="status" th:field="*{status}" class="form-select">
                 <option value=""></option>
                 <option th:each="status : ${T(com.example.p2p.enums.PurchaseOrderStatus).values()}" th:value="${status}"
                   th:text="${status.label}"></option>
@@ -78,7 +79,7 @@
       </div>
 
       <div class="table-box">
-        <table class="table table-hover purchase-order-table">
+        <table class="table table-hover purchase-order-table mb-0">
           <thead>
             <tr>
               <th class="col-number">
@@ -158,14 +159,29 @@
               <td class="col-status">
                 <span class="badge text-bg-light border rounded-pill po-status-badge" th:text="${po.status.label}">
                 </span>
-
               </td>
             </tr>
           </tbody>
-
         </table>
-
       </div>
+
+      <nav class="pagination-area" th:if="!${#lists.isEmpty(view.pageNumberList)}">
+        <ul class="pagination justify-content-center gap-2">
+          <li class="page-item" th:if="${view.currentPage > 1}">
+            <button type="button" class="page-link js-page" th:data-page="${view.currentPage - 1}">&lt;</button>
+          </li>
+
+          <li class="page-item" th:each="pageNo : ${view.pageNumberList}"
+            th:classappend="${pageNo == view.currentPage} ? 'active' : ''">
+            <button type="button" class="page-link js-page" th:data-page="${pageNo}" th:text="${pageNo}"></button>
+          </li>
+
+          <li class="page-item"
+            th:if="${view.currentPage < view.pageNumberList.get(#lists.size(view.pageNumberList) - 1)}">
+            <button type="button" class="page-link js-page" th:data-page="${view.currentPage + 1}">&gt;</button>
+          </li>
+        </ul>
+      </nav>
     </form>
 
 

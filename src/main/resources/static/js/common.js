@@ -59,6 +59,21 @@ $(function () {
   });
 
   /* =========================
+   ページング
+  ========================= */
+  $(".js-page").on("click", function () {
+    if ($keywordForm.length === 0) {
+        return;
+    }
+
+    $keywordForm.find('input[name="page"]').remove();
+
+    appendHidden($keywordForm, "page", $(this).data("page"));
+    
+    $keywordForm[0].submit();
+  })
+
+  /* =========================
      行全体クリック遷移
   ========================= */
   $(".js-row-link").on("click", function () {

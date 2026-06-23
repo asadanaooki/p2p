@@ -13,7 +13,7 @@
     join users u
       on pr.requester_user_id = u.user_id
     <where>
-       <if test="prViewScope == @com.example.p2p.enums.VisibilityScope@SELF">
+       <if test="prViewScope.toString().equals('SELF')">
          pr.requester_user_id = #{userId}
        </if>
 
@@ -77,7 +77,7 @@
     join users u
       on pr.requester_user_id = u.user_id
     <where>
-      <if test="prViewScope == @com.example.p2p.enums.VisibilityScope@SELF">
+      <if test="prViewScope.toString().equals('SELF')">
         pr.requester_user_id = #{userId}
       </if>
 
@@ -116,7 +116,7 @@
       on pr.requester_user_id = u.user_id
     where
       pr.pr_id = #{prId}
-      <if test="prViewScope == @com.example.p2p.enums.VisibilityScope@SELF">
+      <if test="prViewScope.toString().equals('SELF')">
         and pr.requester_user_id = #{userId}
       </if>
   </select>
