@@ -1,3 +1,5 @@
+drop table if exists item;
+
 create table item (
     item_id char(36) primary key default gen_random_uuid () ::text,
     name varchar(100) not null,

@@ -1,4 +1,4 @@
-drop table if exists users ;
+drop table if exists users;
 
 create table users (
     user_id char(36) primary key default gen_random_uuid () ::text,

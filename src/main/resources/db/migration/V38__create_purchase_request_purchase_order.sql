@@ -1,3 +1,5 @@
+drop table if exists purchase_request_purchase_order;
+
 create table purchase_request_purchase_order (
     pr_id char(36),
     po_id char(36),

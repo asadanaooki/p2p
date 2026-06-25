@@ -1,3 +1,5 @@
+drop table if exists email_change_request;
+
 create table email_change_request (
     user_id char(36) primary key,
     token_hash char(64) not null,

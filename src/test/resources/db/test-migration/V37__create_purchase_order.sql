@@ -1,3 +1,5 @@
+drop table if exists purchase_order;
+
 create table purchase_order (
     po_id char(36) primary key,
     display_number SERIAL not null unique,

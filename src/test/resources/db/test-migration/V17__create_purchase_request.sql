@@ -1,3 +1,5 @@
+drop table if exists purchase_request;
+
 create table purchase_request (
     pr_id char(36) primary key default gen_random_uuid () ::text,
     display_number SERIAL not null unique,

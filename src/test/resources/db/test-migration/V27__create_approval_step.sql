@@ -1,3 +1,5 @@
+drop table if exists approval_step;
+
 create table approval_step (
     approval_step_id char(36) primary key,
     approval_workflow_id char(36) not null,

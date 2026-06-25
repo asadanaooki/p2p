@@ -1,3 +1,5 @@
+drop table if exists approval_task;
+
 create table approval_task (
     document_id char(36) not null,
     step_order integer not null check(step_order >= 1),

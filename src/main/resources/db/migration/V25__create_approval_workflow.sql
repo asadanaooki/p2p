@@ -1,3 +1,5 @@
+drop table if exists approval_workflow;
+
 create table approval_workflow (
     approval_workflow_id char(36) primary key,
     document_type varchar(10) not null unique check (document_type in( 'PR', 'PO', 'INVOICE')),
