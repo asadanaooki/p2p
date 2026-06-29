@@ -14,8 +14,12 @@ import java.util.stream.IntStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.example.p2p.dto.app.ApprovalProgressStepDto;
+import com.example.p2p.enums.ApprovalStatus;
+import com.example.p2p.enums.PurchaseRequestStatus;
+
 public class CommonUtil {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(CommonUtil.class);
 
     public static List<Integer> createPageNumbers(int totalItemCount, int pageSize, int currentPage,
@@ -56,7 +60,7 @@ public class CommonUtil {
     public static int calculateOffset(int page, int size) {
         return (page - 1) * size;
     }
-    
+
     public static String generateToken() {
         SecureRandom secureRandom = new SecureRandom();
         byte[] randomBytes = new byte[32];
@@ -72,11 +76,33 @@ public class CommonUtil {
             sha256 = MessageDigest.getInstance("SHA-256");
         }
         catch (NoSuchAlgorithmException e) {
-             logger.error("トークンのハッシュ化に失敗しました");
+            logger.error("トークンのハッシュ化に失敗しました");
             throw new RuntimeException(e);
         }
         HexFormat hex = HexFormat.of();
         return hex.formatHex(sha256.digest(token.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    // 承認関連
+    public static boolean isApprovalActionButtonVisible(String status,
+            List<ApprovalProgressStepDto> approvalProgressSteps, Integer currentStepOrder, String userId) {
+        if (status != "PENDING") {
+            return false;
+        }
+        return approvalProgressSteps.stream()
+            .filter(s -> s.getStepOrder() == currentStepOrder)
+            .flatMap(s -> s.getApprovalProgressApprovers().stream())
+            .anyMatch(a -> a.getUserId().equals(userId) && a.getStatus() == ApprovalStatus.PENDING);
+    }
+
+    public static ApprovalStatus getCurrentApprovalStepStatus(List<ApprovalProgressStepDto> approvalProgressSteps,
+            Integer currentStepOrder) {
+        boolean rejected = approvalProgressSteps.stream()
+            .filter(s -> s.getStepOrder() == currentStepOrder)
+            .flatMap(s -> s.getApprovalProgressApprovers().stream())
+            .anyMatch(a -> a.getStatus() == ApprovalStatus.REJECTED);
+
+        return rejected ? ApprovalStatus.REJECTED : ApprovalStatus.PENDING;
     }
 
 }

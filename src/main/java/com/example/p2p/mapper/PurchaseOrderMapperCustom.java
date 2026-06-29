@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.example.p2p.dto.app.PurchaseOrderDetailDto;
 import com.example.p2p.dto.app.PurchaseOrderListRowDto;
 import com.example.p2p.enums.VisibilityScope;
 import com.example.p2p.form.app.PurchaseOrderSearchForm;
@@ -18,8 +19,8 @@ public interface PurchaseOrderMapperCustom {
     int countPurchaseOrders(@Param("form") PurchaseOrderSearchForm form,
             @Param("poViewScope") VisibilityScope scope, @Param("userId") String userId);
 
-//    PurchaseRequestDetailDto selectPurchaseRequestDetailHeader(@Param("prId") String prId,
-//            @Param("poViewScope") VisibilityScope scope, @Param("userId") String userId);
+    PurchaseOrderDetailDto selectPurchaseOrderDetailHeader(@Param("poId") String poId,
+            @Param("poViewScope") VisibilityScope scope, @Param("userId") String userId);
 //    
 //    PurchaseRequestEditViewDto selectPurchaseRequestEditView(String prId);
 //    

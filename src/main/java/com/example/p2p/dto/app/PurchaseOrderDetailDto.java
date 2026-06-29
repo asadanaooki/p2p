@@ -4,24 +4,30 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.example.p2p.enums.ApprovalStatus;
-import com.example.p2p.enums.PurchaseRequestStatus;
+import com.example.p2p.enums.PurchaseOrderStatus;
+import com.example.p2p.enums.PurchaseOrderType;
 import com.example.p2p.util.CommonUtil;
 
 import lombok.Data;
 
 @Data
-public class PurchaseRequestDetailDto {
+public class PurchaseOrderDetailDto {
+
+    // Mybatis用
+    private String poId;
 
     // ヘッダー
     private Integer displayNumber;
 
-    private String requester;
+    private PurchaseOrderType orderType;
 
-    private LocalDate dueDate;
+    private String purchaser;
+
+    private String supplierName;
 
     private int totalAmountExcludingTax;
 
-    private PurchaseRequestStatus status;
+    private PurchaseOrderStatus status;
 
     private String note;
 
@@ -29,8 +35,19 @@ public class PurchaseRequestDetailDto {
 
     private String userId;
 
+    // POのみ
+    private LocalDate deliveryDueDate;
+
+    // SOのみ
+    private LocalDate servicePeriodFrom;
+
+    private LocalDate servicePeriodTo;
+
+    // 関連するPR
+    private List<Integer> relatedPrDisplayNumbers;
+
     // 明細
-    private List<PurchaseRequestDetailLineDto> details;
+    private List<PurchaseOrderDetailLineDto> details;
 
     // 承認状況
     private List<ApprovalProgressStepDto> approvalProgressSteps;
@@ -56,8 +73,8 @@ public class PurchaseRequestDetailDto {
     }
 
     public boolean isCanEdit() {
-        return status == PurchaseRequestStatus.PENDING || status == PurchaseRequestStatus.APPROVED
-                || status == PurchaseRequestStatus.REJECTED;
+        return status == PurchaseOrderStatus.PENDING || status == PurchaseOrderStatus.APPROVED
+                || status == PurchaseOrderStatus.REJECTED;
     }
 
 }

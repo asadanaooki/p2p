@@ -6,10 +6,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.example.p2p.dto.app.PurchaseOrderDetailDto;
 import com.example.p2p.dto.app.PurchaseOrderListRowDto;
 import com.example.p2p.dto.app.PurchaseOrderListViewDto;
-import com.example.p2p.dto.app.PurchaseRequestListViewDto;
 import com.example.p2p.form.app.PurchaseOrderSearchForm;
+import com.example.p2p.mapper.ApprovalTaskMapperCustom;
+import com.example.p2p.mapper.PurchaseOrderDetailMapperCustom;
+import com.example.p2p.mapper.PurchaseOrderMapper;
 import com.example.p2p.mapper.PurchaseOrderMapperCustom;
 import com.example.p2p.mapper.SupplierMapperCustom;
 import com.example.p2p.security.CustomUserDetails;
@@ -27,6 +30,12 @@ public class PurchaseOrderService {
     
     private SupplierMapperCustom supplierMapperCustom;
     
+    private PurchaseOrderDetailMapperCustom purchaseOrderDetailMapperCustom;
+    
+    private PurchaseOrderMapper purchaseOrderMapper;
+    
+    private ApprovalTaskMapperCustom approvalTaskMapperCustom;
+    
     public PurchaseOrderListViewDto searchPurchaseOrders(PurchaseOrderSearchForm form,
             CustomUserDetails loginUser) {
         logger.debug("発注一覧取得開始");
@@ -34,14 +43,29 @@ public class PurchaseOrderService {
         int page = form.getPage();
         PurchaseOrderListViewDto dto = new PurchaseOrderListViewDto();
         List<PurchaseOrderListRowDto> pos = purchaseOrderMapperCustom.selectPurchaseOrders(form,
-                loginUser.getPrViewScope(), loginUser.getUsername());
+                loginUser.getPoViewScope(), loginUser.getUsername());
         dto.setPurchaseOrders(pos);
         dto.setSupplierOptions(supplierMapperCustom.selectSupplierOptions());
         dto.setCurrentPage(page);
         dto.setPageNumberList(CommonUtil.createPageNumbers(purchaseOrderMapperCustom.countPurchaseOrders(form,
-                loginUser.getPrViewScope(), loginUser.getUsername()), form.getSize(), page, 2));
+                loginUser.getPoViewScope(), loginUser.getUsername()), form.getSize(), page, 2));
 
         logger.debug("発注一覧取得完了");
+        return dto;
+    }
+    
+    public PurchaseOrderDetailDto getPurchaseOrderDetail(String poId, CustomUserDetails loginUser) {
+        logger.debug("発注詳細取得開始");
+
+        PurchaseOrderDetailDto dto = purchaseOrderMapperCustom.selectPurchaseOrderDetailHeader(poId,
+                loginUser.getPoViewScope(), loginUser.getUsername());
+        dto.setDetails(purchaseOrderDetailMapperCustom.selectPurchaseOrderDetailLines(poId,
+                loginUser.getPrViewScope(), loginUser.getUsername()));
+        dto.setApprovalProgressSteps(approvalTaskMapperCustom.selectApprovalProgressSteps(poId));
+        dto.setCurrentStepOrder(purchaseOrderMapper.selectByPrimaryKey(poId).getCurrentStepOrder());
+
+        logger.debug("発注詳細取得完了");
+
         return dto;
     }
 }

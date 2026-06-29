@@ -8,14 +8,13 @@
     </choose>
   </sql>
   
-  
   <select id="selectPurchaseOrders" resultType="com.example.p2p.dto.app.PurchaseOrderListRowDto">
     select 
       po.po_id,
       po.order_type,
       po.display_number,
       CONCAT_WS(' ', u.last_name, u.first_name) as purchaser,
-      po.due_date,
+      po.delivery_due_date as due_date,
       po.snap_supplier_name as supplier_name,
       po.total_amount_excluding_tax,
       po.status
@@ -30,10 +29,10 @@
        </if>
 
       <if test="form.dueDateFrom != null">
-        and po.due_date &gt;= #{form.dueDateFrom}
+        and po.delivery_due_date &gt;= #{form.dueDateFrom}
       </if>
       <if test="form.dueDateTo != null">
-        and po.due_date &lt;= #{form.dueDateTo}
+        and po.delivery_due_date &lt;= #{form.dueDateTo}
       </if>
       <if test="form.supplierId != null">
         and s.supplier_id = #{form.supplierId}
@@ -62,7 +61,7 @@
         end
         </when>
         <when test="form.sortBy.toString().equals('PURCHASER')">concat(u.last_name_kana, u.first_name_kana)</when>
-        <when test="form.sortBy.toString().equals('DUE_DATE')">po.due_date
+        <when test="form.sortBy.toString().equals('DUE_DATE')">po.delivery_due_date
           <choose>
             <when test="form.sortDirection.toString().equals('ASC')">asc nulls first</when>
             <when test="form.sortDirection.toString().equals('DESC')">desc nulls last</when>
@@ -100,10 +99,10 @@
        </if>
 
       <if test="form.dueDateFrom != null">
-        and po.due_date &gt;= #{form.dueDateFrom}
+        and po.delivery_due_date &gt;= #{form.dueDateFrom}
       </if>
       <if test="form.dueDateTo != null">
-        and po.due_date &lt;= #{form.dueDateTo}
+        and po.delivery_due_date &lt;= #{form.dueDateTo}
       </if>
       <if test="form.supplierId != null">
         and s.supplier_id = #{form.supplierId}
@@ -117,9 +116,67 @@
           po.display_number::varchar ~ #{form.keywordRegex}
           or normalization(lower(concat(u.last_name, u.first_name))) ~#{form.keywordRegex}
           or normalization(lower(concat(u.last_name_kana, u.first_name_kana))) ~#{form.keywordRegex}
+          or normalization(lower(s.name)) ~#{form.keywordRegex}
           or normalization(lower(s.name_kana)) ~#{form.keywordRegex}
         )
       </if>
     </where>
+  </select>
+  
+  <resultMap id="purchaseOrderDetailHeaderMap" type="com.example.p2p.dto.app.PurchaseOrderDetailDto">
+    <id property="poId" column="po_id"/>
+  
+    <result property="displayNumber" column="display_number"/>
+    <result property="orderType" column="order_type"/>
+    <result property="supplierName" column="supplier_name"/>
+    <result property="userId" column="user_id"/>
+    <result property="purchaser" column="purchaser"/>
+    <result property="totalAmountExcludingTax" column="total_amount_excluding_tax"/>
+    <result property="status" column="status"/>
+    <result property="note" column="note"/>
+    <result property="createdAt" column="created_at"/>
+  
+    <result property="deliveryDueDate" column="delivery_due_date"/>
+  
+    <result property="servicePeriodFrom" column="service_period_from"/>
+    <result property="servicePeriodTo" column="service_period_to"/>
+    <collection property="relatedPrDisplayNumbers" ofType="java.lang.Integer">
+      <result column="pr_display_number"></result>
+    </collection>  
+  
+  </resultMap>
+  
+  <select id="selectPurchaseOrderDetailHeader" resultMap="purchaseOrderDetailHeaderMap">
+    select 
+      po.po_id,
+      po.display_number,
+      po.order_type,
+      po.snap_supplier_name as supplier_name,
+      u.user_id,
+      CONCAT_WS(' ', u.last_name, u.first_name) as purchaser,
+      po.total_amount_excluding_tax,
+      po.status,
+      po.note,
+      CAST(po.created_at AS DATE) as created_at,
+      
+      po.delivery_due_date,
+      
+      po.service_period_from,
+      po.service_period_to,
+      
+      pr.display_number as pr_display_number
+    from purchase_order po
+    join users u
+      on po.purchaser_user_id = u.user_id
+    left join purchase_request_purchase_order prpo
+      on po.po_id = prpo.po_id
+    left join purchase_request pr
+      on pr.pr_id = prpo.pr_id
+    where 
+      po.po_id = #{poId}
+      <if test="poViewScope.toString().equals('SELF')">
+        and po.purchaser_user_id = #{userId}
+      </if>
+      order by pr.display_number asc
   </select>
 </mapper>
