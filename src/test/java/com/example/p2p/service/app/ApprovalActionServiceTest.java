@@ -15,6 +15,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.p2p.entity.ApprovalTask;
+import com.example.p2p.entity.ApprovalTaskExample;
 import com.example.p2p.entity.ApprovalTaskKey;
 import com.example.p2p.entity.PurchaseRequest;
 import com.example.p2p.entity.Users;
@@ -48,6 +49,10 @@ class ApprovalActionServiceTest {
     @BeforeEach
     void setup() {
         String prId = "88bfbcf6-2be6-4d31-8a46-155a7b58ab93";
+        ApprovalTaskExample ex = new ApprovalTaskExample();
+        ex.createCriteria().andDocumentIdEqualTo(prId);
+        approvalTaskMapper.deleteByExample(ex);
+
         Users user = new Users();
         user.setUserId("6fe99043-cbd1-49c0-96d4-c156c58a8e60");
         user.setRoleId("6862542a-1954-4192-81e8-f18c583ade01");

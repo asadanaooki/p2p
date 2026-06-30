@@ -12,6 +12,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.p2p.form.app.PurchaseOrderSearchForm;
@@ -72,18 +73,18 @@ public class PurchaseOrderController {
         return "app/purchase-order-list";
     }
 
-    // @PreAuthorize("hasAuthority('PR_VIEW_ALL') or hasAuthority('PR_VIEW_SELF')")
-    // @GetMapping("/{prId}")
-    // public String showPurchaseRequestDetail(@PathVariable @NotBlank String prId,
-    // @AuthenticationPrincipal CustomUserDetails loginUser, Model model) {
-    // logger.debug("PR詳細画面表示開始");
-    //
-    // model.addAttribute("view", purchaseRequestService.getPurchaseRequestDetail(prId,
-    // loginUser));
-    //
-    // logger.debug("PR詳細画面表示完了");
-    // return "app/purchase-request-detail";
-    // }
+     @PreAuthorize("hasAuthority('PO_VIEW_ALL') or hasAuthority('PO_VIEW_SELF')")
+     @GetMapping("/{poId}")
+     public String showPurchaseOrderDetail(@PathVariable String poId,
+     @AuthenticationPrincipal CustomUserDetails loginUser, Model model) {
+     logger.debug("発注詳細画面表示開始");
+    
+     model.addAttribute("view", purchaseOrderService.getPurchaseOrderDetail(poId,
+     loginUser));
+    
+     logger.debug("発注詳細画面表示完了");
+     return "app/purchase-order-detail";
+     }
     //
     // @PreAuthorize("hasAuthority('PR_CREATE')")
     // @GetMapping("/create")

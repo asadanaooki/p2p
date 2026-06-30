@@ -13,6 +13,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.p2p.dto.admin.ItemEditViewDto;
@@ -43,6 +44,9 @@ class ItemServiceTest {
 
     @Autowired
     PurchaseRequestDetailMapper purchaseRequestDetailMapper;
+
+    @Autowired
+    JdbcTemplate jdbcTemplate;
     
 
     @Nested
@@ -50,6 +54,7 @@ class ItemServiceTest {
 
         @BeforeEach
         void setup() {
+            jdbcTemplate.update("delete from purchase_order_line");
             purchaseRequestDetailMapper.deleteByExample(new PurchaseRequestDetailExample());
             itemMapper.deleteByExample(new ItemExample());
         }

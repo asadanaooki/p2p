@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <link rel="stylesheet" th:href="@{/css/common.css}" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/app/purchase-order-detail.css}">
+
+</head>
+
+<body>
+  <main class="page">
+    <div class="success-message" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <div class="page-error-message" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+    <h1 class="page-title">発注詳細</h1>
+    <div class="page-actions">
+      <a class="edit-button" th:if="${view.canEdit}" th:href="@{/purchase-order/{poId}/edit(poId=${poId})}">編集</a>
+      <span th:unless="${view.canEdit}" class="edit-button is-disabled">編集</span>
+
+      <div class="dropdown">
+        <button class="edit-button dropdown-toggle" type="button" data-bs-toggle="dropdown">操作</button>
+
+        <ul class="dropdown-menu">
+          <li>
+            <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#voidModal">
+              無効化
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <div class="ms-5" th:if="${view.approvalActionButtonVisible}">
+        <form class="d-flex gap-2" th:action="@{/purchase-order/{poId}/approve(poId=${poId})}" method="post">
+          <button type="submit" class="btn btn-success px-4">承認</button>
+          <button type="button" class="btn btn-outline-danger px-4" data-bs-toggle="modal"
+            data-bs-target="#rejectModal">否認</button>
+        </form>
+
+      </div>
+    </div>
+
+
+    <div class="summary-grid">
+
+      <!-- 1行目 -->
+      <div class=" status-summary-item summary-primary-item">
+        <div class="summary-label">状態</div>
+        <div class="summary-value">
+          <th:block th:switch="${view.status.toString()}">
+            <span th:case="'PENDING'"
+              class="badge rounded-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-2"
+              th:text="${view.status.label}">
+              承認待ち
+            </span>
+
+            <span th:case="'APPROVED'"
+              class="badge rounded-pill bg-success-subtle text-success-emphasis border border-success-subtle px-3 py-2"
+              th:text="${view.status.label}">
+              承認済み
+            </span>
+
+            <span th:case="'REJECTED'"
+              class="badge rounded-pill bg-danger-subtle text-danger-emphasis border border-danger-subtle px-3 py-2"
+              th:text="${view.status.label}">
+              否認
+            </span>
+
+            <span th:case="'CANCELLED'"
+              class="badge rounded-pill bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle px-3 py-2"
+              th:text="${view.status.label}">
+              取消
+            </span>
+
+            <span th:case="'COMPLETED'"
+              class="badge rounded-pill bg-primary-subtle text-primary-emphasis border border-primary-subtle px-3 py-2"
+              th:text="${view.status.label}">
+              完了
+            </span>
+          </th:block>
+        </div>
+      </div>
+
+      <div class="summary-primary-item">
+        <div class="summary-label">種別</div>
+        <div class="summary-value" th:switch="${orderType.toString()}">
+          <span th:case="'STANDARD'"
+            class="badge rounded-pill bg-info-subtle text-info-emphasis border border-info-subtle px-3 py-2">
+            PO
+          </span>
+          <span th:case="'SERVICE'"
+            class="badge rounded-pill bg-dark-subtle text-dark-emphasis border border-dark-subtle px-3 py-2">
+            SO
+          </span>
+        </div>
+      </div>
+
+      <!-- 2行目 -->
+      <div>
+        <div class="summary-label">番号</div>
+        <div class="summary-value" th:text="${view.displayNumber}"></div>
+      </div>
+
+      <div>
+        <div class="summary-label">発注者</div>
+        <div class="summary-value" th:text="${view.purchaser}"></div>
+      </div>
+
+      <div>
+        <div class="summary-label">仕入先</div>
+        <div class="summary-value" th:text="${view.supplierName}"></div>
+      </div>
+
+      <div>
+        <div class="summary-label">作成日</div>
+        <div class="summary-value" th:text="${#temporals.format(view.createdAt, 'yyyy/M/d')}"></div>
+      </div>
+
+      <!-- 3行目 -->
+      <div class="summary-wide-item" th:if="${view.orderType.toString().equals('STANDARD')}">
+        <div class="summary-label">納期</div>
+        <div class="summary-value" th:text="${#temporals.format(view.deliveryDueDate, 'yyyy/M/d')}"></div>
+      </div>
+
+      <div th:if="${view.orderType.toString().equals('SERVICE')}">
+        <div class="summary-label">期間</div>
+        <div class="summary-value">
+          <span th:text="${#temporals.format(view.servicePeriodFrom, 'yyyy/M/d')}"></span>
+          <span>〜</span>
+          <span th:text="${#temporals.format(view.servicePeriodTo, 'yyyy/M/d')}"></span>
+        </div>
+      </div>
+
+      <div th:if="${!#lists.isEmpty(view.relatedPrDisplayNumbers)}">
+        <div class="summary-label">関連PR</div>
+        <div class="summary-value related-pr-value">
+          <a th:each="pr : ${view.relatedPrs}" th:href="@{/purchase-request/{prId}(prId=${pr.prId})}"
+            class="badge rounded-pill bg-light text-dark border text-decoration-none me-1 mb-1"
+            th:text="${pr.displayNumber}">
+          </a>
+        </div>
+      </div>
+    </div>
+
+
+
+    </div>
+
+
+
+
+
+    <table class="detail-table">
+      <thead>
+        <tr>
+          <th class="col-line">No.</th>
+          <th class="col-name">名称</th>
+          <th class="col-kind">区分</th>
+          <th class="col-supplier">仕入先</th>
+          <th class="col-unit">単位</th>
+          <th class="col-price">単価</th>
+          <th class="col-quantity">数量</th>
+          <th class="col-subtotal">小計</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr th:each="detail, stat: ${view.details}">
+          <td class="text-right" th:text="${stat.count}"></td>
+          <td th:text="${detail.itemName}"></td>
+          <td th:text="${detail.kind.label}"></td>
+          <td th:text="${detail.supplierName}"></td>
+          <td th:text="${detail.unitName}"></td>
+          <td class="text-right" th:text="${#numbers.formatInteger(detail.unitPrice, 1, 'COMMA')}"></td>
+          <td class="text-right" th:text="${detail.quantity}"></td>
+          <td class="text-right" th:text="${#numbers.formatInteger(detail.subtotalExcludingTax, 1, 'COMMA')}"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="amount-area">
+      <div class="amount-cell">税抜合計</div>
+      <div class="amount-cell" th:text="${#numbers.formatInteger(view.totalAmountExcludingTax, 1, 'COMMA')}"></div>
+
+      <div class="amount-cell">消費税(10%）</div>
+      <div class="amount-cell" th:text="${#numbers.formatInteger(view.taxAmount, 1, 'COMMA')}"></div>
+
+      <div class="amount-cell">税込合計</div>
+      <div class="amount-cell" th:text="${#numbers.formatInteger(view.totalAmountIncludingTax, 1, 'COMMA')}"></div>
+    </div>
+
+    <div class="info-area">
+      <div class="info-block">
+        <div class="info-label">備考</div>
+        <div class="info-value" th:text="${view.note}"></div>
+      </div>
+
+      <!-- 承認状況 -->
+      <div class="mt-4">
+        <h2 class="h6 mb-1 fw-normal approval-title">承認状況</h2>
+
+        <div class="pt-2 ps-2">
+          <!-- ステップ単位 -->
+          <div class="mb-3" th:each="step : ${view.approvalProgressSteps}">
+            <!-- ステップ見出し -->
+            <div class="approval-progress-line approval-step-line border-bottom pb-2 mb-1">
+              <div class="approval-name-area d-flex align-items-center gap-2">
+                <span class="approval-step-dot"
+                  th:classappend="${step.stepOrder == view.currentStepOrder} ? 'is-current' : ''"></span>
+                <div class="fw-normal" th:text="${step.stepName}"></div>
+              </div>
+
+              <div class="approval-status-area">
+                <span th:if="${step.stepOrder &lt; view.currentStepOrder}"
+                  class="badge bg-success-subtle text-success-emphasis d-inline-flex align-items-center">承認済み</span>
+
+                <span
+                  th:if="${step.stepOrder == view.currentStepOrder and view.currentApprovalStepStatus.toString().equals('PENDING')}"
+                  class="badge bg-warning-subtle text-warning-emphasis d-inline-flex align-items-center">現在承認待ち</span>
+                <span
+                  th:if="${step.stepOrder == view.currentStepOrder and view.currentApprovalStepStatus.toString().equals('REJECTED')}"
+                  class="badge bg-danger-subtle text-danger-emphasis d-inline-flex align-items-center">否認</span>
+
+                <span th:if="${step.stepOrder &gt; view.currentStepOrder}"
+                  class="badge bg-secondary-subtle text-secondary-emphasis d-inline-flex align-items-center">未処理</span>
+              </div>
+            </div>
+
+            <!-- 承認者一覧 -->
+            <div class="approval-progress-line approval-approver-line"
+              th:each="approver : ${step.approvalProgressApprovers}">
+              <div>
+                <div class="fw-normal" th:text="${approver.userName}"></div>
+                <div class="small text-muted mt-1" th:if="${approver.comment != null}" th:text="${approver.comment}">
+                </div>
+              </div>
+
+              <div class="approval-approver-status">
+                <span th:if="${approver.status.toString().equals('APPROVED')}">承認済み</span>
+                <span th:if="${approver.status.toString().equals('REJECTED')}">否認</span>
+                <span
+                  th:if=" ${approver.status.toString().equals('PENDING') and step.stepOrder == view.currentStepOrder}">承認待ち</span>
+                <span
+                  th:if="${approver.status.toString().equals('PENDING') and step.stepOrder &gt; view.currentStepOrder}">未処理</span>
+
+                <span class="small text-muted ms-1" th:if="${approver.actedAt != null}">
+                  (<span th:text="${#temporals.format(approver.actedAt, 'yyyy/M/d')}"></span>)
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 無効化モーダル -->
+    <div class="modal fade" id="voidModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <button type="button" class="btn-close align-self-end m-2 mb-0" data-bs-dismiss="modal"></button>
+          <form th:action="@{/purchase-request/{prId}/void(prId=${prId})}" method="post">
+
+            <div class="modal-body">
+              <label for="reason" class="form-label">備考（任意）</label>
+              <textarea id="reason" name="reason" class="form-control" rows="4"></textarea>
+            </div>
+
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-danger">無効化</button>
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">戻る</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 否認モーダル -->
+    <div class="modal fade" id="rejectModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <button type="button" class="btn-close align-self-end m-2 mb-0" data-bs-dismiss="modal"></button>
+
+          <form th:action="@{/purchase-request/{prId}/reject(prId=${prId})}" method="post">
+            <div class="modal-body">
+              <label for="rejectReason" class="form-label">否認理由（任意）</label>
+              <textarea id="rejectReason" name="reason" class="form-control" rows="4"></textarea>
+            </div>
+
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-danger">否認</button>
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">戻る</button>
+
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -52,7 +52,7 @@ class PurchaseOrderServiceTest {
         assertThat(actual.getDeliveryDueDate()).isEqualTo(LocalDate.of(2026, 5, 10));
         assertThat(actual.getServicePeriodFrom()).isNull();
         assertThat(actual.getServicePeriodTo()).isNull();
-        assertThat(actual.getRelatedPrDisplayNumbers()).hasSize(2);
+        assertThat(actual.getRelatedPrs()).hasSize(2);
         assertThat(actual.getDetails()).hasSize(2);
         assertThat(actual.getApprovalProgressSteps()).hasSize(3);
         assertThat(actual.getCurrentStepOrder()).isEqualTo(3);

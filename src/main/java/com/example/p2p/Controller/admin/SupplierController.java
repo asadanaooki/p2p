@@ -83,6 +83,7 @@ public class SupplierController {
             Model model) {
         SupplierDetailDto supplier = supplierService.getSupplierDetail(supplierId);
         form.setName(supplier.getSupplierName());
+        form.setNameKana(supplier.getSupplierNameKana());
         form.setEmail(supplier.getEmail());
         form.setPhoneNumber(supplier.getPhoneNumber());
         form.setPostalCode(supplier.getPostalCode());

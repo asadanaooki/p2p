@@ -15,6 +15,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.example.p2p.dto.admin.UserDetailDto;
 import com.example.p2p.dto.admin.UserListRowDto;
@@ -49,6 +50,9 @@ class UsersMapperCustomTest {
     
     @Autowired
     ApprovalTaskMapper approvalTaskMapper;
+
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 
     @Nested
     class SelectUsers {
@@ -122,6 +126,9 @@ class UsersMapperCustomTest {
 
             @BeforeEach
             void setup() {
+                jdbcTemplate.update("delete from purchase_order_line");
+                jdbcTemplate.update("delete from purchase_request_purchase_order");
+                jdbcTemplate.update("delete from purchase_order");
                 purchaseRequestDetailMapper.deleteByExample(new PurchaseRequestDetailExample());
                 purchaseRequestMapper.deleteByExample(new PurchaseRequestExample());
                 approvalStepApproverMapper.deleteByExample(new ApprovalStepApproverExample());
@@ -309,6 +316,9 @@ class UsersMapperCustomTest {
 
             @BeforeEach
             void setup() {
+                jdbcTemplate.update("delete from purchase_order_line");
+                jdbcTemplate.update("delete from purchase_request_purchase_order");
+                jdbcTemplate.update("delete from purchase_order");
                 purchaseRequestDetailMapper.deleteByExample(new PurchaseRequestDetailExample());
                 purchaseRequestMapper.deleteByExample(new PurchaseRequestExample());
                 approvalStepApproverMapper.deleteByExample(new ApprovalStepApproverExample());

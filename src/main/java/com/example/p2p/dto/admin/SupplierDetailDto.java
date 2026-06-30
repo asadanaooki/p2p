@@ -7,6 +7,8 @@ public class SupplierDetailDto {
 
     private String supplierName;
 
+    private String supplierNameKana;
+
     private String email;
 
     private String phoneNumber;

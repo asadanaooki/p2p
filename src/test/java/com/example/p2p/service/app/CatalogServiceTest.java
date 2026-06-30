@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.p2p.dto.app.CatalogListViewDto;
@@ -27,12 +28,16 @@ class CatalogServiceTest {
     
     @Autowired
     PurchaseRequestDetailMapper purchaseRequestDetailMapper;
+
+    @Autowired
+    JdbcTemplate jdbcTemplate;
     
     @Nested
     class SearchCatalogItems {
 
         @Test
         void searchCatalogItems_notFound() {
+            jdbcTemplate.update("delete from purchase_order_line");
             purchaseRequestDetailMapper.deleteByExample(new PurchaseRequestDetailExample());
             itemMapper.deleteByExample(new ItemExample());
             

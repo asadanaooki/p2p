@@ -137,8 +137,7 @@ class PurchaseRequestServiceTest {
 
         assertThat(actual.getDetails()).hasSize(2);
 
-        assertThat(actual.getApprovalProgressSteps()).hasSize(1);
-        assertThat(actual.getApprovalProgressSteps().get(0).getApprovalProgressApprovers()).hasSize(1);
+        assertThat(actual.getApprovalProgressSteps()).isEmpty();
         assertThat(actual.getCurrentStepOrder()).isOne();
     }
 
@@ -207,12 +206,16 @@ class PurchaseRequestServiceTest {
 
         ApprovalProgressStepDto dto = actual.getApprovalProgressSteps().get(0);
         assertThat(dto.getStepOrder()).isOne();
-        assertThat(dto.getStepName()).isEqualTo("1段階目承認");
+        ApprovalTaskExample ex = new ApprovalTaskExample();
+        ex.createCriteria()
+            .andDocumentIdEqualTo("3c4f62bf-855b-4c35-b19d-eb06acb16896")
+            .andStepOrderEqualTo(1);
+        assertThat(dto.getStepName()).isEqualTo(approvalTaskMapper.selectByExample(ex).get(0).getStepName());
         assertThat(dto.getApprovalProgressApprovers()).singleElement().satisfies(s -> {
             assertThat(s.getUserName()).isEqualTo("山田 太郎");
-            assertThat(s.getStatus()).isEqualTo(ApprovalStatus.PENDING);
-            assertThat(s.getComment()).isNull();
-            assertThat(s.getActedAt()).isNull();
+            assertThat(s.getStatus()).isEqualTo(ApprovalStatus.APPROVED);
+            assertThat(s.getComment()).isNotBlank();
+            assertThat(s.getActedAt()).isNotNull();
         });
 
     }

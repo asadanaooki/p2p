@@ -140,8 +140,9 @@
   
     <result property="servicePeriodFrom" column="service_period_from"/>
     <result property="servicePeriodTo" column="service_period_to"/>
-    <collection property="relatedPrDisplayNumbers" ofType="java.lang.Integer">
-      <result column="pr_display_number"></result>
+    <collection property="relatedPrs" ofType="com.example.p2p.dto.app.PurchaseOrderRelatedPrDto">
+      <id property="prId" column="pr_id"></id>
+      <result property="displayNumber" column="pr_display_number"></result>
     </collection>  
   
   </resultMap>
@@ -164,6 +165,7 @@
       po.service_period_from,
       po.service_period_to,
       
+      pr.pr_id,
       pr.display_number as pr_display_number
     from purchase_order po
     join users u

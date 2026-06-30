@@ -60,7 +60,7 @@ public class PurchaseOrderService {
         PurchaseOrderDetailDto dto = purchaseOrderMapperCustom.selectPurchaseOrderDetailHeader(poId,
                 loginUser.getPoViewScope(), loginUser.getUsername());
         dto.setDetails(purchaseOrderDetailMapperCustom.selectPurchaseOrderDetailLines(poId,
-                loginUser.getPrViewScope(), loginUser.getUsername()));
+                loginUser.getPoViewScope(), loginUser.getUsername()));
         dto.setApprovalProgressSteps(approvalTaskMapperCustom.selectApprovalProgressSteps(poId));
         dto.setCurrentStepOrder(purchaseOrderMapper.selectByPrimaryKey(poId).getCurrentStepOrder());
 

@@ -13,6 +13,10 @@ public class SupplierEditForm {
     @Length(max = 50)
     private String name;
 
+    @NotBlank
+    @Length(max = 255)
+    private String nameKana;
+
     @Email
     @Length(max = 254)
     private String email;
