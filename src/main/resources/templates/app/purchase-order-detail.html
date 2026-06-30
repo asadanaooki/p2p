@@ -9,7 +9,7 @@
 </head>
 
 <body>
-  <main class="page">
+  <main class="page" th:with="orderTypeText=${view.orderType.toString()}">
     <div class="success-message" th:if="${successMessage}" th:text="${successMessage}"></div>
     <div class="page-error-message" th:if="${errorMessage}" th:text="${errorMessage}"></div>
     <h1 class="page-title">発注詳細</h1>
@@ -43,7 +43,7 @@
     <div class="summary-grid">
 
       <!-- 1行目 -->
-      <div class=" status-summary-item summary-primary-item">
+      <div>
         <div class="summary-label">状態</div>
         <div class="summary-value">
           <th:block th:switch="${view.status.toString()}">
@@ -82,13 +82,12 @@
 
       <div class="summary-primary-item">
         <div class="summary-label">種別</div>
-        <div class="summary-value" th:switch="${orderType.toString()}">
+        <div class="summary-value" th:switch="${orderTypeText}">
           <span th:case="'STANDARD'"
             class="badge rounded-pill bg-info-subtle text-info-emphasis border border-info-subtle px-3 py-2">
             PO
           </span>
-          <span th:case="'SERVICE'"
-            class="badge rounded-pill bg-dark-subtle text-dark-emphasis border border-dark-subtle px-3 py-2">
+          <span th:case="'SERVICE'" class="badge rounded-pill order-type-service-badge px-3 py-2">
             SO
           </span>
         </div>
@@ -110,18 +109,13 @@
         <div class="summary-value" th:text="${view.supplierName}"></div>
       </div>
 
-      <div>
-        <div class="summary-label">作成日</div>
-        <div class="summary-value" th:text="${#temporals.format(view.createdAt, 'yyyy/M/d')}"></div>
-      </div>
-
       <!-- 3行目 -->
-      <div class="summary-wide-item" th:if="${view.orderType.toString().equals('STANDARD')}">
+      <div th:if="${orderTypeText.equals('STANDARD')}">
         <div class="summary-label">納期</div>
         <div class="summary-value" th:text="${#temporals.format(view.deliveryDueDate, 'yyyy/M/d')}"></div>
       </div>
 
-      <div th:if="${view.orderType.toString().equals('SERVICE')}">
+      <div th:if="${orderTypeText.equals('SERVICE')}">
         <div class="summary-label">期間</div>
         <div class="summary-value">
           <span th:text="${#temporals.format(view.servicePeriodFrom, 'yyyy/M/d')}"></span>
@@ -130,62 +124,81 @@
         </div>
       </div>
 
-      <div th:if="${!#lists.isEmpty(view.relatedPrDisplayNumbers)}">
+      <div th:if="${!#lists.isEmpty(view.relatedPrs)}">
         <div class="summary-label">関連PR</div>
         <div class="summary-value related-pr-value">
-          <a th:each="pr : ${view.relatedPrs}" th:href="@{/purchase-request/{prId}(prId=${pr.prId})}"
+          <a th:each="pr : ${view.relatedPrs}" th:href="@{/purchase-order/{prId}(prId=${pr.prId})}"
             class="badge rounded-pill bg-light text-dark border text-decoration-none me-1 mb-1"
             th:text="${pr.displayNumber}">
           </a>
         </div>
       </div>
+
+      <div>
+        <div class="summary-label">作成日</div>
+        <div class="summary-value" th:text="${#temporals.format(view.createdAt, 'yyyy/M/d')}"></div>
+      </div>
     </div>
 
+    <th:block th:switch="${orderTypeText}">
+      <!-- PO -->
+      <table class="detail-table" th:case="'STANDARD'">
+        <thead>
+          <tr>
+            <th class="col-line">No.</th>
+            <th class="col-name">名称</th>
+            <th class="col-unit">単位</th>
+            <th class="col-price">単価</th>
+            <th class="col-quantity">数量</th>
+            <th class="col-subtotal">小計</th>
+          </tr>
+        </thead>
 
+        <tbody>
+          <tr th:each="detail: ${view.details}">
+            <td class="text-right" th:text="${detail.lineNo}"></td>
+            <td th:text="${detail.itemName}"></td>
+            <td th:text="${detail.unitName}"></td>
+            <td class="text-right" th:text="${#numbers.formatInteger(detail.unitPrice, 1, 'COMMA')}"></td>
+            <td class="text-right" th:text="${detail.quantity}"></td>
+            <td class="text-right" th:text="${#numbers.formatInteger(detail.lineAmountExcludingTax, 1, 'COMMA')}"></td>
+          </tr>
+        </tbody>
+      </table>
 
-    </div>
+      <!-- SO -->
+      <table class="detail-table" th:case="'SERVICE'">
+        <thead>
+          <tr>
+            <th class="col-line">No.</th>
+            <th class="col-name">名称</th>
+            <th class="col-subtotal">金額</th>
+          </tr>
+        </thead>
 
+        <tbody>
+          <tr th:each="detail: ${view.details}">
+            <td class="text-right" th:text="${detail.lineNo}"></td>
+            <td th:text="${detail.itemName}"></td>
+            <td class="text-right" th:text="${#numbers.formatInteger(detail.lineAmountExcludingTax, 1, 'COMMA')}"></td>
+          </tr>
+        </tbody>
+      </table>
 
+    </th:block>
 
-
-
-    <table class="detail-table">
-      <thead>
-        <tr>
-          <th class="col-line">No.</th>
-          <th class="col-name">名称</th>
-          <th class="col-kind">区分</th>
-          <th class="col-supplier">仕入先</th>
-          <th class="col-unit">単位</th>
-          <th class="col-price">単価</th>
-          <th class="col-quantity">数量</th>
-          <th class="col-subtotal">小計</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <tr th:each="detail, stat: ${view.details}">
-          <td class="text-right" th:text="${stat.count}"></td>
-          <td th:text="${detail.itemName}"></td>
-          <td th:text="${detail.kind.label}"></td>
-          <td th:text="${detail.supplierName}"></td>
-          <td th:text="${detail.unitName}"></td>
-          <td class="text-right" th:text="${#numbers.formatInteger(detail.unitPrice, 1, 'COMMA')}"></td>
-          <td class="text-right" th:text="${detail.quantity}"></td>
-          <td class="text-right" th:text="${#numbers.formatInteger(detail.subtotalExcludingTax, 1, 'COMMA')}"></td>
-        </tr>
-      </tbody>
-    </table>
 
     <div class="amount-area">
-      <div class="amount-cell">税抜合計</div>
-      <div class="amount-cell" th:text="${#numbers.formatInteger(view.totalAmountExcludingTax, 1, 'COMMA')}"></div>
+      <div class="amount-cell text-right">税抜合計</div>
+      <div class="amount-cell text-right" th:text="${#numbers.formatInteger(view.totalAmountExcludingTax, 1, 'COMMA')}">
+      </div>
 
-      <div class="amount-cell">消費税(10%）</div>
-      <div class="amount-cell" th:text="${#numbers.formatInteger(view.taxAmount, 1, 'COMMA')}"></div>
+      <div class="amount-cell text-right">消費税(10%)</div>
+      <div class="amount-cell text-right" th:text="${#numbers.formatInteger(view.taxAmount, 1, 'COMMA')}"></div>
 
-      <div class="amount-cell">税込合計</div>
-      <div class="amount-cell" th:text="${#numbers.formatInteger(view.totalAmountIncludingTax, 1, 'COMMA')}"></div>
+      <div class="amount-cell text-right">税込合計</div>
+      <div class="amount-cell text-right" th:text="${#numbers.formatInteger(view.totalAmountIncludingTax, 1, 'COMMA')}">
+      </div>
     </div>
 
     <div class="info-area">
@@ -257,7 +270,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <button type="button" class="btn-close align-self-end m-2 mb-0" data-bs-dismiss="modal"></button>
-          <form th:action="@{/purchase-request/{prId}/void(prId=${prId})}" method="post">
+          <form th:action="@{/purchase-order/{prId}/void(prId=${prId})}" method="post">
 
             <div class="modal-body">
               <label for="reason" class="form-label">備考（任意）</label>
@@ -280,7 +293,7 @@
         <div class="modal-content">
           <button type="button" class="btn-close align-self-end m-2 mb-0" data-bs-dismiss="modal"></button>
 
-          <form th:action="@{/purchase-request/{prId}/reject(prId=${prId})}" method="post">
+          <form th:action="@{/purchase-order/{prId}/reject(prId=${prId})}" method="post">
             <div class="modal-body">
               <label for="rejectReason" class="form-label">否認理由（任意）</label>
               <textarea id="rejectReason" name="reason" class="form-control" rows="4"></textarea>
