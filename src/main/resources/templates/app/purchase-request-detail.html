@@ -103,6 +103,16 @@
         <div class="summary-label">申請日</div>
         <div class="summary-value" th:text="${#temporals.format(view.createdAt, 'yyyy/M/d')}"></div>
       </div>
+
+      <div th:if="${!#lists.isEmpty(view.relatedPos)}">
+        <div class="summary-label">関連PO</div>
+        <div class="summary-value related-po-value">
+          <a th:each="po : ${view.relatedPos}" th:href="@{/purchase-order/{poId}(poId=${po.poId})}"
+            class="badge rounded-pill bg-light text-dark border text-decoration-none me-1 mb-1"
+            th:text="${po.displayNumber}">
+          </a>
+        </div>
+      </div>
     </div>
 
     <table class="detail-table">

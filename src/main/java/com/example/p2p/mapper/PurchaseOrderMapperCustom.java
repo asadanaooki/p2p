@@ -7,6 +7,8 @@ import org.apache.ibatis.annotations.Param;
 
 import com.example.p2p.dto.app.PurchaseOrderDetailDto;
 import com.example.p2p.dto.app.PurchaseOrderListRowDto;
+import com.example.p2p.dto.app.PurchaseOrderSupplierSelectionDto;
+import com.example.p2p.enums.ItemKind;
 import com.example.p2p.enums.VisibilityScope;
 import com.example.p2p.form.app.PurchaseOrderSearchForm;
 
@@ -21,6 +23,8 @@ public interface PurchaseOrderMapperCustom {
 
     PurchaseOrderDetailDto selectPurchaseOrderDetailHeader(@Param("poId") String poId,
             @Param("poViewScope") VisibilityScope scope, @Param("userId") String userId);
+    
+    List<PurchaseOrderSupplierSelectionDto> selectPurchaseOrderSupplierSelections(ItemKind itemKind);
 //    
 //    PurchaseRequestEditViewDto selectPurchaseRequestEditView(String prId);
 //    

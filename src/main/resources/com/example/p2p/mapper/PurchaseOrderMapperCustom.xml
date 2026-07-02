@@ -181,4 +181,56 @@
       </if>
       order by pr.display_number asc
   </select>
+  
+  <select id="selectPurchaseOrderSupplierSelections" resultType="com.example.p2p.dto.app.PurchaseOrderSupplierSelectionDto">
+   <!-- カタログ -->
+    select
+    s.name_kana as sort,
+        prd.supplier_id
+        , s.name as supplier_name
+        , count(prd.pr_detail_id) as detail_count
+        , array_agg(
+            distinct pr.display_number
+            order by
+                pr.display_number asc
+        ) as pr_numbers
+        , sum(prd.subtotal_excluding_tax) as total_amount_excluding_tax
+    from
+        purchase_request pr
+        join purchase_request_detail prd
+            on pr.pr_id = prd.pr_id
+        join supplier s
+            on prd.supplier_id = s.supplier_id
+    where
+        prd.snap_kind = #{itemKind}
+    group by
+        prd.supplier_id
+        , s.name
+        , s.name_kana
+    
+    union all
+
+    select
+          prd.snap_supplier_name as sort,
+          string_agg(prd.supplier_id, '') as supplier_id
+        , prd.snap_supplier_name as supplier_name
+        , count(prd.pr_detail_id) as detail_count
+        , array_agg(
+            distinct pr.display_number
+            order by
+                pr.display_number asc
+        ) as pr_numbers
+        , sum(prd.subtotal_excluding_tax) as total_amount_excluding_tax
+    from
+        purchase_request pr
+        join purchase_request_detail prd
+            on pr.pr_id = prd.pr_id
+    where
+        prd.supplier_id is null
+        and prd.snap_kind = #{itemKind}
+    group by
+        prd.snap_supplier_name
+        
+    order by sort asc
+  </select>
 </mapper>

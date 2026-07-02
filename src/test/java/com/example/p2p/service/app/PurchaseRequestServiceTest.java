@@ -135,6 +135,7 @@ class PurchaseRequestServiceTest {
         PurchaseRequestDetailDto actual = purchaseRequestService
             .getPurchaseRequestDetail("6b2c5959-233f-4b54-8a9b-98f4a1b13c40", loginUser);
 
+        assertThat(actual.getRelatedPos()).hasSize(2);
         assertThat(actual.getDetails()).hasSize(2);
 
         assertThat(actual.getApprovalProgressSteps()).isEmpty();
@@ -183,6 +184,7 @@ class PurchaseRequestServiceTest {
         assertThat(actual.getNote()).isEqualTo("test");
         assertThat(actual.getCreatedAt()).isEqualTo(LocalDate.of(2026, 4, 21));
 
+        assertThat(actual.getRelatedPos()).hasSize(2);
         assertThat(actual.getDetails()).hasSize(3);
 
         assertThat(actual.getDetails()).extracting(PurchaseRequestDetailLineDto::getItemName)

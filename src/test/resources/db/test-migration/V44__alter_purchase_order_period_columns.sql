@@ -3,6 +3,8 @@ alter table purchase_order add column service_period_to date;
 
 alter table purchase_order rename column due_date to delivery_due_date;
 
+alter table purchase_order alter column supplier_id drop not null;
+
 update purchase_order
 set delivery_due_date = '2026-06-25'
 where po_id = '6f3b9242-2d1e-4e7a-b875-021c3f9a1a01';

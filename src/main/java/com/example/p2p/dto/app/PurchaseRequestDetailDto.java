@@ -12,6 +12,9 @@ import lombok.Data;
 @Data
 public class PurchaseRequestDetailDto {
 
+    // Mybatis用
+    private String prId;
+
     // ヘッダー
     private Integer displayNumber;
 
@@ -28,6 +31,8 @@ public class PurchaseRequestDetailDto {
     private LocalDate createdAt;
 
     private String userId;
+
+    private List<PurchaseRequestRelatedPoDto> relatedPos;
 
     // 明細
     private List<PurchaseRequestDetailLineDto> details;

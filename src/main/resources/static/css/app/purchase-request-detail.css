@@ -110,6 +110,16 @@
   word-break: break-word;
 }
 
+.related-po-value {
+  line-height: 1.8;
+}
+
+.related-po-value a:hover {
+  background: #f8f9fa;
+  color: #0d6efd !important;
+  border-color: #adb5bd !important;
+}
+
 /* =========================
    明細テーブル
    ========================= */
