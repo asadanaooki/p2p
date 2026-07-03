@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.tuple;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -20,9 +21,8 @@ import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabas
 import com.example.p2p.dto.app.PurchaseOrderDetailDto;
 import com.example.p2p.dto.app.PurchaseOrderListRowDto;
 import com.example.p2p.dto.app.PurchaseOrderRelatedPrDto;
-import com.example.p2p.dto.app.PurchaseOrderSupplierSelectionDto;
+import com.example.p2p.dto.app.PurchaseOrderSupplierSelectionRowDto;
 import com.example.p2p.entity.PurchaseOrder;
-import com.example.p2p.entity.PurchaseRequest;
 import com.example.p2p.entity.PurchaseRequestDetail;
 import com.example.p2p.entity.PurchaseRequestPurchaseOrder;
 import com.example.p2p.entity.Supplier;
@@ -30,10 +30,12 @@ import com.example.p2p.entity.Users;
 import com.example.p2p.enums.ItemKind;
 import com.example.p2p.enums.PurchaseOrderSortBy;
 import com.example.p2p.enums.PurchaseOrderStatus;
+import com.example.p2p.enums.PurchaseOrderSupplierSelectionSortBy;
 import com.example.p2p.enums.PurchaseOrderType;
 import com.example.p2p.enums.SortDirection;
 import com.example.p2p.enums.VisibilityScope;
 import com.example.p2p.form.app.PurchaseOrderSearchForm;
+import com.example.p2p.form.app.PurchaseOrderSupplierSelectionSearchForm;
 
 @MybatisTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -50,9 +52,6 @@ class PurchaseOrderMapperCustomTest {
 
     @Autowired
     PurchaseRequestDetailMapper purchaseRequestDetailMapper;
-
-    @Autowired
-    PurchaseRequestMapper purchaseRequestMapper;
 
     @Autowired
     SupplierMapper supplierMapper;
@@ -244,7 +243,106 @@ class PurchaseOrderMapperCustomTest {
         String freeInputSupplierName = "Free Input Supplier";
 
         @Test
-        void selectPurchaseOrderSupplierSelections_freeInputAndCatalog() {
+        void selectPurchaseOrderSupplierSelections_supplierIdNull_freeInputAndCatalog() {
+            int freeInputSubtotal = insertFreeInputGoodsDetail();
+            Supplier firstCatalogSupplier = supplierMapper.selectByPrimaryKey(firstCatalogSupplierId);
+            Supplier catalogSupplier = supplierMapper.selectByPrimaryKey(catalogSupplierId);
+
+            List<PurchaseOrderSupplierSelectionRowDto> actual = purchaseOrderMapperCustom
+                .selectPurchaseOrderSupplierSelections(ItemKind.GOODS, form(null));
+
+            assertThat(actual).hasSize(3);
+            assertThat(actual).extracting(PurchaseOrderSupplierSelectionRowDto::getSupplierId)
+                .containsExactly(null, firstCatalogSupplierId, catalogSupplierId);
+
+            PurchaseOrderSupplierSelectionRowDto first = actual.get(0);
+            assertThat(first.getSupplierId()).isNull();
+            assertThat(first.getSupplierName()).isEqualTo(freeInputSupplierName);
+            assertThat(first.getDetailCount()).isOne();
+            assertThat(first.getPrNumbers()).containsExactly(4);
+            assertThat(first.getTotalAmountExcludingTax()).isEqualTo(freeInputSubtotal);
+
+            PurchaseOrderSupplierSelectionRowDto second = actual.get(1);
+            assertThat(second.getSupplierId()).isEqualTo(firstCatalogSupplierId);
+            assertThat(second.getSupplierName()).isEqualTo(firstCatalogSupplier.getName());
+            assertThat(second.getDetailCount()).isEqualTo(3);
+            assertThat(second.getPrNumbers()).containsExactly(1, 3);
+            assertThat(second.getTotalAmountExcludingTax()).isEqualTo(13140);
+
+            PurchaseOrderSupplierSelectionRowDto third = actual.get(2);
+            assertThat(third.getSupplierId()).isEqualTo(catalogSupplierId);
+            assertThat(third.getSupplierName()).isEqualTo(catalogSupplier.getName());
+            assertThat(third.getDetailCount()).isEqualTo(2);
+            assertThat(third.getPrNumbers()).containsExactly(3, 4);
+            assertThat(third.getTotalAmountExcludingTax()).isEqualTo(50400);
+        }
+
+        @Test
+        void selectPurchaseOrderSupplierSelections_supplierIdSpecified_catalogOnly() {
+            insertFreeInputGoodsDetail();
+            Supplier supplier = supplierMapper.selectByPrimaryKey(firstCatalogSupplierId);
+
+            List<PurchaseOrderSupplierSelectionRowDto> actual = purchaseOrderMapperCustom
+                .selectPurchaseOrderSupplierSelections(ItemKind.GOODS, form(firstCatalogSupplierId));
+
+            assertThat(actual).hasSize(1);
+
+            PurchaseOrderSupplierSelectionRowDto selected = actual.get(0);
+            assertThat(selected.getSupplierId()).isEqualTo(firstCatalogSupplierId);
+            assertThat(selected.getSupplierName()).isEqualTo(supplier.getName());
+            assertThat(selected.getDetailCount()).isEqualTo(3);
+            assertThat(selected.getPrNumbers()).containsExactly(1, 3);
+            assertThat(selected.getTotalAmountExcludingTax()).isEqualTo(13140);
+        }
+
+        @Nested
+        class Sort {
+
+            @Test
+            void selectPurchaseOrderSupplierSelections_sortBySupplier_desc() {
+                assertSorted(PurchaseOrderSupplierSelectionSortBy.SUPPLIER, SortDirection.DESC,
+                        Arrays.asList(catalogSupplierId, firstCatalogSupplierId, null));
+            }
+
+            @Test
+            void selectPurchaseOrderSupplierSelections_sortByDetailCount_asc() {
+                assertSorted(PurchaseOrderSupplierSelectionSortBy.DETAIL_COUNT, SortDirection.ASC,
+                        Arrays.asList(null, catalogSupplierId, firstCatalogSupplierId));
+            }
+
+            @Test
+            void selectPurchaseOrderSupplierSelections_sortByTotalAmount_desc() {
+                assertSorted(PurchaseOrderSupplierSelectionSortBy.TOTAL_AMOUNT, SortDirection.DESC,
+                        Arrays.asList(catalogSupplierId, firstCatalogSupplierId, null));
+            }
+
+            private void assertSorted(PurchaseOrderSupplierSelectionSortBy sortBy, SortDirection sortDirection,
+                    List<String> expectedSupplierIds) {
+                insertFreeInputGoodsDetail();
+
+                List<PurchaseOrderSupplierSelectionRowDto> actual = purchaseOrderMapperCustom
+                    .selectPurchaseOrderSupplierSelections(ItemKind.GOODS, form(null, sortBy, sortDirection));
+
+                assertThat(actual).extracting(PurchaseOrderSupplierSelectionRowDto::getSupplierId)
+                    .containsExactlyElementsOf(expectedSupplierIds);
+            }
+
+        }
+
+        private PurchaseOrderSupplierSelectionSearchForm form(String supplierId) {
+            return form(supplierId, PurchaseOrderSupplierSelectionSortBy.SUPPLIER, SortDirection.ASC);
+        }
+
+        private PurchaseOrderSupplierSelectionSearchForm form(String supplierId,
+                PurchaseOrderSupplierSelectionSortBy sortBy, SortDirection sortDirection) {
+            PurchaseOrderSupplierSelectionSearchForm form = new PurchaseOrderSupplierSelectionSearchForm();
+            form.setSupplierId(supplierId);
+            form.setSortBy(sortBy);
+            form.setSortDirection(sortDirection);
+            return form;
+        }
+
+        private int insertFreeInputGoodsDetail() {
             int freeInputSubtotal = 2468;
 
             PurchaseRequestDetail freeInput = new PurchaseRequestDetail();
@@ -259,36 +357,7 @@ class PurchaseOrderMapperCustomTest {
             freeInput.setLineNo(3);
             purchaseRequestDetailMapper.insertSelective(freeInput);
 
-            PurchaseRequest freeInputRequest = purchaseRequestMapper.selectByPrimaryKey(freeInputPrId);
-            PurchaseRequest firstCatalogRequest = purchaseRequestMapper.selectByPrimaryKey(firstCatalogPrId);
-            PurchaseRequest catalogRequest = purchaseRequestMapper.selectByPrimaryKey(catalogPrId);
-            Supplier firstCatalogSupplier = supplierMapper.selectByPrimaryKey(firstCatalogSupplierId);
-            Supplier catalogSupplier = supplierMapper.selectByPrimaryKey(catalogSupplierId);
-
-            List<PurchaseOrderSupplierSelectionDto> actual = purchaseOrderMapperCustom
-                .selectPurchaseOrderSupplierSelections(ItemKind.GOODS);
-
-            assertThat(actual).hasSize(3);
-            assertThat(actual).extracting(PurchaseOrderSupplierSelectionDto::getSupplierId)
-                .containsExactly(null, firstCatalogSupplierId, catalogSupplierId);
-
-            PurchaseOrderSupplierSelectionDto first = actual.get(0);
-            assertThat(first.getSupplierId()).isNull();
-            assertThat(first.getSupplierName()).isEqualTo(freeInputSupplierName);
-            assertThat(first.getDetailCount()).isOne();
-            assertThat(first.getTotalAmountExcludingTax()).isEqualTo(freeInputSubtotal);
-
-            PurchaseOrderSupplierSelectionDto second = actual.get(1);
-            assertThat(second.getSupplierId()).isEqualTo(firstCatalogSupplierId);
-            assertThat(second.getSupplierName()).isEqualTo(firstCatalogSupplier.getName());
-            assertThat(second.getDetailCount()).isEqualTo(3);
-            assertThat(second.getTotalAmountExcludingTax()).isEqualTo(13140);
-
-            PurchaseOrderSupplierSelectionDto third = actual.get(2);
-            assertThat(third.getSupplierId()).isEqualTo(catalogSupplierId);
-            assertThat(third.getSupplierName()).isEqualTo(catalogSupplier.getName());
-            assertThat(third.getDetailCount()).isEqualTo(2);
-            assertThat(third.getTotalAmountExcludingTax()).isEqualTo(50400);
+            return freeInputSubtotal;
         }
 
     }

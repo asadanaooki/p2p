@@ -14,8 +14,11 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.p2p.enums.PurchaseOrderType;
 import com.example.p2p.form.app.PurchaseOrderSearchForm;
+import com.example.p2p.form.app.PurchaseOrderSupplierSelectionSearchForm;
 import com.example.p2p.security.CustomUserDetails;
 import com.example.p2p.service.app.PurchaseOrderService;
 
@@ -73,18 +76,31 @@ public class PurchaseOrderController {
         return "app/purchase-order-list";
     }
 
-     @PreAuthorize("hasAuthority('PO_VIEW_ALL') or hasAuthority('PO_VIEW_SELF')")
-     @GetMapping("/{poId}")
-     public String showPurchaseOrderDetail(@PathVariable String poId,
-     @AuthenticationPrincipal CustomUserDetails loginUser, Model model) {
-     logger.debug("発注詳細画面表示開始");
-    
-     model.addAttribute("view", purchaseOrderService.getPurchaseOrderDetail(poId,
-     loginUser));
-    
-     logger.debug("発注詳細画面表示完了");
-     return "app/purchase-order-detail";
-     }
+    @PreAuthorize("hasAuthority('PO_VIEW_ALL') or hasAuthority('PO_VIEW_SELF')")
+    @GetMapping("/{poId}")
+    public String showPurchaseOrderDetail(@PathVariable String poId,
+            @AuthenticationPrincipal CustomUserDetails loginUser, Model model) {
+        logger.debug("発注詳細画面表示開始");
+
+        model.addAttribute("view", purchaseOrderService.getPurchaseOrderDetail(poId, loginUser));
+
+        logger.debug("発注詳細画面表示完了");
+        return "app/purchase-order-detail";
+    }
+
+    @PreAuthorize("hasAuthority('PO_CREATE')")
+    @GetMapping("/create/supplier-selection")
+    public String showSupplierSelection(@RequestParam PurchaseOrderType orderType,
+            @ModelAttribute("form") PurchaseOrderSupplierSelectionSearchForm form, Model model) {
+        logger.debug("発注書サプライヤー選択画面表示開始");
+
+        model.addAttribute("orderType", orderType);
+        model.addAttribute("view", purchaseOrderService.searchSupplierSelections(orderType, form));
+
+        logger.debug("発注書サプライヤー選択画面表示完了");
+
+        return "app/purchase-order-supplier-selection";
+    }
     //
     // @PreAuthorize("hasAuthority('PR_CREATE')")
     // @GetMapping("/create")

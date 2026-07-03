@@ -11,10 +11,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.p2p.dto.app.AuthenticationUserDto;
 import com.example.p2p.dto.app.PurchaseOrderDetailDto;
+import com.example.p2p.dto.app.PurchaseOrderSupplierSelectionViewDto;
+import com.example.p2p.entity.PurchaseRequestDetail;
 import com.example.p2p.entity.PurchaseRequestPurchaseOrder;
+import com.example.p2p.enums.ItemKind;
 import com.example.p2p.enums.PurchaseOrderStatus;
 import com.example.p2p.enums.PurchaseOrderType;
 import com.example.p2p.enums.VisibilityScope;
+import com.example.p2p.form.app.PurchaseOrderSupplierSelectionSearchForm;
+import com.example.p2p.mapper.PurchaseRequestDetailMapper;
 import com.example.p2p.mapper.PurchaseRequestPurchaseOrderMapper;
 import com.example.p2p.security.CustomUserDetails;
 
@@ -27,6 +32,9 @@ class PurchaseOrderServiceTest {
 
     @Autowired
     PurchaseRequestPurchaseOrderMapper purchaseRequestPurchaseOrderMapper;
+
+    @Autowired
+    PurchaseRequestDetailMapper purchaseRequestDetailMapper;
 
     @Test
     void getPurchaseOrderDetail_standardPo() {
@@ -56,6 +64,33 @@ class PurchaseOrderServiceTest {
         assertThat(actual.getDetails()).hasSize(2);
         assertThat(actual.getApprovalProgressSteps()).hasSize(3);
         assertThat(actual.getCurrentStepOrder()).isEqualTo(3);
+    }
+
+    @Test
+    void searchSupplierSelections_standard() {
+        insertFreeInputGoodsDetail();
+
+        PurchaseOrderSupplierSelectionViewDto actual = purchaseOrderService
+            .searchSupplierSelections(PurchaseOrderType.STANDARD, new PurchaseOrderSupplierSelectionSearchForm());
+
+        assertThat(actual.getSupplierOptions()).hasSize(3);
+        assertThat(actual.getSupplierSelections()).hasSize(3);
+        assertThat(actual.getSupplierSelections().get(0).getSupplierId()).isNull();
+        assertThat(actual.getSupplierSelections().get(0).getPrNumbers()).containsExactly(4);
+    }
+
+    private void insertFreeInputGoodsDetail() {
+        PurchaseRequestDetail freeInput = new PurchaseRequestDetail();
+        freeInput.setPrId("56856dfe-8e7a-4524-9d05-9e161c6b8fc3");
+        freeInput.setSnapItemName("Free Input Item");
+        freeInput.setSnapKind(ItemKind.GOODS);
+        freeInput.setSnapUnitName("piece");
+        freeInput.setSnapSupplierName("Free Input Supplier");
+        freeInput.setQuantity(2);
+        freeInput.setSnapUnitPrice(1234);
+        freeInput.setSubtotalExcludingTax(2468);
+        freeInput.setLineNo(3);
+        purchaseRequestDetailMapper.insertSelective(freeInput);
     }
 
     private CustomUserDetails loginUser() {

@@ -7,10 +7,11 @@ import org.apache.ibatis.annotations.Param;
 
 import com.example.p2p.dto.app.PurchaseOrderDetailDto;
 import com.example.p2p.dto.app.PurchaseOrderListRowDto;
-import com.example.p2p.dto.app.PurchaseOrderSupplierSelectionDto;
+import com.example.p2p.dto.app.PurchaseOrderSupplierSelectionRowDto;
 import com.example.p2p.enums.ItemKind;
 import com.example.p2p.enums.VisibilityScope;
 import com.example.p2p.form.app.PurchaseOrderSearchForm;
+import com.example.p2p.form.app.PurchaseOrderSupplierSelectionSearchForm;
 
 @Mapper
 public interface PurchaseOrderMapperCustom {
@@ -24,7 +25,8 @@ public interface PurchaseOrderMapperCustom {
     PurchaseOrderDetailDto selectPurchaseOrderDetailHeader(@Param("poId") String poId,
             @Param("poViewScope") VisibilityScope scope, @Param("userId") String userId);
     
-    List<PurchaseOrderSupplierSelectionDto> selectPurchaseOrderSupplierSelections(ItemKind itemKind);
+    List<PurchaseOrderSupplierSelectionRowDto> selectPurchaseOrderSupplierSelections(@Param("itemKind") ItemKind itemKind,
+            @Param("form") PurchaseOrderSupplierSelectionSearchForm form);
 //    
 //    PurchaseRequestEditViewDto selectPurchaseRequestEditView(String prId);
 //    

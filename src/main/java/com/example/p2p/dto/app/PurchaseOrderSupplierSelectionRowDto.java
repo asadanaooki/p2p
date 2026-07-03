@@ -5,15 +5,15 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class PurchaseOrderSupplierSelectionDto {
+public class PurchaseOrderSupplierSelectionRowDto {
 
     private String supplierId;
-    
+
     private String supplierName;
 
-    private int detailCount;
+    private Integer detailCount;
 
-    private List<Integer> prDisplayNumbers;
+    private List<Integer> prNumbers;
 
     private int totalAmountExcludingTax;
 
