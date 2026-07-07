@@ -1,6 +1,7 @@
 package com.example.p2p.service.app;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 import java.time.LocalDate;
 
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.p2p.dto.app.AuthenticationUserDto;
 import com.example.p2p.dto.app.PurchaseOrderDetailDto;
 import com.example.p2p.dto.app.PurchaseOrderSupplierSelectionViewDto;
+import com.example.p2p.dto.app.RelatedPrDto;
 import com.example.p2p.entity.PurchaseRequestDetail;
 import com.example.p2p.entity.PurchaseRequestPurchaseOrder;
 import com.example.p2p.enums.ItemKind;
@@ -76,7 +78,9 @@ class PurchaseOrderServiceTest {
         assertThat(actual.getSupplierOptions()).hasSize(3);
         assertThat(actual.getSupplierSelections()).hasSize(3);
         assertThat(actual.getSupplierSelections().get(0).getSupplierId()).isNull();
-        assertThat(actual.getSupplierSelections().get(0).getPrNumbers()).containsExactly(4);
+        assertThat(actual.getSupplierSelections().get(0).getPurchaseRequests())
+            .extracting(RelatedPrDto::getPrId, RelatedPrDto::getDisplayNumber)
+            .containsExactly(tuple("56856dfe-8e7a-4524-9d05-9e161c6b8fc3", 4));
     }
 
     private void insertFreeInputGoodsDetail() {

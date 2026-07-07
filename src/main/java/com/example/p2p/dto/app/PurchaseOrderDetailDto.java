@@ -44,7 +44,7 @@ public class PurchaseOrderDetailDto {
     private LocalDate servicePeriodTo;
 
     // 関連するPR
-    private List<PurchaseOrderRelatedPrDto> relatedPrs;
+    private List<RelatedPrDto> relatedPrs;
 
     // 明細
     private List<PurchaseOrderDetailLineDto> details;

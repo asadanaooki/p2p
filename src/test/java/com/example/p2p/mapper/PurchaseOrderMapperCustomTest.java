@@ -18,11 +18,15 @@ import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 
+import com.example.p2p.dto.app.PurchaseOrderDetailSelectionPrGroupDto;
+import com.example.p2p.dto.app.PurchaseOrderDetailSelectionRowDto;
+import com.example.p2p.dto.app.PurchaseOrderDetailSelectionViewDto;
 import com.example.p2p.dto.app.PurchaseOrderDetailDto;
 import com.example.p2p.dto.app.PurchaseOrderListRowDto;
-import com.example.p2p.dto.app.PurchaseOrderRelatedPrDto;
+import com.example.p2p.dto.app.RelatedPrDto;
 import com.example.p2p.dto.app.PurchaseOrderSupplierSelectionRowDto;
 import com.example.p2p.entity.PurchaseOrder;
+import com.example.p2p.entity.PurchaseRequest;
 import com.example.p2p.entity.PurchaseRequestDetail;
 import com.example.p2p.entity.PurchaseRequestPurchaseOrder;
 import com.example.p2p.entity.Supplier;
@@ -32,6 +36,7 @@ import com.example.p2p.enums.PurchaseOrderSortBy;
 import com.example.p2p.enums.PurchaseOrderStatus;
 import com.example.p2p.enums.PurchaseOrderSupplierSelectionSortBy;
 import com.example.p2p.enums.PurchaseOrderType;
+import com.example.p2p.enums.PurchaseRequestStatus;
 import com.example.p2p.enums.SortDirection;
 import com.example.p2p.enums.VisibilityScope;
 import com.example.p2p.form.app.PurchaseOrderSearchForm;
@@ -46,6 +51,9 @@ class PurchaseOrderMapperCustomTest {
 
     @Autowired
     PurchaseOrderMapper purchaseOrderMapper;
+
+    @Autowired
+    PurchaseRequestMapper purchaseRequestMapper;
 
     @Autowired
     PurchaseRequestPurchaseOrderMapper purchaseRequestPurchaseOrderMapper;
@@ -179,7 +187,7 @@ class PurchaseOrderMapperCustomTest {
             assertThat(actual.getServicePeriodFrom()).isNull();
             assertThat(actual.getServicePeriodTo()).isNull();
             assertThat(actual.getRelatedPrs())
-                .extracting(PurchaseOrderRelatedPrDto::getPrId, PurchaseOrderRelatedPrDto::getDisplayNumber)
+                .extracting(RelatedPrDto::getPrId, RelatedPrDto::getDisplayNumber)
                 .containsExactly(tuple("88bfbcf6-2be6-4d31-8a46-155a7b58ab93", 1),
                         tuple("3a5b130e-0279-4bca-bee3-d41cddbc9192", 2));
         }
@@ -213,7 +221,7 @@ class PurchaseOrderMapperCustomTest {
             assertThat(actual.getServicePeriodFrom()).isEqualTo(expectedOrder.getServicePeriodFrom());
             assertThat(actual.getServicePeriodTo()).isEqualTo(expectedOrder.getServicePeriodTo());
             assertThat(actual.getRelatedPrs())
-                .extracting(PurchaseOrderRelatedPrDto::getPrId, PurchaseOrderRelatedPrDto::getDisplayNumber)
+                .extracting(RelatedPrDto::getPrId, RelatedPrDto::getDisplayNumber)
                 .containsExactly(tuple("3a5b130e-0279-4bca-bee3-d41cddbc9192", 2));
         }
 
@@ -244,7 +252,9 @@ class PurchaseOrderMapperCustomTest {
 
         @Test
         void selectPurchaseOrderSupplierSelections_supplierIdNull_freeInputAndCatalog() {
+            approvePurchaseRequests(freeInputPrId, firstCatalogPrId, catalogPrId);
             int freeInputSubtotal = insertFreeInputGoodsDetail();
+            insertNonApprovedGoodsDetails();
             Supplier firstCatalogSupplier = supplierMapper.selectByPrimaryKey(firstCatalogSupplierId);
             Supplier catalogSupplier = supplierMapper.selectByPrimaryKey(catalogSupplierId);
 
@@ -259,27 +269,35 @@ class PurchaseOrderMapperCustomTest {
             assertThat(first.getSupplierId()).isNull();
             assertThat(first.getSupplierName()).isEqualTo(freeInputSupplierName);
             assertThat(first.getDetailCount()).isOne();
-            assertThat(first.getPrNumbers()).containsExactly(4);
+            assertThat(first.getPurchaseRequests())
+                .extracting(RelatedPrDto::getPrId, RelatedPrDto::getDisplayNumber)
+                .containsExactly(tuple(freeInputPrId, 4));
             assertThat(first.getTotalAmountExcludingTax()).isEqualTo(freeInputSubtotal);
 
             PurchaseOrderSupplierSelectionRowDto second = actual.get(1);
             assertThat(second.getSupplierId()).isEqualTo(firstCatalogSupplierId);
             assertThat(second.getSupplierName()).isEqualTo(firstCatalogSupplier.getName());
             assertThat(second.getDetailCount()).isEqualTo(3);
-            assertThat(second.getPrNumbers()).containsExactly(1, 3);
+            assertThat(second.getPurchaseRequests())
+                .extracting(RelatedPrDto::getPrId, RelatedPrDto::getDisplayNumber)
+                .containsExactly(tuple(firstCatalogPrId, 1), tuple(catalogPrId, 3));
             assertThat(second.getTotalAmountExcludingTax()).isEqualTo(13140);
 
             PurchaseOrderSupplierSelectionRowDto third = actual.get(2);
             assertThat(third.getSupplierId()).isEqualTo(catalogSupplierId);
             assertThat(third.getSupplierName()).isEqualTo(catalogSupplier.getName());
             assertThat(third.getDetailCount()).isEqualTo(2);
-            assertThat(third.getPrNumbers()).containsExactly(3, 4);
+            assertThat(third.getPurchaseRequests())
+                .extracting(RelatedPrDto::getPrId, RelatedPrDto::getDisplayNumber)
+                .containsExactlyInAnyOrder(tuple(catalogPrId, 3), tuple(freeInputPrId, 4));
             assertThat(third.getTotalAmountExcludingTax()).isEqualTo(50400);
         }
 
         @Test
         void selectPurchaseOrderSupplierSelections_supplierIdSpecified_catalogOnly() {
+            approvePurchaseRequests(freeInputPrId, firstCatalogPrId, catalogPrId);
             insertFreeInputGoodsDetail();
+            insertNonApprovedGoodsDetails();
             Supplier supplier = supplierMapper.selectByPrimaryKey(firstCatalogSupplierId);
 
             List<PurchaseOrderSupplierSelectionRowDto> actual = purchaseOrderMapperCustom
@@ -291,7 +309,9 @@ class PurchaseOrderMapperCustomTest {
             assertThat(selected.getSupplierId()).isEqualTo(firstCatalogSupplierId);
             assertThat(selected.getSupplierName()).isEqualTo(supplier.getName());
             assertThat(selected.getDetailCount()).isEqualTo(3);
-            assertThat(selected.getPrNumbers()).containsExactly(1, 3);
+            assertThat(selected.getPurchaseRequests())
+                .extracting(RelatedPrDto::getPrId, RelatedPrDto::getDisplayNumber)
+                .containsExactly(tuple(firstCatalogPrId, 1), tuple(catalogPrId, 3));
             assertThat(selected.getTotalAmountExcludingTax()).isEqualTo(13140);
         }
 
@@ -318,7 +338,9 @@ class PurchaseOrderMapperCustomTest {
 
             private void assertSorted(PurchaseOrderSupplierSelectionSortBy sortBy, SortDirection sortDirection,
                     List<String> expectedSupplierIds) {
+                approvePurchaseRequests(freeInputPrId, firstCatalogPrId, catalogPrId);
                 insertFreeInputGoodsDetail();
+                insertNonApprovedGoodsDetails();
 
                 List<PurchaseOrderSupplierSelectionRowDto> actual = purchaseOrderMapperCustom
                     .selectPurchaseOrderSupplierSelections(ItemKind.GOODS, form(null, sortBy, sortDirection));
@@ -342,6 +364,65 @@ class PurchaseOrderMapperCustomTest {
             return form;
         }
 
+        private void approvePurchaseRequests(String... prIds) {
+            for (String prId : prIds) {
+                PurchaseRequest request = new PurchaseRequest();
+                request.setPrId(prId);
+                request.setStatus(PurchaseRequestStatus.APPROVED);
+                purchaseRequestMapper.updateByPrimaryKeySelective(request);
+            }
+        }
+
+        private void insertNonApprovedGoodsDetails() {
+            Supplier firstCatalogSupplier = supplierMapper.selectByPrimaryKey(firstCatalogSupplierId);
+            Supplier catalogSupplier = supplierMapper.selectByPrimaryKey(catalogSupplierId);
+
+            insertPurchaseRequest("30000000-0000-4000-9000-000000000101", PurchaseRequestStatus.PENDING, 5_000_000);
+            for (int i = 1; i <= 5; i++) {
+                insertPurchaseRequestDetail("30000000-0000-4000-9000-00000000010" + i,
+                        "30000000-0000-4000-9000-000000000101", i, null, freeInputSupplierName,
+                        "Pending Free Input Item " + i, 1_000_000);
+            }
+
+            insertPurchaseRequest("30000000-0000-4000-9000-000000000201", PurchaseRequestStatus.REJECTED, 900_000);
+            insertPurchaseRequestDetail("30000000-0000-4000-9000-000000000202",
+                    "30000000-0000-4000-9000-000000000201", 1, firstCatalogSupplierId, firstCatalogSupplier.getName(),
+                    "Rejected Catalog Item", 900_000);
+
+            insertPurchaseRequest("30000000-0000-4000-9000-000000000301", PurchaseRequestStatus.CANCELLED, 800_000);
+            insertPurchaseRequestDetail("30000000-0000-4000-9000-000000000302",
+                    "30000000-0000-4000-9000-000000000301", 1, catalogSupplierId, catalogSupplier.getName(),
+                    "Cancelled Catalog Item", 800_000);
+        }
+
+        private void insertPurchaseRequest(String prId, PurchaseRequestStatus status, int totalAmountExcludingTax) {
+            PurchaseRequest request = new PurchaseRequest();
+            request.setPrId(prId);
+            request.setRequesterUserId("169f1e17-619f-45bf-b6dc-8faed08c404c");
+            request.setDueDate(LocalDate.of(2026, 7, 7));
+            request.setTotalAmountExcludingTax(totalAmountExcludingTax);
+            request.setStatus(status);
+            request.setCurrentStepOrder(1);
+            purchaseRequestMapper.insertSelective(request);
+        }
+
+        private void insertPurchaseRequestDetail(String prDetailId, String prId, int lineNo, String supplierId,
+                String supplierName, String itemName, int subtotalExcludingTax) {
+            PurchaseRequestDetail detail = new PurchaseRequestDetail();
+            detail.setPrDetailId(prDetailId);
+            detail.setPrId(prId);
+            detail.setLineNo(lineNo);
+            detail.setSnapKind(ItemKind.GOODS);
+            detail.setSupplierId(supplierId);
+            detail.setSnapSupplierName(supplierName);
+            detail.setSnapItemName(itemName);
+            detail.setSnapUnitName("piece");
+            detail.setSnapUnitPrice(subtotalExcludingTax);
+            detail.setQuantity(1);
+            detail.setSubtotalExcludingTax(subtotalExcludingTax);
+            purchaseRequestDetailMapper.insertSelective(detail);
+        }
+
         private int insertFreeInputGoodsDetail() {
             int freeInputSubtotal = 2468;
 
@@ -358,6 +439,185 @@ class PurchaseOrderMapperCustomTest {
             purchaseRequestDetailMapper.insertSelective(freeInput);
 
             return freeInputSubtotal;
+        }
+
+    }
+
+    @Nested
+    class SelectPurchaseOrderDetailSelectionView {
+
+        @Test
+        void selectPurchaseOrderDetailSelectionView_supplierIdSpecified_goodsApprovedOnly() {
+            GoodsSelectionFixture fixture = insertGoodsSelectionFixture();
+
+            PurchaseOrderDetailSelectionViewDto actual = purchaseOrderMapperCustom
+                .selectPurchaseOrderDetailSelectionView(fixture.supplierId, null, ItemKind.GOODS);
+
+            PurchaseOrderDetailSelectionViewDto view = actual;
+            assertThat(view.getTotalAmountExcludingTax()).isEqualTo(fixture.totalAmountExcludingTax);
+            assertThat(view.getPrGroups()).hasSize(3);
+            assertThat(view.getPrGroups())
+                .extracting(PurchaseOrderDetailSelectionPrGroupDto::getDisplayNumber)
+                .containsExactly(fixture.threeDetailPr.getDisplayNumber(), fixture.oneDetailPr1.getDisplayNumber(),
+                        fixture.oneDetailPr2.getDisplayNumber());
+
+            PurchaseOrderDetailSelectionPrGroupDto firstGroup = view.getPrGroups().get(0);
+            assertThat(firstGroup.getPrId()).isEqualTo(fixture.threeDetailPr.getPrId());
+            assertThat(firstGroup.getPrTotalAmountExcludingTax()).isEqualTo(fixture.threeDetailPrTotalAmountExcludingTax);
+            assertThat(firstGroup.getDetailRows()).hasSize(3);
+            assertThat(firstGroup.getDetailRows())
+                .extracting(PurchaseOrderDetailSelectionRowDto::getPrDetailId)
+                .containsExactly(fixture.firstDetailId, fixture.secondDetailId, fixture.thirdDetailId);
+
+            PurchaseOrderDetailSelectionRowDto first = firstGroup.getDetailRows().get(0);
+            assertThat(first.getPrDetailId()).isEqualTo(fixture.firstDetailId);
+            assertThat(first.getItemName()).isEqualTo(fixture.firstItemName);
+            assertThat(first.getUnitName()).isEqualTo(fixture.firstUnitName);
+            assertThat(first.getUnitPrice()).isEqualTo(fixture.firstUnitPrice);
+            assertThat(first.getQuantity()).isEqualTo(fixture.firstQuantity);
+            assertThat(first.getSubtotalExcludingTax()).isEqualTo(String.valueOf(fixture.firstSubtotalExcludingTax));
+        }
+
+        @Test
+        void selectPurchaseOrderDetailSelectionView_supplierIdNull_serviceFreeInputOnly() {
+            ServiceSelectionFixture fixture = insertServiceSelectionFixture();
+
+            PurchaseOrderDetailSelectionViewDto actual = purchaseOrderMapperCustom
+                .selectPurchaseOrderDetailSelectionView(null, fixture.freeInputSupplierName, ItemKind.SERVICE);
+
+            assertThat(actual.getPrGroups()).hasSize(1);
+            assertThat(actual.getPrGroups().get(0).getDetailRows()).hasSize(1);
+        }
+
+        private GoodsSelectionFixture insertGoodsSelectionFixture() {
+            GoodsSelectionFixture fixture = new GoodsSelectionFixture();
+            Supplier supplier = supplierMapper.selectByPrimaryKey(fixture.supplierId);
+
+            fixture.threeDetailPr = insertPurchaseRequest("10000000-0000-4000-9000-000000000101",
+                    PurchaseRequestStatus.APPROVED, 5120);
+            fixture.threeDetailPrTotalAmountExcludingTax += insertPurchaseRequestDetail(fixture.firstDetailId,
+                    fixture.threeDetailPr.getPrId(), 1, ItemKind.GOODS, fixture.supplierId, supplier.getName(),
+                    fixture.firstItemName, fixture.firstUnitName, fixture.firstUnitPrice, fixture.firstQuantity);
+            fixture.threeDetailPrTotalAmountExcludingTax += insertPurchaseRequestDetail(fixture.secondDetailId,
+                    fixture.threeDetailPr.getPrId(), 2,
+                    ItemKind.GOODS, fixture.supplierId, supplier.getName(), "Goods approved three detail 2", "box",
+                    2000, 1);
+            fixture.threeDetailPrTotalAmountExcludingTax += insertPurchaseRequestDetail(fixture.thirdDetailId,
+                    fixture.threeDetailPr.getPrId(), 3,
+                    ItemKind.GOODS, fixture.supplierId, supplier.getName(), "Goods approved three detail 3", "set", 300,
+                    3);
+            fixture.totalAmountExcludingTax += fixture.threeDetailPrTotalAmountExcludingTax;
+
+            fixture.oneDetailPr1 = insertPurchaseRequest("10000000-0000-4000-9000-000000000201",
+                    PurchaseRequestStatus.APPROVED, 777);
+            fixture.totalAmountExcludingTax += insertPurchaseRequestDetail("10000000-0000-4000-9000-000000000202",
+                    fixture.oneDetailPr1.getPrId(), 1,
+                    ItemKind.GOODS, fixture.supplierId, supplier.getName(), "Goods approved one detail 1", "piece", 777,
+                    1);
+
+            fixture.oneDetailPr2 = insertPurchaseRequest("10000000-0000-4000-9000-000000000301",
+                    PurchaseRequestStatus.APPROVED, 1776);
+            fixture.totalAmountExcludingTax += insertPurchaseRequestDetail("10000000-0000-4000-9000-000000000302",
+                    fixture.oneDetailPr2.getPrId(), 1,
+                    ItemKind.GOODS, fixture.supplierId, supplier.getName(), "Goods approved one detail 2", "piece", 888,
+                    2);
+
+            PurchaseRequest cancelled = insertPurchaseRequest("10000000-0000-4000-9000-000000000401",
+                    PurchaseRequestStatus.CANCELLED, 9999);
+            insertPurchaseRequestDetail("10000000-0000-4000-9000-000000000402", cancelled.getPrId(), 1, ItemKind.GOODS,
+                    fixture.supplierId, supplier.getName(), "Goods cancelled detail", "piece", 9999, 1);
+
+            return fixture;
+        }
+
+        private ServiceSelectionFixture insertServiceSelectionFixture() {
+            ServiceSelectionFixture fixture = new ServiceSelectionFixture();
+            Supplier supplier = supplierMapper.selectByPrimaryKey(fixture.supplierId);
+
+            PurchaseRequest freeInput = insertPurchaseRequest("20000000-0000-4000-9000-000000000101",
+                    PurchaseRequestStatus.APPROVED, 12000);
+            insertPurchaseRequestDetail("20000000-0000-4000-9000-000000000102", freeInput.getPrId(), 1,
+                    ItemKind.SERVICE, null, fixture.freeInputSupplierName, "Manual service detail", "hour", 12000, 1);
+
+            PurchaseRequest supplierSpecified = insertPurchaseRequest("20000000-0000-4000-9000-000000000201",
+                    PurchaseRequestStatus.APPROVED, 34000);
+            insertPurchaseRequestDetail("20000000-0000-4000-9000-000000000202", supplierSpecified.getPrId(), 1,
+                    ItemKind.SERVICE, fixture.supplierId, supplier.getName(), "Supplier service detail", "hour", 34000,
+                    1);
+
+            return fixture;
+        }
+
+        private PurchaseRequest insertPurchaseRequest(String prId, PurchaseRequestStatus status,
+                int totalAmountExcludingTax) {
+            PurchaseRequest request = new PurchaseRequest();
+            request.setPrId(prId);
+            request.setRequesterUserId("169f1e17-619f-45bf-b6dc-8faed08c404c");
+            request.setDueDate(LocalDate.of(2026, 7, 7));
+            request.setTotalAmountExcludingTax(totalAmountExcludingTax);
+            request.setStatus(status);
+            request.setCurrentStepOrder(1);
+            purchaseRequestMapper.insertSelective(request);
+            return purchaseRequestMapper.selectByPrimaryKey(prId);
+        }
+
+        private int insertPurchaseRequestDetail(String prDetailId, String prId, int lineNo, ItemKind kind,
+                String supplierId, String supplierName, String itemName, String unitName, int unitPrice, int quantity) {
+            int subtotal = unitPrice * quantity;
+            PurchaseRequestDetail detail = new PurchaseRequestDetail();
+            detail.setPrDetailId(prDetailId);
+            detail.setPrId(prId);
+            detail.setLineNo(lineNo);
+            detail.setSnapKind(kind);
+            detail.setSupplierId(supplierId);
+            detail.setSnapSupplierName(supplierName);
+            detail.setSnapItemName(itemName);
+            detail.setSnapUnitName(unitName);
+            detail.setSnapUnitPrice(unitPrice);
+            detail.setQuantity(quantity);
+            detail.setSubtotalExcludingTax(subtotal);
+            purchaseRequestDetailMapper.insertSelective(detail);
+            return subtotal;
+        }
+
+        class GoodsSelectionFixture {
+
+            String supplierId = "c9e2a4b6-7d1f-43a8-b5c2-9f0e1d2c3b4a";
+
+            PurchaseRequest threeDetailPr;
+
+            PurchaseRequest oneDetailPr1;
+
+            PurchaseRequest oneDetailPr2;
+
+            String firstDetailId = "10000000-0000-4000-9000-000000000001";
+
+            String secondDetailId = "10000000-0000-4000-9000-000000000102";
+
+            String thirdDetailId = "10000000-0000-4000-9000-000000000103";
+
+            String firstItemName = "Goods approved three detail 1";
+
+            String firstUnitName = "piece";
+
+            int firstUnitPrice = 1110;
+
+            int firstQuantity = 2;
+
+            int firstSubtotalExcludingTax = firstUnitPrice * firstQuantity;
+
+            int threeDetailPrTotalAmountExcludingTax;
+
+            int totalAmountExcludingTax;
+
+        }
+
+        class ServiceSelectionFixture {
+
+            String supplierId = "c9e2a4b6-7d1f-43a8-b5c2-9f0e1d2c3b4a";
+
+            String freeInputSupplierName = "Manual Service Supplier";
+
         }
 
     }

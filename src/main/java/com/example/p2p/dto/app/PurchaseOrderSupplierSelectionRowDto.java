@@ -13,7 +13,7 @@ public class PurchaseOrderSupplierSelectionRowDto {
 
     private Integer detailCount;
 
-    private List<Integer> prNumbers;
+    private List<RelatedPrDto> purchaseRequests;
 
     private int totalAmountExcludingTax;
 

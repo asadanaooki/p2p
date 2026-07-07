@@ -140,7 +140,7 @@
   
     <result property="servicePeriodFrom" column="service_period_from"/>
     <result property="servicePeriodTo" column="service_period_to"/>
-    <collection property="relatedPrs" ofType="com.example.p2p.dto.app.PurchaseOrderRelatedPrDto">
+    <collection property="relatedPrs" ofType="com.example.p2p.dto.app.RelatedPrDto">
       <id property="prId" column="pr_id"></id>
       <result property="displayNumber" column="pr_display_number"></result>
     </collection>  
@@ -187,23 +187,24 @@
     <id column="supplier_name" property="supplierName" />
     <result column="detail_count" property="detailCount" />
     <result column="total_amount_excluding_tax" property="totalAmountExcludingTax" />
-    <collection property="prNumbers" ofType="java.lang.Integer">
-      <id column="pr_display_number"></id>
-    </collection>  
+    <result column="purchase_requests" property="purchaseRequests"
+      typeHandler="com.example.p2p.typehandler.RelatedPurchaseRequestListTypeHandler"/>
   </resultMap>
 
   <select id="selectPurchaseOrderSupplierSelections" resultMap="PurchaseOrderSupplierSelectionRowResultMap">
-   <!-- カタログ -->
+   <!-- カタログ + フリー入力(IDあり) -->
     select
         s.name_kana as supplier,
         prd.supplier_id
         , s.name as supplier_name
         , count(prd.pr_detail_id) as detail_count
-        , unnest(array_agg(
-            distinct pr.display_number
-            order by
-                pr.display_number asc
-        )) as pr_display_number
+        , jsonb_agg(
+            jsonb_build_object(
+              'prId', pr.pr_id
+              ,'displayNumber', pr.display_number
+            )
+            order by pr.display_number asc
+        ) as purchase_requests
         , sum(prd.subtotal_excluding_tax) as total_amount_excluding_tax
     from
         purchase_request pr
@@ -216,6 +217,7 @@
         <if test="form.supplierId != null">
           and s.supplier_id = #{form.supplierId}
         </if>
+        and pr.status = 'APPROVED'
     group by
         prd.supplier_id
         , s.name
@@ -224,17 +226,19 @@
     <if test="form.supplierId == null">
       union all
 
-      <!-- フリー入力 -->
+      <!-- フリー入力(IDなし) -->
       select
             prd.snap_supplier_name as supplier,
             string_agg(prd.supplier_id, '') as supplier_id
           , prd.snap_supplier_name as supplier_name
           , count(prd.pr_detail_id) as detail_count
-          , unnest(array_agg(
-              distinct pr.display_number
-              order by
-                  pr.display_number asc
-          )) as pr_display_number
+          , jsonb_agg(
+            jsonb_build_object(
+              'prId', pr.pr_id
+              ,'displayNumber', pr.display_number
+            )
+            order by pr.display_number asc
+          ) as purchase_requests
           , sum(prd.subtotal_excluding_tax) as total_amount_excluding_tax
       from
           purchase_request pr
@@ -243,6 +247,7 @@
       where
           prd.supplier_id is null
           and prd.snap_kind = #{itemKind}
+          and pr.status = 'APPROVED'
       group by
           prd.snap_supplier_name
     </if>
@@ -262,8 +267,84 @@
 
     <include refid="sortDirection"></include>
     , supplier asc
-    , supplier_name asc
-    , supplier_id asc
-    , pr_display_number asc
+  </select>
+  
+  <resultMap id="purchaseOrderDetailSelectionMap"
+           type="com.example.p2p.dto.app.PurchaseOrderDetailSelectionViewDto">
+
+  <id property="viewKey" column="view_key" />
+
+  <result property="totalAmountExcludingTax" column="total_amount_excluding_tax" />
+
+  <collection property="prGroups"
+              ofType="com.example.p2p.dto.app.PurchaseOrderDetailSelectionPrGroupDto">
+
+    <id property="prId" column="pr_id" />
+
+    <result property="displayNumber" column="display_number" />
+    <result property="prTotalAmountExcludingTax" column="pr_total_amount_excluding_tax" />
+
+    <collection property="detailRows"
+                ofType="com.example.p2p.dto.app.PurchaseOrderDetailSelectionRowDto">
+
+      <id property="prDetailId" column="pr_detail_id" />
+
+      <result property="itemName" column="item_name" />
+      <result property="unitPrice" column="unit_price" />
+      <result property="subtotalExcludingTax" column="subtotal_excluding_tax" />
+
+      <result property="unitName" column="unit_name" />
+      <result property="quantity" column="quantity" />
+
+    </collection>
+
+  </collection>
+
+</resultMap>
+
+
+  <select id="selectPurchaseOrderDetailSelectionView"
+          resultMap="purchaseOrderDetailSelectionMap">
+  
+    select
+      'DETAIL_SELECTION' as view_key,
+      sum(prd.subtotal_excluding_tax) over() as total_amount_excluding_tax,
+  
+      pr.pr_id,
+      pr.display_number,
+      sum(prd.subtotal_excluding_tax) over(partition by pr.pr_id) as pr_total_amount_excluding_tax,
+  
+      prd.pr_detail_id,
+      prd.snap_item_name as item_name,
+      prd.snap_unit_price as unit_price,
+      prd.subtotal_excluding_tax,
+  
+      prd.snap_unit_name as unit_name,
+      prd.quantity
+  
+    from purchase_request pr
+  
+    join purchase_request_detail prd
+      on pr.pr_id = prd.pr_id
+  
+    <where>
+      <choose>
+        <when test="supplierId != null">
+          prd.supplier_id = #{supplierId}
+        </when>
+        <otherwise>
+          prd.snap_supplier_name = #{supplierName}
+          and prd.supplier_id is null
+        </otherwise>
+      </choose>
+  
+      and prd.snap_kind = #{itemKind}
+      and pr.status = 'APPROVED'
+    </where>
+  
+    order by
+      pr.display_number asc,
+      prd.line_no asc
+  
   </select>
 </mapper>
