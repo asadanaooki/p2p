@@ -62,7 +62,7 @@
 
 .filter-grid {
   display: grid;
-  grid-template-columns: 2fr 2fr 1fr;
+  grid-template-columns: 1fr 2fr 2fr 1fr;
   gap: 28px;
 }
 
@@ -185,19 +185,19 @@
 }
 
 .col-type {
-  width: 12%;
+  width: 10%;
 }
 
 .col-purchaser {
-  width: 16%;
+  width: 14%;
 }
 
 .col-due-date {
-  width: 13%;
+  width: 18%;
 }
 
 .col-supplier {
-  width: 22%;
+  width: 21%;
 }
 
 .col-total {

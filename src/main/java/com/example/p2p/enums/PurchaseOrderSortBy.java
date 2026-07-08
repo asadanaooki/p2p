@@ -4,7 +4,7 @@ public enum PurchaseOrderSortBy {
     NUMBER,
     TYPE,
     PURCHASER,
-    DUE_DATE,
+    TARGET_DATE,
     SUPPLIER,
     TOTAL,
     STATUS

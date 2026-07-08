@@ -14,13 +14,16 @@ import com.example.p2p.dto.app.AuthenticationUserDto;
 import com.example.p2p.dto.app.PurchaseOrderDetailDto;
 import com.example.p2p.dto.app.PurchaseOrderSupplierSelectionViewDto;
 import com.example.p2p.dto.app.RelatedPrDto;
+import com.example.p2p.entity.PurchaseRequest;
 import com.example.p2p.entity.PurchaseRequestDetail;
 import com.example.p2p.entity.PurchaseRequestPurchaseOrder;
 import com.example.p2p.enums.ItemKind;
 import com.example.p2p.enums.PurchaseOrderStatus;
 import com.example.p2p.enums.PurchaseOrderType;
+import com.example.p2p.enums.PurchaseRequestStatus;
 import com.example.p2p.enums.VisibilityScope;
 import com.example.p2p.form.app.PurchaseOrderSupplierSelectionSearchForm;
+import com.example.p2p.mapper.PurchaseRequestMapper;
 import com.example.p2p.mapper.PurchaseRequestDetailMapper;
 import com.example.p2p.mapper.PurchaseRequestPurchaseOrderMapper;
 import com.example.p2p.security.CustomUserDetails;
@@ -34,6 +37,9 @@ class PurchaseOrderServiceTest {
 
     @Autowired
     PurchaseRequestPurchaseOrderMapper purchaseRequestPurchaseOrderMapper;
+
+    @Autowired
+    PurchaseRequestMapper purchaseRequestMapper;
 
     @Autowired
     PurchaseRequestDetailMapper purchaseRequestDetailMapper;
@@ -84,6 +90,11 @@ class PurchaseOrderServiceTest {
     }
 
     private void insertFreeInputGoodsDetail() {
+        PurchaseRequest request = new PurchaseRequest();
+        request.setPrId("56856dfe-8e7a-4524-9d05-9e161c6b8fc3");
+        request.setStatus(PurchaseRequestStatus.APPROVED);
+        purchaseRequestMapper.updateByPrimaryKeySelective(request);
+
         PurchaseRequestDetail freeInput = new PurchaseRequestDetail();
         freeInput.setPrId("56856dfe-8e7a-4524-9d05-9e161c6b8fc3");
         freeInput.setSnapItemName("Free Input Item");

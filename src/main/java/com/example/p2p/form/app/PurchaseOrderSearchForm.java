@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 import com.example.p2p.enums.PurchaseOrderSortBy;
 import com.example.p2p.enums.PurchaseOrderStatus;
+import com.example.p2p.enums.PurchaseOrderType;
 import com.example.p2p.enums.SortDirection;
 import com.example.p2p.util.CommonUtil;
 
@@ -25,11 +26,13 @@ public class PurchaseOrderSearchForm {
     private int size = 2; // TODO: 仮値
 
     // フィルター
-    @DateTimeFormat(iso = ISO.DATE)
-    private LocalDate dueDateFrom;
+    private PurchaseOrderType orderType;
     
     @DateTimeFormat(iso = ISO.DATE)
-    private LocalDate dueDateTo;
+    private LocalDate targetDateFrom;
+    
+    @DateTimeFormat(iso = ISO.DATE)
+    private LocalDate targetDateTo;
     
     private String supplierId;
 

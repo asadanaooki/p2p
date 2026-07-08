@@ -18,7 +18,13 @@ public class PurchaseOrderListRowDto {
     
     private String purchaser;
     
-    private LocalDate dueDate;
+    // PO納期
+    private LocalDate deliveryDueDate;
+    
+    // SO納期
+    private LocalDate servicePeriodFrom;
+    
+    private LocalDate servicePeriodTo;
     
     private String supplierName;
     

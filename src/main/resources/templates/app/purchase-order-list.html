@@ -14,8 +14,9 @@
 
 <body>
   <main class="page" th:with="filterActive=${
-    form.dueDateFrom != null
-    or form.dueDateTo != null
+    form.orderType != null
+    or form.targetDateFrom != null
+    or form.targetDateTo != null
     or form.supplierId != null
     or form.status != null}">
     <div class="success-message" th:if="${successMessage}" th:text="${successMessage}"></div>
@@ -44,11 +45,20 @@
         <div class="filter-box">
           <div class="filter-grid">
             <div class="filter-item">
-              <label class="form-label">納期</label>
+              <label for="orderType" class="form-label">種別</label>
+              <select id="orderType" th:field="*{orderType}" class="form-select">
+                <option value=""></option>
+                <option th:each="type : ${T(com.example.p2p.enums.PurchaseOrderType).values()}" th:value="${type}"
+                  th:text="${type.label}"></option>
+              </select>
+            </div>
+
+            <div class="filter-item">
+              <label class="form-label">対象日</label>
               <div class="date-range">
-                <input id="dueDateFrom" type="date" th:field="*{dueDateFrom}" class="form-control">
+                <input id="targetDateFrom" type="date" th:field="*{targetDateFrom}" class="form-control">
                 <span>～</span>
-                <input id="dueDateTo" type="date" th:field="*{dueDateTo}" class="form-control">
+                <input id="targetDateTo" type="date" th:field="*{targetDateTo}" class="form-control">
               </div>
             </div>
 
@@ -107,9 +117,9 @@
               </th>
 
               <th class="col-due-date">
-                <button type="button" class="js-sort sort-button" data-sort-by="DUE_DATE">
-                  <span>納期</span>
-                  <span class="sort-icon" th:if="${form.sortBy.name().equals('DUE_DATE')}"
+                <button type="button" class="js-sort sort-button" data-sort-by="TARGET_DATE">
+                  <span>対象日</span>
+                  <span class="sort-icon" th:if="${form.sortBy.name().equals('TARGET_DATE')}"
                     th:text="${form.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
                 </button>
               </th>
@@ -151,7 +161,17 @@
 
               <td class="col-type" th:text="${po.orderType.label}"></td>
               <td class="col-purchaser" th:text="${po.purchaser}"></td>
-              <td class="col-due-date" th:text="${#temporals.format(po.dueDate, 'yyyy/M/d')}"></td>
+              <td class="col-due-date">
+                <span th:if="${po.orderType.toString().equals('STANDARD')}"
+                  th:text="${po.deliveryDueDate == null ? '' : #temporals.format(po.deliveryDueDate, 'yyyy/M/d')}"></span>
+                <span th:if="${po.orderType.toString().equals('SERVICE')}">
+                  <span
+                    th:text="${po.servicePeriodFrom == null ? '' : #temporals.format(po.servicePeriodFrom, 'yyyy/M/d')}"></span>
+                  <span th:if="${po.servicePeriodFrom != null or po.servicePeriodTo != null}"> - </span>
+                  <span
+                    th:text="${po.servicePeriodTo == null ? '' : #temporals.format(po.servicePeriodTo, 'yyyy/M/d')}"></span>
+                </span>
+              </td>
               <td class="col-supplier" th:text="${po.supplierName}"></td>
               <td class="col-total text-end"
                 th:text="${#numbers.formatInteger(po.totalAmountExcludingTax, 1, 'COMMA')}"></td>

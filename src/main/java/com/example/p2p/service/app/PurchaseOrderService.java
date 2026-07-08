@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.example.p2p.dto.app.PurchaseOrderDetailDto;
+import com.example.p2p.dto.app.PurchaseOrderDetailSelectionViewDto;
 import com.example.p2p.dto.app.PurchaseOrderListRowDto;
 import com.example.p2p.dto.app.PurchaseOrderListViewDto;
 import com.example.p2p.dto.app.PurchaseOrderSupplierSelectionViewDto;
@@ -74,14 +75,31 @@ public class PurchaseOrderService {
 
     public PurchaseOrderSupplierSelectionViewDto searchSupplierSelections(PurchaseOrderType orderType,
             PurchaseOrderSupplierSelectionSearchForm form) {
+        logger.debug("発注書仕入先選択情報取得開始");
+
         ItemKind kind = orderType == PurchaseOrderType.STANDARD ? ItemKind.GOODS : ItemKind.SERVICE;
 
         PurchaseOrderSupplierSelectionViewDto dto = new PurchaseOrderSupplierSelectionViewDto();
         dto.setSupplierSelections(purchaseOrderMapperCustom.selectPurchaseOrderSupplierSelections(kind, form));
         dto.setSupplierOptions(supplierMapperCustom.selectSupplierOptions());
 
+        logger.debug("発注書仕入先選択情報取得完了");
+
         return dto;
 
+    }
+
+    public PurchaseOrderDetailSelectionViewDto getDetailSelectionView(PurchaseOrderType orderType, String supplierId,
+            String supplierName) {
+        logger.debug("発注明細選択情報取得開始");
+
+        ItemKind kind = orderType == PurchaseOrderType.STANDARD ? ItemKind.GOODS : ItemKind.SERVICE;
+        PurchaseOrderDetailSelectionViewDto dto = purchaseOrderMapperCustom.selectPurchaseOrderDetailSelectionView(
+                supplierId, supplierName, kind);
+
+        logger.debug("発注明細選択情報取得完了");
+
+        return dto;
     }
 
 }

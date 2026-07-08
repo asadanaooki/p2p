@@ -14,7 +14,13 @@
       po.order_type,
       po.display_number,
       CONCAT_WS(' ', u.last_name, u.first_name) as purchaser,
-      po.delivery_due_date as due_date,
+      
+      <!-- PO納期 -->
+      po.delivery_due_date,
+      <!-- SO期間 -->
+      po.service_period_from,
+      po.service_period_to,
+      
       po.snap_supplier_name as supplier_name,
       po.total_amount_excluding_tax,
       po.status
@@ -28,11 +34,42 @@
          po.purchaser_user_id = #{userId}
        </if>
 
-      <if test="form.dueDateFrom != null">
-        and po.delivery_due_date &gt;= #{form.dueDateFrom}
+      <if test="form.orderType != null">
+        and po.order_type = #{form.orderType}
       </if>
-      <if test="form.dueDateTo != null">
-        and po.delivery_due_date &lt;= #{form.dueDateTo}
+      <if test="form.targetDateFrom != null">
+        <choose>
+          <when test="form.orderType == null">
+            and 
+              (
+                po.delivery_due_date &gt;= #{form.targetDateFrom}
+                or po.service_period_to &gt;= #{form.targetDateFrom}
+              )
+          </when>
+          <when test="form.orderType.toString().equals('STANDARD')">
+             and po.delivery_due_date &gt;= #{form.targetDateFrom}
+          </when>
+          <when test="form.orderType.toString().equals('SERVICE')">
+             and po.service_period_to &gt;= #{form.targetDateFrom}
+          </when>
+        </choose>
+      </if>
+      <if test="form.targetDateTo != null">
+        <choose>
+          <when test="form.orderType == null">
+            and 
+              (
+                po.delivery_due_date &lt;= #{form.targetDateTo}
+                or po.service_period_from &lt;= #{form.targetDateTo}
+              )
+          </when>
+          <when test="form.orderType.toString().equals('STANDARD')">
+             and po.delivery_due_date &lt;= #{form.targetDateTo}
+          </when>
+          <when test="form.orderType.toString().equals('SERVICE')">
+             and po.service_period_from &lt;= #{form.targetDateTo}
+          </when>
+        </choose>
       </if>
       <if test="form.supplierId != null">
         and s.supplier_id = #{form.supplierId}
@@ -61,10 +98,16 @@
         end
         </when>
         <when test="form.sortBy.toString().equals('PURCHASER')">concat(u.last_name_kana, u.first_name_kana)</when>
-        <when test="form.sortBy.toString().equals('DUE_DATE')">po.delivery_due_date
+        <when test="form.sortBy.toString().equals('TARGET_DATE')">
           <choose>
-            <when test="form.sortDirection.toString().equals('ASC')">asc nulls first</when>
-            <when test="form.sortDirection.toString().equals('DESC')">desc nulls last</when>
+            <when test="form.sortDirection.toString().equals('ASC')">
+              coalesce(po.delivery_due_date, po.service_period_from) asc,
+              coalesce(po.delivery_due_date, po.service_period_to) asc
+            </when>
+            <when test="form.sortDirection.toString().equals('DESC')">
+              coalesce(po.delivery_due_date, po.service_period_to) desc,
+              coalesce(po.delivery_due_date, po.service_period_from) desc
+            </when>
           </choose>
         </when>
         <when test="form.sortBy.toString().equals('SUPPLIER')">s.name_kana</when>
@@ -79,7 +122,7 @@
         end
         </when>
       </choose>
-      <if test="!form.sortBy.toString().equals('DUE_DATE')">
+      <if test="!form.sortBy.toString().equals('TARGET_DATE')">
         <include refid="sortDirection"></include>
       </if>
       , po.display_number <include refid="sortDirection"></include>
@@ -98,11 +141,42 @@
          po.purchaser_user_id = #{userId}
        </if>
 
-      <if test="form.dueDateFrom != null">
-        and po.delivery_due_date &gt;= #{form.dueDateFrom}
+      <if test="form.orderType != null">
+        and po.order_type = #{form.orderType}
       </if>
-      <if test="form.dueDateTo != null">
-        and po.delivery_due_date &lt;= #{form.dueDateTo}
+      <if test="form.targetDateFrom != null">
+        <choose>
+          <when test="form.orderType == null">
+            and 
+              (
+                po.delivery_due_date &gt;= #{form.targetDateFrom}
+                or po.service_period_to &gt;= #{form.targetDateFrom}
+              )
+          </when>
+          <when test="form.orderType.toString().equals('STANDARD')">
+             and po.delivery_due_date &gt;= #{form.targetDateFrom}
+          </when>
+          <when test="form.orderType.toString().equals('SERVICE')">
+             and po.service_period_to &gt;= #{form.targetDateFrom}
+          </when>
+        </choose>
+      </if>
+      <if test="form.targetDateTo != null">
+        <choose>
+          <when test="form.orderType == null">
+            and 
+              (
+                po.delivery_due_date &lt;= #{form.targetDateTo}
+                or po.service_period_from &lt;= #{form.targetDateTo}
+              )
+          </when>
+          <when test="form.orderType.toString().equals('STANDARD')">
+             and po.delivery_due_date &lt;= #{form.targetDateTo}
+          </when>
+          <when test="form.orderType.toString().equals('SERVICE')">
+             and po.service_period_from &lt;= #{form.targetDateTo}
+          </when>
+        </choose>
       </if>
       <if test="form.supplierId != null">
         and s.supplier_id = #{form.supplierId}

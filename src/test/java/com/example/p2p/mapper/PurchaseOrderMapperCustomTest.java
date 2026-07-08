@@ -74,6 +74,8 @@ class PurchaseOrderMapperCustomTest {
 
         String firstPoId = "6f3b9242-2d1e-4e7a-b875-021c3f9a1a01";
 
+        String targetDateSupplierId = "50000000-0000-4000-9000-000000000001";
+
         @Test
         void selectPurchaseOrders_noCondition() {
             List<PurchaseOrderListRowDto> actual = purchaseOrderMapperCustom
@@ -90,7 +92,7 @@ class PurchaseOrderMapperCustomTest {
             assertThat(first.getDisplayNumber()).isOne();
             assertThat(first.getOrderType()).isEqualTo(PurchaseOrderType.STANDARD);
             assertThat(first.getPurchaser()).isEqualTo(expectedPurchaser);
-            assertThat(first.getDueDate()).isEqualTo(LocalDate.of(2026, 6, 25));
+            assertThat(first.getDeliveryDueDate()).isEqualTo(LocalDate.of(2026, 6, 25));
             assertThat(first.getSupplierName()).isEqualTo(expectedOrder.getSnapSupplierName());
             assertThat(first.getTotalAmountExcludingTax()).isEqualTo(6800);
             assertThat(first.getStatus()).isEqualTo(PurchaseOrderStatus.PENDING);
@@ -116,6 +118,70 @@ class PurchaseOrderMapperCustomTest {
                     Arguments.of("6f3b9242-2d1e-4e7a-b875-021c3f9a1a01", 1));
         }
 
+        @Test
+        void selectPurchaseOrders_targetDateFrom_orderTypeNull_boundary() {
+            insertTargetDateFromFixture();
+            PurchaseOrderSearchForm form = completedSearchForm();
+            form.setTargetDateFrom(LocalDate.of(2026, 7, 10));
+
+            assertDisplayNumbers(form, 10101, 10103);
+        }
+
+        @Test
+        void selectPurchaseOrders_targetDateFrom_standard_boundary() {
+            insertTargetDateFromFixture();
+            PurchaseOrderSearchForm form = completedSearchForm(PurchaseOrderType.STANDARD);
+            form.setTargetDateFrom(LocalDate.of(2026, 7, 10));
+
+            assertDisplayNumbers(form, 10101);
+        }
+
+        @Test
+        void selectPurchaseOrders_targetDateFrom_service_boundary() {
+            insertTargetDateFromFixture();
+            PurchaseOrderSearchForm form = completedSearchForm(PurchaseOrderType.SERVICE);
+            form.setTargetDateFrom(LocalDate.of(2026, 7, 10));
+
+            assertDisplayNumbers(form, 10103);
+        }
+
+        @Test
+        void selectPurchaseOrders_targetDateTo_orderTypeNull_boundary() {
+            insertTargetDateToFixture();
+            PurchaseOrderSearchForm form = completedSearchForm();
+            form.setTargetDateTo(LocalDate.of(2026, 7, 10));
+
+            assertDisplayNumbers(form, 10201, 10203);
+        }
+
+        @Test
+        void selectPurchaseOrders_targetDateTo_standard_boundary() {
+            insertTargetDateToFixture();
+            PurchaseOrderSearchForm form = completedSearchForm(PurchaseOrderType.STANDARD);
+            form.setTargetDateTo(LocalDate.of(2026, 7, 10));
+
+            assertDisplayNumbers(form, 10201);
+        }
+
+        @Test
+        void selectPurchaseOrders_targetDateTo_service_boundary() {
+            insertTargetDateToFixture();
+            PurchaseOrderSearchForm form = completedSearchForm(PurchaseOrderType.SERVICE);
+            form.setTargetDateTo(LocalDate.of(2026, 7, 10));
+
+            assertDisplayNumbers(form, 10203);
+        }
+
+        @Test
+        void selectPurchaseOrders_targetDateRange_service_overlapsBoundary() {
+            insertServiceTargetDateRangeFixture();
+            PurchaseOrderSearchForm form = completedSearchForm(PurchaseOrderType.SERVICE);
+            form.setTargetDateFrom(LocalDate.of(2026, 7, 10));
+            form.setTargetDateTo(LocalDate.of(2026, 7, 20));
+
+            assertDisplayNumbers(form, 10301, 10302, 10303);
+        }
+
         @ParameterizedTest
         @MethodSource("createSortCases")
         void selectPurchaseOrders_sortBy(PurchaseOrderSortBy sortBy, SortDirection direction, int firstDispNum,
@@ -136,6 +202,178 @@ class PurchaseOrderMapperCustomTest {
                     Arguments.of(PurchaseOrderSortBy.TYPE, SortDirection.DESC, 9, 8),
                     Arguments.of(PurchaseOrderSortBy.PURCHASER, SortDirection.ASC, 1, 5),
                     Arguments.of(PurchaseOrderSortBy.SUPPLIER, SortDirection.DESC, 8, 6));
+        }
+
+        @Test
+        void selectPurchaseOrders_sortByTargetDate_orderTypeNull_asc() {
+            insertTargetDateSortAscFixture();
+            PurchaseOrderSearchForm form = completedSearchForm();
+            form.setSortBy(PurchaseOrderSortBy.TARGET_DATE);
+            form.setSortDirection(SortDirection.ASC);
+
+            assertDisplayNumbers(form, 10401, 10402, 10405, 10403, 10404);
+        }
+
+        @Test
+        void selectPurchaseOrders_sortByTargetDate_orderTypeNull_desc() {
+            insertTargetDateSortDescFixture();
+            PurchaseOrderSearchForm form = completedSearchForm();
+            form.setSortBy(PurchaseOrderSortBy.TARGET_DATE);
+            form.setSortDirection(SortDirection.DESC);
+
+            assertDisplayNumbers(form, 10405, 10402, 10404, 10403, 10401);
+        }
+
+        @Test
+        void selectPurchaseOrders_sortByTargetDate_standard_deliveryDueDateAsc() {
+            insertTargetDateSortAscFixture();
+            PurchaseOrderSearchForm form = completedSearchForm(PurchaseOrderType.STANDARD);
+            form.setSortBy(PurchaseOrderSortBy.TARGET_DATE);
+            form.setSortDirection(SortDirection.ASC);
+
+            assertDisplayNumbers(form, 10401, 10403);
+        }
+
+        @Test
+        void selectPurchaseOrders_sortByTargetDate_service_periodFromAsc() {
+            insertTargetDateSortAscFixture();
+            PurchaseOrderSearchForm form = completedSearchForm(PurchaseOrderType.SERVICE);
+            form.setSortBy(PurchaseOrderSortBy.TARGET_DATE);
+            form.setSortDirection(SortDirection.ASC);
+
+            assertDisplayNumbers(form, 10402, 10405, 10404);
+        }
+
+        @Test
+        void selectPurchaseOrders_sortByTargetDate_service_periodToAndPeriodFromDesc() {
+            insertTargetDateSortDescFixture();
+            PurchaseOrderSearchForm form = completedSearchForm(PurchaseOrderType.SERVICE);
+            form.setSortBy(PurchaseOrderSortBy.TARGET_DATE);
+            form.setSortDirection(SortDirection.DESC);
+
+            assertDisplayNumbers(form, 10405, 10402, 10404);
+        }
+
+        private void insertTargetDateFromFixture() {
+            insertTargetDateTestSupplier();
+            insertStandardPurchaseOrder(10101, LocalDate.of(2026, 7, 10), PurchaseOrderStatus.COMPLETED);
+            insertStandardPurchaseOrder(10102, LocalDate.of(2026, 7, 9), PurchaseOrderStatus.COMPLETED);
+            insertServicePurchaseOrder(10103, LocalDate.of(2026, 7, 1), LocalDate.of(2026, 7, 10),
+                    PurchaseOrderStatus.COMPLETED);
+            insertServicePurchaseOrder(10104, LocalDate.of(2026, 7, 1), LocalDate.of(2026, 7, 9),
+                    PurchaseOrderStatus.COMPLETED);
+        }
+
+        private void insertTargetDateToFixture() {
+            insertTargetDateTestSupplier();
+            insertStandardPurchaseOrder(10201, LocalDate.of(2026, 7, 10), PurchaseOrderStatus.COMPLETED);
+            insertStandardPurchaseOrder(10202, LocalDate.of(2026, 7, 11), PurchaseOrderStatus.COMPLETED);
+            insertServicePurchaseOrder(10203, LocalDate.of(2026, 7, 10), LocalDate.of(2026, 7, 20),
+                    PurchaseOrderStatus.COMPLETED);
+            insertServicePurchaseOrder(10204, LocalDate.of(2026, 7, 11), LocalDate.of(2026, 7, 20),
+                    PurchaseOrderStatus.COMPLETED);
+        }
+
+        private void insertServiceTargetDateRangeFixture() {
+            insertTargetDateTestSupplier();
+            insertServicePurchaseOrder(10301, LocalDate.of(2026, 7, 1), LocalDate.of(2026, 7, 10),
+                    PurchaseOrderStatus.COMPLETED);
+            insertServicePurchaseOrder(10302, LocalDate.of(2026, 7, 20), LocalDate.of(2026, 7, 31),
+                    PurchaseOrderStatus.COMPLETED);
+            insertServicePurchaseOrder(10303, LocalDate.of(2026, 7, 12), LocalDate.of(2026, 7, 15),
+                    PurchaseOrderStatus.COMPLETED);
+            insertServicePurchaseOrder(10304, LocalDate.of(2026, 7, 1), LocalDate.of(2026, 7, 9),
+                    PurchaseOrderStatus.COMPLETED);
+            insertServicePurchaseOrder(10305, LocalDate.of(2026, 7, 21), LocalDate.of(2026, 7, 31),
+                    PurchaseOrderStatus.COMPLETED);
+            insertStandardPurchaseOrder(10306, LocalDate.of(2026, 7, 15), PurchaseOrderStatus.COMPLETED);
+        }
+
+        private void insertTargetDateSortAscFixture() {
+            insertTargetDateTestSupplier();
+            insertStandardPurchaseOrder(10401, LocalDate.of(2026, 7, 10), PurchaseOrderStatus.COMPLETED);
+            insertServicePurchaseOrder(10402, LocalDate.of(2026, 7, 10), LocalDate.of(2026, 7, 20),
+                    PurchaseOrderStatus.COMPLETED);
+            insertStandardPurchaseOrder(10403, LocalDate.of(2026, 7, 20), PurchaseOrderStatus.COMPLETED);
+            insertServicePurchaseOrder(10404, LocalDate.of(2026, 7, 25), LocalDate.of(2026, 7, 26),
+                    PurchaseOrderStatus.COMPLETED);
+            insertServicePurchaseOrder(10405, LocalDate.of(2026, 7, 10), LocalDate.of(2026, 7, 30),
+                    PurchaseOrderStatus.COMPLETED);
+            insertStandardPurchaseOrder(10406, LocalDate.of(2026, 7, 1), PurchaseOrderStatus.PENDING);
+        }
+
+        private void insertTargetDateSortDescFixture() {
+            insertTargetDateTestSupplier();
+            insertStandardPurchaseOrder(10401, LocalDate.of(2026, 7, 10), PurchaseOrderStatus.COMPLETED);
+            insertServicePurchaseOrder(10402, LocalDate.of(2026, 7, 5), LocalDate.of(2026, 7, 30),
+                    PurchaseOrderStatus.COMPLETED);
+            insertStandardPurchaseOrder(10403, LocalDate.of(2026, 7, 20), PurchaseOrderStatus.COMPLETED);
+            insertServicePurchaseOrder(10404, LocalDate.of(2026, 7, 25), LocalDate.of(2026, 7, 26),
+                    PurchaseOrderStatus.COMPLETED);
+            insertServicePurchaseOrder(10405, LocalDate.of(2026, 7, 15), LocalDate.of(2026, 7, 30),
+                    PurchaseOrderStatus.COMPLETED);
+            insertStandardPurchaseOrder(10406, LocalDate.of(2026, 7, 1), PurchaseOrderStatus.PENDING);
+        }
+
+        private PurchaseOrderSearchForm completedSearchForm() {
+            return completedSearchForm(null);
+        }
+
+        private PurchaseOrderSearchForm completedSearchForm(PurchaseOrderType orderType) {
+            PurchaseOrderSearchForm form = new PurchaseOrderSearchForm();
+            form.setOrderType(orderType);
+            form.setStatus(PurchaseOrderStatus.COMPLETED);
+            form.setSupplierId(targetDateSupplierId);
+            form.setSize(100);
+            return form;
+        }
+
+        private void assertDisplayNumbers(PurchaseOrderSearchForm form, Integer... expectedDisplayNumbers) {
+            List<PurchaseOrderListRowDto> actual = purchaseOrderMapperCustom.selectPurchaseOrders(form,
+                    VisibilityScope.ALL, userId);
+
+            assertThat(actual).extracting(PurchaseOrderListRowDto::getDisplayNumber)
+                .containsExactly(expectedDisplayNumbers);
+            assertThat(purchaseOrderMapperCustom.countPurchaseOrders(form, VisibilityScope.ALL, userId))
+                .isEqualTo(expectedDisplayNumbers.length);
+        }
+
+        private void insertStandardPurchaseOrder(int displayNumber, LocalDate deliveryDueDate,
+                PurchaseOrderStatus status) {
+            PurchaseOrder order = basePurchaseOrder(displayNumber, PurchaseOrderType.STANDARD, status);
+            order.setDeliveryDueDate(deliveryDueDate);
+            purchaseOrderMapper.insertSelective(order);
+        }
+
+        private void insertServicePurchaseOrder(int displayNumber, LocalDate servicePeriodFrom,
+                LocalDate servicePeriodTo, PurchaseOrderStatus status) {
+            PurchaseOrder order = basePurchaseOrder(displayNumber, PurchaseOrderType.SERVICE, status);
+            order.setServicePeriodFrom(servicePeriodFrom);
+            order.setServicePeriodTo(servicePeriodTo);
+            purchaseOrderMapper.insertSelective(order);
+        }
+
+        private PurchaseOrder basePurchaseOrder(int displayNumber, PurchaseOrderType orderType,
+                PurchaseOrderStatus status) {
+            PurchaseOrder order = new PurchaseOrder();
+            order.setPoId("40000000-0000-4000-9000-" + String.format("%012d", displayNumber));
+            order.setDisplayNumber(displayNumber);
+            order.setOrderType(orderType);
+            order.setPurchaserUserId(userId);
+            order.setSupplierId(targetDateSupplierId);
+            order.setSnapSupplierName("Target Date Test Supplier");
+            order.setTotalAmountExcludingTax(1000);
+            order.setStatus(status);
+            order.setCurrentStepOrder(1);
+            return order;
+        }
+
+        private void insertTargetDateTestSupplier() {
+            Supplier supplier = new Supplier();
+            supplier.setSupplierId(targetDateSupplierId);
+            supplier.setName("Target Date Test Supplier");
+            supplier.setNameKana("Target Date Test Supplier");
+            supplierMapper.insertSelective(supplier);
         }
 
     }
