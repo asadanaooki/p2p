@@ -101,20 +101,21 @@ public class PurchaseOrderController {
 
         return "app/purchase-order-supplier-selection";
     }
-    //
-    // @PreAuthorize("hasAuthority('PR_CREATE')")
-    // @GetMapping("/create")
-    // public String showPurchaseRequestCreateForm(@AuthenticationPrincipal(expression =
-    // "username") String userId,
-    // @ModelAttribute("form") PurchaseRequestCreateForm form, Model model) {
-    // logger.debug("PR作成画面表示開始");
-    //
-    // model.addAttribute("view", purchaseRequestService.prepareCreateView(userId));
-    //
-    // logger.debug("PR作成画面表示完了");
-    //
-    // return "app/purchase-request-create";
-    // }
+
+    @PreAuthorize("hasAuthority('PO_CREATE') and hasAuthority('PO_VIEW_ALL')")
+    @GetMapping("/create/from-purchase-requests")
+    public String showDetailSelectionFromPrs(@RequestParam PurchaseOrderType orderType,
+            @RequestParam(required = false) String supplierId, @RequestParam(required = false) String supplierName,
+            Model model) {
+        logger.debug("発注明細選択画面表示開始");
+
+        model.addAttribute("orderType", orderType);
+        model.addAttribute("view", purchaseOrderService.getDetailSelectionView(orderType, supplierId, supplierName));
+
+        logger.debug("発注明細選択画面表示完了");
+
+        return "app/purchase-order-detail-selection";
+    }
     //
     // @PreAuthorize("hasAuthority('PR_CREATE')")
     // @PostMapping("/create")

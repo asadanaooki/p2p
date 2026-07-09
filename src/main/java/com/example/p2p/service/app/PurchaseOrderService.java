@@ -94,8 +94,8 @@ public class PurchaseOrderService {
         logger.debug("発注明細選択情報取得開始");
 
         ItemKind kind = orderType == PurchaseOrderType.STANDARD ? ItemKind.GOODS : ItemKind.SERVICE;
-        PurchaseOrderDetailSelectionViewDto dto = purchaseOrderMapperCustom.selectPurchaseOrderDetailSelectionView(
-                supplierId, supplierName, kind);
+        PurchaseOrderDetailSelectionViewDto dto = purchaseOrderMapperCustom
+            .selectPurchaseOrderDetailSelectionView(supplierId, supplierName, kind);
 
         logger.debug("発注明細選択情報取得完了");
 
