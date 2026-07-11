@@ -110,7 +110,10 @@ public class PurchaseOrderController {
         logger.debug("発注明細選択画面表示開始");
 
         model.addAttribute("orderType", orderType);
-        model.addAttribute("view", purchaseOrderService.getDetailSelectionView(orderType, supplierId, supplierName));
+        model.addAttribute("supplierId", supplierId);
+        model.addAttribute("supplierName", supplierName);
+        model.addAttribute("view",
+                purchaseOrderService.getDetailSelectionView(orderType, supplierId, supplierName));
 
         logger.debug("発注明細選択画面表示完了");
 

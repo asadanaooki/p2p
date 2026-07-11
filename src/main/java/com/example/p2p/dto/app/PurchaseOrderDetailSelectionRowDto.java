@@ -12,7 +12,7 @@ public class PurchaseOrderDetailSelectionRowDto {
     
     private int unitPrice;
     
-    private String subtotalExcludingTax;
+    private int subtotalExcludingTax;
     
     // Goodsのみ
     private String unitName;

@@ -1,0 +1,49 @@
+/*
+ * 上部の合計表示領域の横幅を固定する。
+ * Bootstrapにはmin-width用ユーティリティがないため定義する。
+ */
+.po-header-total {
+  min-width: 150px;
+}
+
+/*
+ * PRごとに同じ列幅で表示するため、固定テーブルレイアウトにする。
+ */
+.po-detail-table {
+  table-layout: fixed;
+}
+
+/*
+ * 以下は業務固有のテーブル列幅。
+ * Bootstrapのグリッドではtable列幅を安定して固定できないため定義する。
+ */
+.po-col-select {
+  width: 58px;
+}
+
+.po-col-quantity-unit {
+  width: 180px;
+}
+
+.po-col-price {
+  width: 170px;
+}
+
+.po-col-subtotal {
+  width: 180px;
+}
+
+/*
+ * 数量入力欄の上下矢印を非表示にする。
+ * Bootstrapにはnumber入力の矢印を消すユーティリティがないため定義する。
+ */
+.po-quantity-input {
+  appearance: textfield;
+}
+
+/* Chrome、Edge、Safari */
+.po-quantity-input::-webkit-inner-spin-button,
+.po-quantity-input::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
+}

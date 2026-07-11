@@ -1,17 +1,272 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
 
 <head>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" th:href="@{/css/app/purchase-order-supplier-selection.css}">
+  <meta charset="UTF-8">
 
-  <!-- JS -->
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script th:src="@{/js/common.js}"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <title th:text="${orderType.label} + '発注書作成'">
+    発注書作成
+  </title>
+
+  <!-- CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" th:href="@{/css/app/purchase-order-detail-selection.css}">
 </head>
 
 <body>
+
+  <main class="container-fluid p-4" th:with="
+        isStandard=${orderType.toString().equals('STANDARD')},
+        isService=${orderType.toString().equals('SERVICE')}">
+
+    <!-- 画面ヘッダー -->
+    <header class="sticky-top bg-white border-bottom shadow-sm mb-3">
+
+      <div class="px-4 py-2 d-flex justify-content-between align-items-center">
+
+        <h1 class="h3 mb-0" th:text="${orderType.label} + '発注書作成'">
+          発注書作成
+        </h1>
+
+        <div class="d-flex align-items-center gap-3 flex-shrink-0">
+
+          <!-- 選択中の合計 -->
+          <div class="po-header-total border-start ps-3">
+            選択合計
+          </div>
+
+          <div id="selectedTotalAmount" class="fw-bold text-nowrap">
+            0 円
+          </div>
+
+          <button id="nextStepButton" class="btn btn-primary px-4" type="submit" form="detailSelectionForm" disabled>
+            次へ
+          </button>
+
+        </div>
+      </div>
+    </header>
+
+    <form id="detailSelectionForm" method="post" th:action="@{/purchase-order/create/from-purchase-requests}">
+
+      <!-- 次画面へ引き継ぐ値 -->
+      <input type="hidden" name="orderType" th:value="${orderType}">
+
+      <input type="hidden" name="supplierId" th:value="${supplierId}">
+
+      <input type="hidden" name="supplierName" th:value="${supplierName}">
+
+      <!-- 画面説明 -->
+      <div class="mb-4">
+
+        <div class="d-flex align-items-center gap-2">
+
+          <span class="badge rounded-circle text-bg-success p-2">
+            ✓
+          </span>
+
+          <h2 class="h5 fw-normal mb-0">
+
+            <span th:text="${isService
+                    ? '発注書に追加するサービス明細を選択してください。'
+                    : '発注書に追加する物品明細を選択してください。'}">
+              発注書に追加する明細を選択してください。
+            </span>
+
+          </h2>
+        </div>
+      </div>
+
+      <!-- 全明細選択 -->
+      <div th:if="${view.prGroups != null
+              and !#lists.isEmpty(view.prGroups)}" class="form-check d-flex align-items-center gap-2 ps-3 mb-3">
+
+        <input id="selectAllDetails" class="form-check-input m-0" type="checkbox">
+
+        <label class="form-check-label" for="selectAllDetails">
+          すべての明細を選択
+        </label>
+
+      </div>
+
+      <!-- PR単位のテーブル -->
+      <section th:each="prGroup, groupStat : ${view.prGroups}" class="border rounded overflow-hidden mb-4"
+        th:data-group-index="${groupStat.index}">
+
+        <table class="table table-bordered po-detail-table mb-0">
+
+          <thead class="table-light">
+            <tr>
+
+              <!-- PR内全選択 -->
+              <th class="po-col-select align-middle fw-normal">
+
+                <input class="form-check-input js-select-pr
+                           d-block mx-auto my-0" type="checkbox" th:id="|selectPr-${groupStat.index}|"
+                  th:data-group-index="${groupStat.index}" aria-label="このPRの明細をすべて選択">
+
+              </th>
+
+              <!-- 品目名／サービス名 -->
+              <th class="align-middle fw-normal">
+
+                <span th:text="${isStandard
+                        ? '品目名'
+                        : 'サービス名'}">
+                  品目名
+                </span>
+
+              </th>
+
+              <!-- 数量／単位 -->
+              <th class="po-col-quantity-unit align-middle fw-normal">
+                数量 / 単位
+              </th>
+
+              <!-- 単価 -->
+              <th class="po-col-price text-end align-middle fw-normal">
+                単価
+              </th>
+
+              <!-- 税抜小計 -->
+              <th class="po-col-subtotal text-end align-middle fw-normal">
+                税抜小計
+              </th>
+
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <tr th:each="row, rowStat : ${prGroup.detailRows}">
+
+              <!-- 明細選択 -->
+              <td class="po-col-select align-middle">
+
+                <input class="form-check-input js-detail-checkbox
+                           d-block mx-auto my-0" type="checkbox" name="selectedPrDetailIds"
+                  th:value="${row.prDetailId}" th:data-group-index="${groupStat.index}"
+                  th:data-row-index="${rowStat.index}" th:data-subtotal="${row.subtotalExcludingTax}"
+                  aria-label="発注明細を選択">
+
+              </td>
+
+              <!-- 品目名／サービス名 -->
+              <td class="align-middle">
+
+                <span class="d-block text-truncate" th:title="${row.itemName}" th:text="${row.itemName}">
+                  品目名
+                </span>
+
+              </td>
+
+              <!-- 数量／単位 -->
+              <td class="po-col-quantity-unit align-middle">
+
+                <!-- 物品：数量を変更可能 -->
+                <div th:if="${isStandard}" class="d-flex flex-nowrap align-items-center gap-3">
+
+                  <input class="form-control form-control-sm text-end
+                             js-quantity po-quantity-input" type="number" name="quantities" min="1"
+                    th:max="${row.quantity}" th:value="${row.quantity}" th:data-unit-price="${row.unitPrice}"
+                    th:data-group-index="${groupStat.index}" th:data-row-index="${rowStat.index}">
+
+                  <span class="text-secondary text-nowrap flex-shrink-0" th:text="${row.unitName}">
+                    個
+                  </span>
+
+                </div>
+
+                <!-- サービス：数量を変更不可 -->
+                <div th:if="${isService}" class="text-nowrap">
+
+                  <span th:text="${row.quantity}">
+                    6
+                  </span>
+
+                  <span class="ms-1 text-secondary" th:text="${row.unitName}">
+                    時間
+                  </span>
+
+                </div>
+
+              </td>
+
+              <!-- 単価：物品・サービス共通で変更不可 -->
+              <td class="po-col-price text-end align-middle text-nowrap" th:text="${#numbers.formatInteger(
+                      row.unitPrice,
+                      0,
+                      'COMMA'
+                  ) + ' 円'}">
+                4,500 円
+              </td>
+
+              <!-- 税抜小計 -->
+              <td class="po-col-subtotal text-end align-middle text-nowrap">
+
+                <span class="js-row-subtotal" th:data-group-index="${groupStat.index}"
+                  th:data-row-index="${rowStat.index}" th:data-subtotal="${row.subtotalExcludingTax}" th:text="${#numbers.formatInteger(
+                        row.subtotalExcludingTax,
+                        0,
+                        'COMMA'
+                    ) + ' 円'}">
+                  27,000 円
+                </span>
+
+              </td>
+
+            </tr>
+
+          </tbody>
+        </table>
+
+        <!-- PR情報 -->
+        <footer class="bg-body-secondary border-top p-2
+                   d-flex justify-content-between align-items-center">
+
+          <span>
+            PR番号
+
+            <a class="fw-semibold text-decoration-none" th:href="@{/purchase-request/{prId}(
+                    prId=${prGroup.prId}
+                )}" th:text="${prGroup.displayNumber}">
+              1001
+            </a>
+          </span>
+
+          <div class="text-nowrap">
+
+            <strong class="fs-5" th:text="${'合計：'
+                    + #numbers.formatInteger(
+                        prGroup.prTotalAmountExcludingTax,
+                        0,
+                        'COMMA'
+                    )
+                    + ' 円'}">
+              合計：27,000 円
+            </strong>
+
+          </div>
+
+        </footer>
+
+      </section>
+
+    </form>
+
+  </main>
+
+  <!-- JS -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <script th:src="@{/js/common.js}"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+  </script>
+
+  <script th:src="@{/js/app/purchase-order-detail-selection.js}">
+  </script>
 
 </body>
 

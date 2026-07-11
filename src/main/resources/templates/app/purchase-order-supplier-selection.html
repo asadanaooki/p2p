@@ -100,12 +100,11 @@
             <td class="col-supplier" th:text="${row.supplierName}"></td>
             <td class="col-detail-count text-end" th:text="${row.detailCount}"></td>
 
-            <td class="col-pr-number">
+            <td class="col-pr-number align-middle">
               <div class="d-flex flex-wrap gap-1">
                 <a class="badge text-bg-light border text-decoration-none text-reset"
                   th:each="pr : ${row.purchaseRequests}" th:text="${pr.displayNumber}"
                   th:href="@{/purchase-request/{prId}(prId=${pr.prId})}">
-
                 </a>
               </div>
             </td>
@@ -114,12 +113,12 @@
             </td>
 
             <td class="col-actions text-center">
-              <a class="btn btn-primary btn-sm" th:if="${row.supplierId != null}" th:href="@{/purchase-order/create/from-purchase-request(orderType=${orderType}, 
+              <a class="btn btn-primary btn-sm" th:if="${row.supplierId != null}" th:href="@{/purchase-order/create/from-purchase-requests(orderType=${orderType}, 
                   supplierId=${row.supplierId})}">
                 選択
               </a>
 
-              <a class="btn btn-primary btn-sm" th:if="${row.supplierId == null}" th:href="@{/purchase-order/create/from-purchase-request(orderType=${orderType}, 
+              <a class="btn btn-primary btn-sm" th:if="${row.supplierId == null}" th:href="@{/purchase-order/create/from-purchase-requests(orderType=${orderType}, 
                   freeInputSupplierName=${row.supplierName})}">
                 選択
               </a>
