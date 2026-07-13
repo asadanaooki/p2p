@@ -51,7 +51,6 @@ $(function () {
     const subtotal = quantity * unitPrice;
     const $row = $quantityInput.closest("tr");
     const $subtotal = $row.find(".js-row-subtotal");
-    const $detailCheckbox = $row.find(".js-detail-checkbox");
 
     $subtotal.attr("data-subtotal", subtotal).text(formatYen(subtotal));
   }
@@ -106,14 +105,26 @@ $(function () {
     const $checkedDetailCheckboxes = $detailCheckboxes.filter(":checked");
 
     let selectedTotal = 0;
+    let hasInvalidQuantity = false;
 
     $checkedDetailCheckboxes.each(function () {
+      const $row = $(this).closest("tr");
+      const $quantityInput = $row.find(".js-quantity");
+
+      // サービス明細には数量入力欄が存在しない。
+      if ($quantityInput.length > 0 && $quantityInput.hasClass("is-invalid")) {
+        hasInvalidQuantity = true;
+      }
+
       selectedTotal += getRowSubtotal($(this));
     });
 
     $selectedTotalAmount.text(formatYen(selectedTotal));
 
-    $nextStepButton.prop("disabled", $checkedDetailCheckboxes.length === 0);
+    $nextStepButton.prop(
+      "disabled",
+      $checkedDetailCheckboxes.length === 0 || hasInvalidQuantity,
+    );
   }
 
   /**
@@ -131,6 +142,13 @@ $(function () {
     updateSelectedRowHighlight();
   }
 
+  /**
+   * 選択された物品明細から、
+   * 最初の不正な数量入力欄を取得する。
+   *
+   * @returns {JQuery} 不正な数量入力欄。
+   *                   存在しない場合は空のjQueryオブジェクト
+   */
   function findInvalidQuantityInput() {
     let $invalidInput = $();
 
@@ -142,24 +160,119 @@ $(function () {
         return;
       }
 
-      const rawValue = $quantityInput.val();
-      const quantity = Number(rawValue);
-
-      const min = parseNumber($quantityInput.attr("min"));
-      const max = parseNumber($quantityInput.attr("max"));
-
-      const isInvalid =
-        rawValue === "" ||
-        !Number.isFinite(quantity) ||
-        !Number.isInteger(quantity) ||
-        quantity < min ||
-        quantity > max;
-
-      if (isInvalid) {
+      if (isInvalidQuantityInput($quantityInput)) {
         $invalidInput = $quantityInput;
         return false;
       }
     });
     return $invalidInput;
   }
+
+  /**
+   * 全明細選択チェックボックス変更時。
+   */
+  $selectAllCheckBox.on("change", function () {
+    const checked = $(this).prop("checked");
+
+    $(this).prop("indeterminate", false);
+
+    $detailCheckboxes.prop("checked", checked);
+
+    refreshSelectionState();
+  });
+
+  /**
+   * PR単位チェックボックス変更時。
+   */
+  $prCheckboxes.on("change", function () {
+    const $prCheckbox = $(this);
+
+    const groupIndex = $prCheckbox.attr("data-group-index");
+
+    const checked = $prCheckbox.prop("checked");
+
+    getDetailCheckboxesByGroup(groupIndex).prop("checked", checked);
+
+    refreshSelectionState();
+  });
+
+  /**
+   * 明細単位チェックボックス変更時。
+   */
+  $detailCheckboxes.on("change", function () {
+    const groupIndex = $(this).attr("data-group-index");
+
+    updatePrCheckbox(groupIndex);
+    updateSelectAllCheckbox();
+    updateSelectionSummary();
+    updateSelectedRowHighlight();
+  });
+
+  /**
+   * 物品数量欄の値が確定したとき、
+   * 入力値を検証し、正常な場合だけ小計を更新する。
+   */
+  $quantityInputs.on("change", function () {
+    const $quantityInput = $(this);
+
+    const isInvalid = isInvalidQuantityInput($quantityInput);
+
+    $quantityInput.toggleClass("is-invalid", isInvalid);
+
+    // 不正な値の場合は、小計を変更しない。
+    if (!isInvalid) {
+      updateRowSubtotal($quantityInput);
+    }
+
+    updateSelectionSummary();
+  });
+
+  /**
+   * 数量入力欄の値が不正か判定する。
+   * @param {JQuery} $quantityInput 数量入力欄
+   * @returns {boolean} 不正な場合はtrue
+   */
+  function isInvalidQuantityInput($quantityInput) {
+    const rawValue = $quantityInput.val();
+    const quantity = Number(rawValue);
+
+    const min = parseNumber($quantityInput.attr("min"));
+
+    const max = parseNumber($quantityInput.attr("max"));
+
+    return (
+      rawValue === "" ||
+      !Number.isFinite(quantity) ||
+      !Number.isInteger(quantity) ||
+      quantity < min ||
+      quantity > max
+    );
+  }
+
+  /**
+   * フォーム送信時。
+   */
+  $form.on("submit", function (event) {
+    const selectedCount = $detailCheckboxes.filter(":checked").length;
+
+    if (selectedCount === 0) {
+      event.preventDefault();
+      window.alert("発注対象の明細を1件以上選択してください。");
+      return;
+    }
+
+    const $invalidQuantityInput = findInvalidQuantityInput();
+    if ($invalidQuantityInput.length > 0) {
+      event.preventDefault();
+      window.alert("発注数量を正しく入力してください。");
+
+      $invalidQuantityInput.trigger("focus");
+      return;
+    }
+
+    $nextStepButton.prop("disabled", true).text("処理中...");
+  });
+
+  // 初期表示時の選択状態を設定する。
+  refreshSelectionState();
 });

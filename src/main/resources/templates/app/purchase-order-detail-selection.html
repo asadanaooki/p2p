@@ -48,7 +48,8 @@
       </div>
     </header>
 
-    <form id="detailSelectionForm" method="post" th:action="@{/purchase-order/create/from-purchase-requests}">
+    <form id="detailSelectionForm" method="post" th:action="@{/purchase-order/create/from-purchase-requests}"
+      novalidate>
 
       <!-- 次画面へ引き継ぐ値 -->
       <input type="hidden" name="orderType" th:value="${orderType}">
@@ -166,14 +167,20 @@
                 <!-- 物品：数量を変更可能 -->
                 <div th:if="${isStandard}" class="d-flex flex-nowrap align-items-center gap-3">
 
-                  <input class="form-control form-control-sm text-end
+                  <div>
+                    <input class="form-control form-control-sm text-end
                              js-quantity po-quantity-input" type="number" name="quantities" min="1"
-                    th:max="${row.quantity}" th:value="${row.quantity}" th:data-unit-price="${row.unitPrice}"
-                    th:data-group-index="${groupStat.index}" th:data-row-index="${rowStat.index}">
+                      th:max="${row.quantity}" th:value="${row.quantity}" th:data-unit-price="${row.unitPrice}"
+                      th:data-group-index="${groupStat.index}" th:data-row-index="${rowStat.index}">
 
-                  <span class="text-secondary text-nowrap flex-shrink-0" th:text="${row.unitName}">
-                    個
-                  </span>
+                    <div class="invalid-feedback" th:text="|${minQuantity}～${maxQuantity}の範囲内で入力してください。|">
+                    </div>
+
+                    <span class="text-secondary text-nowrap flex-shrink-0" th:text="${row.unitName}">
+                      個
+                    </span>
+                  </div>
+
 
                 </div>
 
