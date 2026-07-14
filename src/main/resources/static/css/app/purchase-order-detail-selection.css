@@ -47,3 +47,18 @@
   margin: 0;
   appearance: none;
 }
+
+/*
+ * エラー時
+*/
+.invalid-feedback {
+  display: none;
+}
+
+.po-quantity-input:invalid {
+  border-color: var(--bs-form-invalid-border-color);
+}
+
+.po-quantity-area:has(.po-quantity-input:invalid) .invalid-feedback {
+  display: block;
+}

@@ -28,7 +28,33 @@
       <input type="hidden" th:field="*{sortDirection}">
 
       <div class="toolbar-box">
-        <a th:href="@{/purchase-order/create}" class="btn btn-outline-success create-button">作成</a>
+        <div class="create-actions">
+          <a th:href="@{/purchase-order/create}" class="btn btn-outline-success create-button">作成</a>
+
+          <div class="dropdown">
+            <button id="createFromPurchaseRequestsButton" class="btn btn-outline-success dropdown-toggle" type="button"
+              data-bs-toggle="dropdown">
+              購買申請から作成
+            </button>
+
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" th:href="@{/purchase-order/create/supplier-selection(orderType='STANDARD')}">
+                  物品発注書
+                </a>
+              </li>
+
+              <li>
+                <a class="dropdown-item" th:href="@{/purchase-order/create/supplier-selection(orderType='SERVICE')}">
+                  サービス発注書
+                </a>
+              </li>
+            </ul>
+
+          </div>
+
+        </div>
+
 
         <div class="toolbar-actions">
           <div class="keyword-search-area">
@@ -206,6 +232,8 @@
 
 
   </main>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+  </script>
 </body>
 
 </html>

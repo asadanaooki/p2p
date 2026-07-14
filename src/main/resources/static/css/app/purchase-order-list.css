@@ -22,6 +22,12 @@
   align-items: flex-start;
 }
 
+.create-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .create-button {
   min-width: 86px;
 }

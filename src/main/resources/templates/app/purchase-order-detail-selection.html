@@ -165,21 +165,25 @@
               <td class="po-col-quantity-unit align-middle">
 
                 <!-- 物品：数量を変更可能 -->
-                <div th:if="${isStandard}" class="d-flex flex-nowrap align-items-center gap-3">
+                <div th:if="${isStandard}" class="po-quantity-area">
 
-                  <div>
+                  <div class="d-flex flex-nowrap align-items-center gap-3">
                     <input class="form-control form-control-sm text-end
                              js-quantity po-quantity-input" type="number" name="quantities" min="1"
                       th:max="${row.quantity}" th:value="${row.quantity}" th:data-unit-price="${row.unitPrice}"
-                      th:data-group-index="${groupStat.index}" th:data-row-index="${rowStat.index}">
-
-                    <div class="invalid-feedback" th:text="|${minQuantity}～${maxQuantity}の範囲内で入力してください。|">
-                    </div>
+                      th:data-group-index="${groupStat.index}" th:data-row-index="${rowStat.index}" required>
 
                     <span class="text-secondary text-nowrap flex-shrink-0" th:text="${row.unitName}">
                       個
                     </span>
+
+
                   </div>
+
+                  <div class="invalid-feedback" th:text="|1～${row.quantity}の範囲内で入力してください。|">
+                  </div>
+
+
 
 
                 </div>
