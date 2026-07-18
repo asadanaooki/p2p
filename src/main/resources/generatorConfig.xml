@@ -150,6 +150,8 @@
     </table>
     
     <table tableName="purchase_request_purchase_order"></table>
+    
+    <table tableName="purchase_order_line_allocation"></table>
 
   </context>
 </generatorConfiguration>

@@ -92,7 +92,7 @@ class PurchaseOrderMapperCustomTest {
             assertThat(first.getDisplayNumber()).isOne();
             assertThat(first.getOrderType()).isEqualTo(PurchaseOrderType.STANDARD);
             assertThat(first.getPurchaser()).isEqualTo(expectedPurchaser);
-            assertThat(first.getDeliveryDueDate()).isEqualTo(LocalDate.of(s026, 6, 25));
+            assertThat(first.getDeliveryDueDate()).isEqualTo(LocalDate.of(2026, 6, 25));
             assertThat(first.getSupplierName()).isEqualTo(expectedOrder.getSnapSupplierName());
             assertThat(first.getTotalAmountExcludingTax()).isEqualTo(6800);
             assertThat(first.getStatus()).isEqualTo(PurchaseOrderStatus.PENDING);

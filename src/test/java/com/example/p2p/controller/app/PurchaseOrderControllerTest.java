@@ -6,7 +6,10 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import static org.hamcrest.CoreMatchers.notNullValue;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,6 +21,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.p2p.dto.app.PurchaseOrderDetailSelectionViewDto;
+import com.example.p2p.dto.app.PurchaseOrderListViewDto;
 import com.example.p2p.enums.PurchaseOrderType;
 import com.example.p2p.service.app.PurchaseOrderService;
 
@@ -30,6 +34,16 @@ class PurchaseOrderControllerTest {
 
     @MockitoBean
     PurchaseOrderService purchaseOrderService;
+
+    @Test
+    @WithMockUser(authorities = { "PO_VIEW_SELF" })
+    void showPurchaseOrderList_storesOwnSearchCondition() throws Exception {
+        doReturn(new PurchaseOrderListViewDto()).when(purchaseOrderService).searchPurchaseOrders(any(), any());
+
+        mockMvc.perform(get("/purchase-order"))
+            .andExpect(status().isOk())
+            .andExpect(request().sessionAttribute("purchaseOrderLastSearchCondition", notNullValue()));
+    }
 
     @Nested
     class ShowDetailSelectionFromPrs {

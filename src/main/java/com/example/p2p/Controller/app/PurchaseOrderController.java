@@ -33,7 +33,7 @@ public class PurchaseOrderController {
 
     private static final Logger logger = LoggerFactory.getLogger(PurchaseOrderController.class);
 
-    private static final String LAST_SEARCH_CONDITION = "lastSearchCondition";
+    private static final String LAST_SEARCH_CONDITION = "purchaseOrderLastSearchCondition";
 
     private PurchaseOrderService purchaseOrderService;
 

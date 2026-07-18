@@ -114,7 +114,7 @@ class SupplierControllerTest {
             MvcResult res = mockMvc
                 .perform(post("/setting/supplier/{supplierId}/update", "test").with(csrf()).params(params))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/admin/setting/supplier/" + "test"))
+                .andExpect(redirectedUrl("/setting/supplier/" + "test"))
                 .andReturn();
 
             assertThat(res.getFlashMap().get("successMessage")).isEqualTo("編集完了しました");

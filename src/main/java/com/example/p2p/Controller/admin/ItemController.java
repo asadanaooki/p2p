@@ -37,7 +37,7 @@ public class ItemController {
 
     private MessageSource messageSource;
 
-    private static final String LAST_SEARCH_CONDITION = "lastSearchCondition";
+    private static final String LAST_SEARCH_CONDITION = "itemLastSearchCondition";
 
     private ModelMapper modelMapper;
 

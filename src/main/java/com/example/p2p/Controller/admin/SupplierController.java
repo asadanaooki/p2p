@@ -117,7 +117,7 @@ public class SupplierController {
                 messageSource.getMessage("common.update.success", null, null));
         redirectAttributes.addAttribute("supplierId", supplierId);
         
-        return "redirect:/admin/setting/supplier/{supplierId}";
+        return "redirect:/setting/supplier/{supplierId}";
     }
 
 }
