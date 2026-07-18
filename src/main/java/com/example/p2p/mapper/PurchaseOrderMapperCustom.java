@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.example.p2p.dto.app.PurchaseOrderCreateSourceDto;
 import com.example.p2p.dto.app.PurchaseOrderDetailDto;
 import com.example.p2p.dto.app.PurchaseOrderDetailSelectionViewDto;
 import com.example.p2p.dto.app.PurchaseOrderListRowDto;
@@ -31,9 +32,9 @@ public interface PurchaseOrderMapperCustom {
 
     PurchaseOrderDetailSelectionViewDto selectPurchaseOrderDetailSelectionView(@Param("supplierId") String supplierId,
             @Param("supplierName") String supplierName, @Param("itemKind") ItemKind itemKind);
-    //
-    // PurchaseRequestEditViewDto selectPurchaseRequestEditView(String prId);
-    //
-    // int updateForEdit(PurchaseRequest pr);
+
+    PurchaseOrderCreateSourceDto selectPurchaseOrderCreateSource(@Param("supplierId") String supplierId,
+            @Param("supplierName") String supplierName, @Param("userId") String userId,
+            @Param("prDetailIds") List<String> prDetailIds);
 
 }

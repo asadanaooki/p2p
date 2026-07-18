@@ -93,6 +93,7 @@ class UserServiceTest {
 
             @BeforeEach
             void setup() {
+                jdbcTemplate.update("delete from purchase_order_line_allocation");
                 jdbcTemplate.update("delete from purchase_order_line");
                 jdbcTemplate.update("delete from purchase_request_purchase_order");
                 jdbcTemplate.update("delete from purchase_order");
@@ -379,6 +380,7 @@ class UserServiceTest {
     @ParameterizedTest
     @CsvSource(value = {"testPass123, true, false", "null, false, true"}, nullValues = "null")
     void getUserDetail_canInvite(String password, boolean isActive, boolean expected) {
+        jdbcTemplate.update("delete from purchase_order_line_allocation");
         jdbcTemplate.update("delete from purchase_order_line");
         jdbcTemplate.update("delete from purchase_request_purchase_order");
         jdbcTemplate.update("delete from purchase_order");

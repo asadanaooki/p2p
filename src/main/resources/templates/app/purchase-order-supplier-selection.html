@@ -119,7 +119,7 @@
               </a>
 
               <a class="btn btn-primary btn-sm" th:if="${row.supplierId == null}" th:href="@{/purchase-order/create/from-purchase-requests(orderType=${orderType}, 
-                  freeInputSupplierName=${row.supplierName})}">
+                  supplierName=${row.supplierName})}">
                 選択
               </a>
             </td>

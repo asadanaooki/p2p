@@ -25,7 +25,7 @@
       po.total_amount_excluding_tax,
       po.status
     from purchase_order po
-    join supplier s
+    left join supplier s
       on po.supplier_id = s.supplier_id
     join users u
       on po.purchaser_user_id = u.user_id
@@ -132,7 +132,7 @@
   <select id="countPurchaseOrders" resultType="int">
     select count(*)
     from purchase_order po
-    join supplier s
+    left join supplier s
       on po.supplier_id = s.supplier_id
     join users u
       on po.purchaser_user_id = u.user_id

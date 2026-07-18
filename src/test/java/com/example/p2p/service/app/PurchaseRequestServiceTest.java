@@ -33,6 +33,7 @@ import com.example.p2p.dto.app.PurchaseRequestEditDetailDto;
 import com.example.p2p.dto.app.PurchaseRequestEditViewDto;
 import com.example.p2p.dto.app.PurchaseRequestListViewDto;
 import com.example.p2p.entity.ApprovalTaskExample;
+import com.example.p2p.entity.PurchaseOrderLineAllocationExample;
 import com.example.p2p.entity.PurchaseRequest;
 import com.example.p2p.entity.PurchaseRequestDetail;
 import com.example.p2p.entity.PurchaseRequestDetailExample;
@@ -49,6 +50,7 @@ import com.example.p2p.form.app.PurchaseRequestEditForm;
 import com.example.p2p.form.app.PurchaseRequestSearchForm;
 import com.example.p2p.mapper.ApprovalTaskMapper;
 import com.example.p2p.mapper.ApprovalWorkflowMapper;
+import com.example.p2p.mapper.PurchaseOrderLineAllocationMapper;
 import com.example.p2p.mapper.PurchaseRequestDetailMapper;
 import com.example.p2p.mapper.PurchaseRequestMapper;
 import com.example.p2p.security.CustomUserDetails;
@@ -71,6 +73,9 @@ class PurchaseRequestServiceTest {
 
     @Autowired
     ApprovalWorkflowMapper approvalWorkflowMapper;
+
+    @Autowired
+    PurchaseOrderLineAllocationMapper purchaseOrderLineAllocationMapper;
 
     @Test
     void searchPurchaseRequests() {
@@ -669,6 +674,10 @@ class PurchaseRequestServiceTest {
 
         @Test
         void update_with_deleted() {
+            PurchaseOrderLineAllocationExample allocationExample = new PurchaseOrderLineAllocationExample();
+            allocationExample.createCriteria()
+                .andPrDetailIdEqualTo("4d57ee8a-4dc6-4155-9f4b-9ee7985d4e21");
+            purchaseOrderLineAllocationMapper.deleteByExample(allocationExample);
             PurchaseRequestEditForm form = new PurchaseRequestEditForm();
             form.setDeletedPrDetailIds(List.of("4d57ee8a-4dc6-4155-9f4b-9ee7985d4e21"));
 

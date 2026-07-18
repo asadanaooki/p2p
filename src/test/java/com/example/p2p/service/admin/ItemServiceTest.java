@@ -54,6 +54,7 @@ class ItemServiceTest {
 
         @BeforeEach
         void setup() {
+            jdbcTemplate.update("delete from purchase_order_line_allocation");
             jdbcTemplate.update("delete from purchase_order_line");
             purchaseRequestDetailMapper.deleteByExample(new PurchaseRequestDetailExample());
             itemMapper.deleteByExample(new ItemExample());

@@ -219,4 +219,54 @@
     where pr_id = #{prId}
       and status in ('PENDING', 'APPROVED', 'REJECTED')
   </update>
+  
+  <resultMap id="purchaseOrderCreateSourceMap"
+             type="com.example.p2p.dto.app.PurchaseOrderCreateSourceDto">
+    <id property="prDetailId" column="parent_pr_detail_id"/>
+
+    <result property="displayNumber" column="display_number"/>
+    <result property="supplierName" column="supplier_name"/>
+    <result property="purchaser" column="purchaser"/>
+    
+    <collection property="relatedPrs" ofType="java.lang.Integer">
+      <id column="display_number"/>
+    </collection>
+    
+    <collection property="details" ofType="com.example.p2p.dto.app.PurchaseOrderCreateSourceRowDto">
+      <id property="prDetailId" column="child_pr_detail_id"></id>
+      <result property="itemId" column="itemId"/>
+      <result property="unitId" column="unitId"/>
+      <result property="itemName" column="snap_item_name"/>
+      <result property="unitName" column="snap_unit_name"/>
+      <result property="unitPrice" column="snap_unit_price"/>
+      <result property="maxOrderableQuantity" column="quantity"/>
+    </collection>
+  </resultMap>
+
+  <select id="selectPurchaseOrderCreateSource" resultMap="purchaseOrderCreateSourceMap">
+    select
+       <!-- ヘッダー -->
+        prd.pr_detail_id as parent_pr_detail_id,
+        coalesce(s.name, #{supplierName}) as supplier_name,
+        CONCAT_WS(' ', u.last_name, u.first_name) as purchaser,
+        pr.display_number,
+       
+       <!-- 明細 -->
+        prd.pr_detail_id as child_pr_detail_id,
+        prd.item_id,
+        prd.unit_id,
+        prd.snap_item_name,
+        prd.snap_unit_name,
+        prd.snap_unit_price,
+        prd.quantity
+        
+    from
+        purchase_request pr 
+        join purchase_request_detail prd 
+            on pr.pr_id = prd.pr_id 
+        join users u 
+            on pr.requester_user_id = u.user_id 
+        left join supplier s 
+            on prd.supplier_id = s.supplier_id
+  </select>
 </mapper>
