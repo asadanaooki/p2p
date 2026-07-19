@@ -421,4 +421,63 @@
       prd.line_no asc
   
   </select>
+
+  <resultMap id="purchaseOrderCreateSourceMap"
+             type="com.example.p2p.dto.app.PurchaseOrderCreateSourceDto">
+    <id property="mappingKey" column="mapping_key"/>
+    <result property="supplierName" column="supplier_name"/>
+    <result property="purchaser" column="purchaser"/>
+
+    <collection property="relatedPrNumbers" ofType="java.lang.Integer">
+      <id column="display_number"/>
+    </collection>
+
+    <collection property="details" ofType="com.example.p2p.dto.app.PurchaseOrderCreateSourceRowDto">
+      <id property="prDetailId" column="pr_detail_id"/>
+      <result property="itemId" column="item_id"/>
+      <result property="unitId" column="unit_id"/>
+      <result property="itemName" column="snap_item_name"/>
+      <result property="unitName" column="snap_unit_name"/>
+      <result property="unitPrice" column="snap_unit_price"/>
+      <result property="purchaseRequestQuantity" column="quantity"/>
+    </collection>
+  </resultMap>
+
+  <select id="selectPurchaseOrderCreateSource" resultMap="purchaseOrderCreateSourceMap">
+    select
+      coalesce(#{supplierId}, #{supplierName}) as mapping_key,
+      coalesce(s.name, #{supplierName}) as supplier_name,
+      concat_ws(' ', u.last_name, u.first_name) as purchaser,
+      pr.display_number,
+      prd.pr_detail_id,
+      prd.item_id,
+      prd.unit_id,
+      prd.snap_item_name,
+      prd.snap_unit_name,
+      prd.snap_unit_price,
+      prd.quantity
+    from purchase_request pr
+    join purchase_request_detail prd
+      on pr.pr_id = prd.pr_id
+    join users u
+      on u.user_id = #{userId}
+    left join supplier s
+      on prd.supplier_id = s.supplier_id
+    where prd.pr_detail_id in
+    <foreach collection="prDetailIds" item="prDetailId" open="(" separator="," close=")">
+      #{prDetailId}
+    </foreach>
+    <choose>
+      <when test="supplierId != null">
+        and prd.supplier_id = #{supplierId}
+      </when>
+      <otherwise>
+        and prd.supplier_id is null
+        and prd.snap_supplier_name = #{supplierName}
+      </otherwise>
+    </choose>
+    order by
+      pr.display_number asc,
+      prd.line_no asc
+  </select>
 </mapper>

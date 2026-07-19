@@ -18,6 +18,8 @@ import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 
+import com.example.p2p.dto.app.PurchaseOrderCreateSourceDto;
+import com.example.p2p.dto.app.PurchaseOrderCreateSourceRowDto;
 import com.example.p2p.dto.app.PurchaseOrderDetailSelectionPrGroupDto;
 import com.example.p2p.dto.app.PurchaseOrderDetailSelectionRowDto;
 import com.example.p2p.dto.app.PurchaseOrderDetailSelectionViewDto;
@@ -856,6 +858,78 @@ class PurchaseOrderMapperCustomTest {
 
             String freeInputSupplierName = "Manual Service Supplier";
 
+        }
+
+    }
+
+    @Nested
+    class SelectPurchaseOrderCreateSource {
+
+        String purchaserUserId = "6fe99043-cbd1-49c0-96d4-c156c58a8e60";
+
+        String supplierId = "a7f3c9d2-4b8e-41f1-9c6a-1d2e3f4a5b6c";
+
+        String firstDetailId = "33aaccfe-c7c4-4e37-ab48-259dbe7a7fdf";
+
+        @Test
+        void selectPurchaseOrderCreateSource_supplierIdSpecified_multiplePrDetails() {
+            Supplier supplier = supplierMapper.selectByPrimaryKey(supplierId);
+            Users purchaser = usersMapper.selectByPrimaryKey(purchaserUserId);
+            PurchaseRequestDetail expectedFirstDetail = purchaseRequestDetailMapper.selectByPrimaryKey(firstDetailId);
+            List<String> prDetailIds = List.of("72a9f12f-bb87-4604-93f6-5d866542b0d8", firstDetailId,
+                    "fae1963c-2d5b-450a-8b12-4be480e65ecd");
+
+            PurchaseOrderCreateSourceDto actual = purchaseOrderMapperCustom.selectPurchaseOrderCreateSource(supplierId,
+                    supplier.getName(), purchaserUserId, prDetailIds);
+
+            assertThat(actual.getMappingKey()).isEqualTo(supplierId);
+            assertThat(actual.getSupplierName()).isEqualTo(supplier.getName());
+            assertThat(actual.getPurchaser())
+                .isEqualTo(purchaser.getLastName() + " " + purchaser.getFirstName());
+            assertThat(actual.getRelatedPrNumbers()).containsExactly(1, 3);
+            assertThat(actual.getDetails()).hasSize(3);
+            assertDetail(actual.getDetails().get(0), expectedFirstDetail);
+        }
+
+        @Test
+        void selectPurchaseOrderCreateSource_supplierIdNull_singlePrDetail() {
+            String supplierName = "Free Input Supplier";
+            PurchaseRequestDetail expectedDetail = insertFreeInputDetail(supplierName);
+
+            PurchaseOrderCreateSourceDto actual = purchaseOrderMapperCustom.selectPurchaseOrderCreateSource(null,
+                    supplierName, purchaserUserId, List.of(expectedDetail.getPrDetailId()));
+
+            assertThat(actual.getRelatedPrNumbers()).hasSize(1);
+            assertThat(actual.getDetails()).hasSize(1);
+            assertDetail(actual.getDetails().get(0), expectedDetail);
+        }
+
+        private PurchaseRequestDetail insertFreeInputDetail(String supplierName) {
+            PurchaseRequestDetail detail = new PurchaseRequestDetail();
+            detail.setPrDetailId("50000000-0000-4000-9000-000000000001");
+            detail.setPrId("56856dfe-8e7a-4524-9d05-9e161c6b8fc3");
+            detail.setLineNo(3);
+            detail.setItemId("f758e462-f526-4b23-a822-8821c5c62adf");
+            detail.setSnapItemName("Free Input Monitor");
+            detail.setSnapKind(ItemKind.GOODS);
+            detail.setUnitId("22222222-2222-2222-2222-222222222222");
+            detail.setSnapUnitName("unit");
+            detail.setSnapSupplierName(supplierName);
+            detail.setQuantity(7);
+            detail.setSnapUnitPrice(3210);
+            detail.setSubtotalExcludingTax(22470);
+            purchaseRequestDetailMapper.insertSelective(detail);
+            return purchaseRequestDetailMapper.selectByPrimaryKey(detail.getPrDetailId());
+        }
+
+        private void assertDetail(PurchaseOrderCreateSourceRowDto actual, PurchaseRequestDetail expected) {
+            assertThat(actual.getPrDetailId()).isEqualTo(expected.getPrDetailId());
+            assertThat(actual.getItemId()).isEqualTo(expected.getItemId());
+            assertThat(actual.getUnitId()).isEqualTo(expected.getUnitId());
+            assertThat(actual.getItemName()).isEqualTo(expected.getSnapItemName());
+            assertThat(actual.getUnitName()).isEqualTo(expected.getSnapUnitName());
+            assertThat(actual.getUnitPrice()).isEqualTo(expected.getSnapUnitPrice());
+            assertThat(actual.getPurchaseRequestQuantity()).isEqualTo(expected.getQuantity());
         }
 
     }

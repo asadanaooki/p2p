@@ -5,17 +5,15 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class PurchaseOrderCreateSourceDto {
-
-    // Mybatis用
-    private String mappingKey;
-
+public class PurchaseOrderCreateViewDto {
+    
+    private String supplierId;
+    
     private String supplierName;
-
+    
     private String purchaser;
-
+    
     private List<Integer> relatedPrNumbers;
-
-    private List<PurchaseOrderCreateSourceRowDto> details;
-
+    
+    private List<PurchaseOrderLineViewDto> lines;
 }
