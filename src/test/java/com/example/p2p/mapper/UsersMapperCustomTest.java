@@ -19,6 +19,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.example.p2p.dto.admin.UserDetailDto;
 import com.example.p2p.dto.admin.UserListRowDto;
+import com.example.p2p.dto.app.AuthenticationUserDto;
 import com.example.p2p.entity.ApprovalStepApproverExample;
 import com.example.p2p.entity.ApprovalTaskExample;
 import com.example.p2p.entity.PurchaseRequestDetailExample;
@@ -28,6 +29,7 @@ import com.example.p2p.entity.UsersExample;
 import com.example.p2p.enums.SortDirection;
 import com.example.p2p.enums.UserSortBy;
 import com.example.p2p.form.admin.UserSearchForm;
+import com.example.p2p.security.CustomUserDetails;
 
 @MybatisTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -53,6 +55,14 @@ class UsersMapperCustomTest {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
+
+    @Test
+    void selectAuthenticationUser_setsFullName() {
+        AuthenticationUserDto actual = usersMapperCustom.selectAuthenticationUser("siotan0926@gmail.com");
+
+        assertThat(actual.getFullName()).isEqualTo("山田 太郎");
+        assertThat(new CustomUserDetails(actual).getFullName()).isEqualTo("山田 太郎");
+    }
 
     @Nested
     class SelectUsers {

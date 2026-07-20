@@ -118,6 +118,8 @@ public class PurchaseOrderService {
     }
 
     public PurchaseOrderCreateViewDto getPurchaseOrderCreateView(PurchaseOrderCreateDraft draft, String userId) {
+        logger.debug("発注書作成画面表示情報取得開始");
+
         PurchaseOrderCreateSourceDto source = purchaseOrderMapperCustom.selectPurchaseOrderCreateSource(
                 draft.getSupplierId(), draft.getSupplierName(), userId,
                 draft.getDetails().stream().map(SelectedPurchaseRequestDetail::getPrDetailId).toList());
@@ -145,6 +147,8 @@ public class PurchaseOrderService {
         view.setPurchaser(source.getPurchaser());
         view.setRelatedPrNumbers(source.getRelatedPrNumbers());
         view.setLines(poLines);
+
+        logger.debug("発注書作成画面表示情報取得完了");
 
         return view;
 

@@ -54,7 +54,7 @@ class PurchaseOrderControllerTest {
             doReturn(new PurchaseOrderDetailSelectionViewDto()).when(purchaseOrderService)
                 .getDetailSelectionView(any(), any(), any());
             mockMvc
-                .perform(get("/purchase-order/create/from-purchase-requests")
+                .perform(get("/purchase-order/create/detail-selection")
                         .param("orderType", PurchaseOrderType.STANDARD.toString())
                         .param("supplierId", "aaa")
                         .param("supplierName", "")
@@ -69,7 +69,7 @@ class PurchaseOrderControllerTest {
             doReturn(new PurchaseOrderDetailSelectionViewDto()).when(purchaseOrderService)
                 .getDetailSelectionView(any(), any(), any());
             mockMvc
-                .perform(get("/purchase-order/create/from-purchase-requests")
+                .perform(get("/purchase-order/create/detail-selection")
                         .param("orderType", PurchaseOrderType.STANDARD.toString())
                         .param("supplierId", "aaa")
                         .param("supplierName", "")
@@ -84,7 +84,7 @@ class PurchaseOrderControllerTest {
             doReturn(new PurchaseOrderDetailSelectionViewDto()).when(purchaseOrderService)
                 .getDetailSelectionView(any(), any(), any());
             mockMvc
-                .perform(get("/purchase-order/create/from-purchase-requests")
+                .perform(get("/purchase-order/create/detail-selection")
                         .param("orderType", PurchaseOrderType.STANDARD.toString())
                         .param("supplierId", "aaa")
                         .param("supplierName", "")

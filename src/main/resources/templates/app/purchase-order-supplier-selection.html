@@ -113,12 +113,12 @@
             </td>
 
             <td class="col-actions text-center">
-              <a class="btn btn-primary btn-sm" th:if="${row.supplierId != null}" th:href="@{/purchase-order/create/from-purchase-requests(orderType=${orderType}, 
+              <a class="btn btn-primary btn-sm" th:if="${row.supplierId != null}" th:href="@{/purchase-order/create/detail-selection(orderType=${orderType},
                   supplierId=${row.supplierId})}">
                 選択
               </a>
 
-              <a class="btn btn-primary btn-sm" th:if="${row.supplierId == null}" th:href="@{/purchase-order/create/from-purchase-requests(orderType=${orderType}, 
+              <a class="btn btn-primary btn-sm" th:if="${row.supplierId == null}" th:href="@{/purchase-order/create/detail-selection(orderType=${orderType},
                   supplierName=${row.supplierName})}">
                 選択
               </a>

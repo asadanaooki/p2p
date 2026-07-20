@@ -4,27 +4,25 @@ import java.util.List;
 
 import com.example.p2p.enums.PurchaseOrderType;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 public class PurchaseOrderCreateDraft {
 
-    private final String supplierId;
+    private String supplierId;
 
-    private final String supplierName;
+    private String supplierName;
 
-    private final PurchaseOrderType orderType;
+    private PurchaseOrderType orderType;
 
-    private final List<SelectedPurchaseRequestDetail> details;
+    private List<SelectedPurchaseRequestDetail> details;
 
     @Data
-    @AllArgsConstructor
     public static class SelectedPurchaseRequestDetail {
 
-        private final String prDetailId;
+        private String prDetailId;
 
-        private final Integer selectedQuantity;
+        private Integer selectedQuantity;
 
     }
 
