@@ -708,9 +708,14 @@ class PurchaseOrderMapperCustomTest {
             assertThat(firstGroup.getDetailRows())
                 .extracting(PurchaseOrderDetailSelectionRowDto::getPrDetailId)
                 .containsExactly(fixture.firstDetailId, fixture.secondDetailId, fixture.thirdDetailId);
+            assertThat(view.getPrGroups().stream()
+                .flatMap(group -> group.getDetailRows().stream())
+                .map(PurchaseOrderDetailSelectionRowDto::getDetailIndex))
+                .containsExactly(0, 1, 2, 3, 4);
 
             PurchaseOrderDetailSelectionRowDto first = firstGroup.getDetailRows().get(0);
             assertThat(first.getPrDetailId()).isEqualTo(fixture.firstDetailId);
+            assertThat(first.getDetailIndex()).isZero();
             assertThat(first.getItemName()).isEqualTo(fixture.firstItemName);
             assertThat(first.getUnitName()).isEqualTo(fixture.firstUnitName);
             assertThat(first.getUnitPrice()).isEqualTo(fixture.firstUnitPrice);
@@ -727,6 +732,7 @@ class PurchaseOrderMapperCustomTest {
 
             assertThat(actual.getPrGroups()).hasSize(1);
             assertThat(actual.getPrGroups().get(0).getDetailRows()).hasSize(1);
+            assertThat(actual.getPrGroups().get(0).getDetailRows().get(0).getDetailIndex()).isZero();
         }
 
         private GoodsSelectionFixture insertGoodsSelectionFixture() {

@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 
 import com.example.p2p.entity.Users;
 import com.example.p2p.form.admin.UserUpsertForm;
+import com.example.p2p.form.app.PurchaseOrderCreatePreparationForm;
+import com.example.p2p.session.app.PurchaseOrderCreateDraft;
 
 @Configuration
 public class ModelMapperConfig {
@@ -16,6 +18,9 @@ public class ModelMapperConfig {
         modelMapper.typeMap(UserUpsertForm.class, Users.class).addMappings(m -> {
             m.skip(Users::setUserId);
             m.skip(Users::setPasswordHash);
+        });
+        modelMapper.typeMap(PurchaseOrderCreatePreparationForm.class, PurchaseOrderCreateDraft.class).addMappings(m -> {
+            m.skip(PurchaseOrderCreateDraft::setDetails);
         });
         return modelMapper;
     }

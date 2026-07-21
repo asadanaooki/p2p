@@ -8,6 +8,8 @@ public class PurchaseOrderDetailSelectionRowDto {
     // 共通
     private String prDetailId;
     
+    private Integer detailIndex;
+
     private String itemName;
     
     private int unitPrice;

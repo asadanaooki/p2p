@@ -24,29 +24,44 @@ public class PurchaseOrderCreatePreparationForm {
     private PurchaseOrderType orderType;
 
     @NotEmpty
-    private List<@Valid SelectedPurchaseRequestDetailForm> details;
+    private List<@Valid PurchaseRequestDetailSelectionRowForm> details;
+
+    @AssertTrue(message = "発注対象の明細を１件以上選択してください。")
+    public boolean isAnyDetailSelected() {
+        if (orderType == null || details == null || details.isEmpty()) {
+            return true;
+        }
+        return details.stream().anyMatch(d -> Boolean.TRUE.equals(d.getSelected()));
+    }
 
     @AssertTrue(message = "選択数量が不正です。")
     public boolean isSelectedQuantityValid() {
-        if (orderType == null) {
+        if (orderType == null || details == null) {
             return true;
         }
-        else if (orderType == PurchaseOrderType.SERVICE) {
-            return details.stream().allMatch(d -> d.getSelectedQuantity() == null);
-        }
-        else {
-            return details.stream().allMatch(d -> d.getSelectedQuantity() != null);
-        }
+        return switch (orderType) {
+            case STANDARD -> details.stream()
+                .filter(d -> Boolean.TRUE.equals(d.getSelected()))
+                .allMatch(d -> d.getSelectedQuantity() != null);
+
+            case SERVICE -> details.stream()
+                .filter(d -> Boolean.TRUE.equals(d.getSelected()))
+                .allMatch(d -> d.getSelectedQuantity() == null);
+
+        };
     }
 
     @Data
-    public static class SelectedPurchaseRequestDetailForm {
+    public static class PurchaseRequestDetailSelectionRowForm {
 
         @NotBlank
         private String prDetailId;
 
         @Min(value = 1)
         private Integer selectedQuantity;
+
+        @NotNull
+        private Boolean selected;
 
     }
 

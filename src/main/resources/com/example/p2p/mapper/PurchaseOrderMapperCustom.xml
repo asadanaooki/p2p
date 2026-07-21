@@ -362,6 +362,7 @@
                 ofType="com.example.p2p.dto.app.PurchaseOrderDetailSelectionRowDto">
 
       <id property="prDetailId" column="pr_detail_id" />
+      <result property="detailIndex" column="index"/>
 
       <result property="itemName" column="item_name" />
       <result property="unitPrice" column="unit_price" />
@@ -389,6 +390,7 @@
       sum(prd.subtotal_excluding_tax) over(partition by pr.pr_id) as pr_total_amount_excluding_tax,
   
       prd.pr_detail_id,
+      row_number() over(order by pr.display_number asc, prd.line_no asc) - 1 as index,
       prd.snap_item_name as item_name,
       prd.snap_unit_price as unit_price,
       prd.subtotal_excluding_tax,

@@ -1,5 +1,6 @@
 package com.example.p2p.controller.app;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
@@ -23,15 +24,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.p2p.dto.app.PurchaseOrderCreateViewDto;
+import com.example.p2p.dto.app.PurchaseOrderDetailSelectionViewDto;
 import com.example.p2p.enums.PurchaseOrderType;
 import com.example.p2p.form.app.PurchaseOrderCreatePreparationForm;
+import com.example.p2p.form.app.PurchaseOrderCreatePreparationForm.PurchaseRequestDetailSelectionRowForm;
 import com.example.p2p.form.app.PurchaseOrderSearchForm;
 import com.example.p2p.form.app.PurchaseOrderSupplierSelectionSearchForm;
 import com.example.p2p.security.CustomUserDetails;
 import com.example.p2p.service.app.PurchaseOrderService;
 import com.example.p2p.session.app.PurchaseOrderCreateDraft;
+import com.example.p2p.session.app.PurchaseOrderCreateDraft.SelectedPurchaseRequestDetail;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -116,17 +119,38 @@ public class PurchaseOrderController {
         return "app/purchase-order-supplier-selection";
     }
 
-    @PreAuthorize("hasAuthority('PO_CREATE') and hasAuthority('PO_VIEW_ALL')")
+    @PreAuthorize("hasAuthority('PO_CREATE')")
     @GetMapping("/create/detail-selection")
-    public String showDetailSelectionFromPrs(@RequestParam PurchaseOrderType orderType,
+    public String showDetailSelectionFromPr(@RequestParam PurchaseOrderType orderType,
             @RequestParam(required = false) String supplierId, @RequestParam(required = false) String supplierName,
-            Model model) {
+            @ModelAttribute("form") PurchaseOrderCreatePreparationForm form, Model model) {
         logger.debug("発注明細選択画面表示開始");
+
+        form.setOrderType(orderType);
+        form.setSupplierId(supplierId);
+        form.setSupplierName(supplierName);
 
         model.addAttribute("orderType", orderType);
         model.addAttribute("supplierId", supplierId);
         model.addAttribute("supplierName", supplierName);
-        model.addAttribute("view", purchaseOrderService.getDetailSelectionView(orderType, supplierId, supplierName));
+
+        PurchaseOrderDetailSelectionViewDto view = purchaseOrderService.getDetailSelectionView(orderType, supplierId,
+                supplierName);
+        model.addAttribute("view", view);
+
+        // formバインディング用の明細作成
+        List<PurchaseRequestDetailSelectionRowForm> rowForms = view.getPrGroups()
+            .stream()
+            .flatMap(g -> g.getDetailRows().stream())
+            .map(r -> {
+                PurchaseRequestDetailSelectionRowForm row = new PurchaseRequestDetailSelectionRowForm();
+                row.setPrDetailId(r.getPrDetailId());
+                row.setSelectedQuantity(r.getQuantity());
+                row.setSelected(false);
+                return row;
+            })
+            .toList();
+        form.setDetails(rowForms);
 
         logger.debug("発注明細選択画面表示完了");
 
@@ -136,49 +160,68 @@ public class PurchaseOrderController {
     @PreAuthorize("hasAuthority('PO_CREATE')")
     @PostMapping("/create/draft")
     public String createPurchaseOrderDraft(@Valid @ModelAttribute("form") PurchaseOrderCreatePreparationForm form,
-            BindingResult bindingResult, Model model, HttpSession session, RedirectAttributes attributes)
-            throws ServletException {
-        logger.info("PR作成開始");
+            BindingResult bindingResult, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+        logger.info("発注書作成Draft保存開始");
 
         if (bindingResult.hasErrors()) {
-            logger.warn("PR作成バリデーションエラー");
+            logger.warn("発注書作成Draft保存バリデーションエラー");
+
+            PurchaseOrderDetailSelectionViewDto view = purchaseOrderService.getDetailSelectionView(form.getOrderType(),
+                    form.getSupplierId(), form.getSupplierName());
+            model.addAttribute("orderType", form.getOrderType());
+            model.addAttribute("supplierId", form.getSupplierId());
+            model.addAttribute("supplierName", form.getSupplierName());
+            model.addAttribute("view", view);
 
             return "app/purchase-order-detail-selection";
         }
-        String draftId = UUID.randomUUID().toString();
-        session.setAttribute(draftId, modelMapper.map(form, PurchaseOrderCreateDraft.class));
-        attributes.addAttribute("draftId", draftId);
 
-        logger.info("PR作成開始");
+        // 明細へのマップはスキップされる
+        PurchaseOrderCreateDraft draft = modelMapper.map(form, PurchaseOrderCreateDraft.class);
+
+        List<SelectedPurchaseRequestDetail> selectedDetails = form.getDetails()
+            .stream()
+            .filter(d -> Boolean.TRUE.equals(d.getSelected()))
+            .map(d -> modelMapper.map(d, SelectedPurchaseRequestDetail.class))
+            .toList();
+        draft.setDetails(selectedDetails);
+
+        String draftId = UUID.randomUUID().toString();
+        session.setAttribute(draftId, draft);
+
+        redirectAttributes.addAttribute("draftId", draftId);
+
+        logger.info("発注書作成Draft保存完了");
         return "redirect:/purchase-order/create";
     }
 
     @PreAuthorize("hasAuthority('PO_CREATE')")
     @GetMapping("/create")
     public String showPurchaseOrderCreateForm(@AuthenticationPrincipal CustomUserDetails principal,
-            @RequestParam(required = false) String draftId, Model model, HttpSession session) {
+            @RequestParam(required = false) String draftId, Model model, HttpSession session,
+            RedirectAttributes redirectAttributes) {
         logger.debug("発注作成画面表示開始");
 
-        String viewName = "app/purchase-order-create";
         model.addAttribute("draftId", draftId);
         // 直接作成
         if (draftId == null) {
             PurchaseOrderCreateViewDto direct = new PurchaseOrderCreateViewDto();
             direct.setPurchaser(principal.getFullName());
             model.addAttribute("view", direct);
-            return viewName;
+            return "app/purchase-order-create";
         }
         PurchaseOrderCreateDraft draft = (PurchaseOrderCreateDraft) session.getAttribute(draftId);
         // セッション切れ
         if (draft == null) {
-            messageSource.getMessage("purchaseOrder.create.draft.expired", null, null);
-            return viewName;
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    messageSource.getMessage("purchaseOrder.create.draft.expired", null, null));
+            return "redirect:/purchase-order/create";
         }
-
+        // PRから作成
         model.addAttribute("view", purchaseOrderService.getPurchaseOrderCreateView(draft, principal.getUsername()));
 
         logger.debug("発注作成画面表示完了");
-        return viewName;
+        return "app/purchase-order-create";
     }
     //
     // redirectAttributes.addAttribute("prId", prId);
