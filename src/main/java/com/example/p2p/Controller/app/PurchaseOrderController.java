@@ -130,10 +130,6 @@ public class PurchaseOrderController {
         form.setSupplierId(supplierId);
         form.setSupplierName(supplierName);
 
-        model.addAttribute("orderType", orderType);
-        model.addAttribute("supplierId", supplierId);
-        model.addAttribute("supplierName", supplierName);
-
         PurchaseOrderDetailSelectionViewDto view = purchaseOrderService.getDetailSelectionView(orderType, supplierId,
                 supplierName);
         model.addAttribute("view", view);
@@ -145,6 +141,7 @@ public class PurchaseOrderController {
             .map(r -> {
                 PurchaseRequestDetailSelectionRowForm row = new PurchaseRequestDetailSelectionRowForm();
                 row.setPrDetailId(r.getPrDetailId());
+                row.setOrderMaxQuantity(r.getQuantity());
                 row.setSelectedQuantity(r.getQuantity());
                 row.setSelected(false);
                 return row;

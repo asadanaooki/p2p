@@ -27,7 +27,7 @@ public class PaymentTermEditForm {
 
     private boolean active;
 
-    @AssertTrue
+    @AssertTrue(message = "{error.paymentTerm.dueDate.invalid}")
     public boolean isDueDateValid() {
         if (dueDateType == DueDateType.THIS_MONTH_DAY ||
                 dueDateType == DueDateType.NEXT_MONTH_DAY) {

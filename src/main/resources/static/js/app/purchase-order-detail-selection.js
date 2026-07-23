@@ -111,9 +111,14 @@ $(function () {
       const $row = $(this).closest("tr");
       const $quantityInput = $row.find(".js-quantity");
 
-      // サービス明細には数量入力欄が存在しない。
-      if ($quantityInput.length > 0 && $quantityInput.hasClass("is-invalid")) {
+      // 物品明細に数量入力エラーがあるか確認する。
+      // サービス明細には数量入力欄がないため判定対象外。
+      if (
+        $quantityInput.length > 0 &&
+        isInvalidQuantityInput($quantityInput)
+      ) {
         hasInvalidQuantity = true;
+        return;
       }
 
       selectedTotal += getRowSubtotal($(this));
@@ -144,13 +149,13 @@ $(function () {
 
   /**
    * 選択された物品明細から、
-   * 最初の不正な数量入力欄を取得する。
+   * 不正な数量入力欄全てを取得する。
    *
    * @returns {JQuery} 不正な数量入力欄。
    *                   存在しない場合は空のjQueryオブジェクト
    */
-  function findInvalidQuantityInput() {
-    let $invalidInput = $();
+  function findInvalidQuantityInputs() {
+    let $invalidInputs = $();
 
     $detailCheckboxes.filter(":checked").each(function () {
       const $quantityInput = $(this).closest("tr").find(".js-quantity");
@@ -161,11 +166,11 @@ $(function () {
       }
 
       if (isInvalidQuantityInput($quantityInput)) {
-        $invalidInput = $quantityInput;
-        return false;
+        $quantityInput.addClass("is-invalid");
+        $invalidInputs = $invalidInputs.add($quantityInput);
       }
     });
-    return $invalidInput;
+    return $invalidInputs;
   }
 
   /**
@@ -261,18 +266,36 @@ $(function () {
       return;
     }
 
-    const $invalidQuantityInput = findInvalidQuantityInput();
-    if ($invalidQuantityInput.length > 0) {
+    const $invalidQuantityInputs = findInvalidQuantityInputs();
+    if ($invalidQuantityInputs.length > 0) {
       event.preventDefault();
       window.alert("発注数量を正しく入力してください。");
 
-      $invalidQuantityInput.trigger("focus");
+      $invalidQuantityInputs.first().trigger("focus");
       return;
     }
 
     $nextStepButton.prop("disabled", true).text("処理中...");
   });
 
-  // 初期表示時の選択状態を設定する。
+  /**
+   * 初期表示処理。
+   *
+   * 初回表示時のForm初期値および
+   * BindingResultから復元された入力値を小計へ反映する。
+   */
+  $quantityInputs.each(function () {
+    const $quantityInput = $(this);
+    const isInvalid = isInvalidQuantityInput($quantityInput);
+
+    // 入力値から検証状態を決定し、CSSクラスは表示結果として設定する。
+    $quantityInput.toggleClass("is-invalid", isInvalid);
+
+    if (isInvalid) {
+      return;
+    }
+    updateRowSubtotal($quantityInput);
+  });
+
   refreshSelectionState();
 });
