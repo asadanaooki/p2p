@@ -1,6 +1,7 @@
 package com.example.p2p.service.app;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +11,11 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.core.SqlReturnResultSet;
 import org.springframework.stereotype.Service;
 
+import com.example.p2p.dto.admin.PaymentTermOptionDto;
+import com.example.p2p.dto.admin.SupplierOptionDto;
 import com.example.p2p.dto.app.PurchaseOrderCreateDetailDto;
 import com.example.p2p.dto.app.PurchaseOrderCreateSourceDto;
 import com.example.p2p.dto.app.PurchaseOrderCreateViewDto;
@@ -27,6 +31,7 @@ import com.example.p2p.enums.PurchaseOrderType;
 import com.example.p2p.form.app.PurchaseOrderSearchForm;
 import com.example.p2p.form.app.PurchaseOrderSupplierSelectionSearchForm;
 import com.example.p2p.mapper.ApprovalTaskMapperCustom;
+import com.example.p2p.mapper.PaymentTermMapperCustom;
 import com.example.p2p.mapper.PurchaseOrderDetailMapperCustom;
 import com.example.p2p.mapper.PurchaseOrderMapper;
 import com.example.p2p.mapper.PurchaseOrderMapperCustom;
@@ -47,6 +52,8 @@ public class PurchaseOrderService {
     private PurchaseOrderMapperCustom purchaseOrderMapperCustom;
 
     private SupplierMapperCustom supplierMapperCustom;
+
+    private PaymentTermMapperCustom paymentTermMapperCustom;
 
     private PurchaseOrderDetailMapperCustom purchaseOrderDetailMapperCustom;
 
@@ -118,7 +125,7 @@ public class PurchaseOrderService {
     }
 
     public PurchaseOrderCreateViewDto getPurchaseOrderCreateView(PurchaseOrderCreateDraft draft, String userId) {
-        logger.debug("発注書作成画面表示情報取得開始");
+        logger.debug("PRからの発注書作成画面表示情報取得開始");
 
         PurchaseOrderCreateSourceDto source = purchaseOrderMapperCustom.selectPurchaseOrderCreateSource(
                 draft.getSupplierId(), draft.getSupplierName(), userId,
@@ -142,15 +149,23 @@ public class PurchaseOrderService {
         List<PurchaseOrderLineViewDto> poLines = detailGroups.stream().map(this::toPurchaseOrderLineView).toList();
 
         PurchaseOrderCreateViewDto view = new PurchaseOrderCreateViewDto();
-        view.setSupplierId(draft.getSupplierId());
+        view.setSelectedSupplierId(draft.getSupplierId());
         view.setSupplierName(source.getSupplierName());
         view.setPurchaser(source.getPurchaser());
+        view.setPaymentTermName(source.getPaymentTermName());
         view.setRelatedPrNumbers(source.getRelatedPrNumbers());
+
         view.setLines(poLines);
 
-        logger.debug("発注書作成画面表示情報取得完了");
+        logger.debug("PRからの発注書作成画面表示情報取得完了");
 
         return view;
+
+    }
+
+    public PurchaseOrderCreateOptionsDto gePurchaseOrderCreateOptions() {
+        return new PurchaseOrderCreateOptionsDto(supplierMapperCustom.selectSupplierOptions(),
+                paymentTermMapperCustom.selectPaymentTermOptions());
 
     }
 
@@ -184,6 +199,10 @@ public class PurchaseOrderService {
         lineView.setAllocations(allocations);
 
         return lineView;
+    }
+
+    public record PurchaseOrderCreateOptionsDto(List<SupplierOptionDto> supplierOptions,
+            List<PaymentTermOptionDto> paymentTermOptions) {
     }
 
     private record PurchaseOrderLineGroupKey(String itemId, String unitId, String itemName, String unitName,

@@ -136,8 +136,9 @@ class PurchaseOrderServiceTest {
 
         PurchaseOrderCreateViewDto actual = purchaseOrderService.getPurchaseOrderCreateView(draft, purchaserUserId);
 
-        assertThat(actual.getSupplierId()).isEqualTo(supplierId);
+        assertThat(actual.getSelectedSupplierId()).isEqualTo(supplierId);
         assertThat(actual.getSupplierName()).isEqualTo(supplier.getName());
+        assertThat(actual.getPaymentTermName()).isEqualTo("30日後払い");
         assertThat(actual.getPurchaser())
             .isEqualTo(purchaser.getLastName() + " " + purchaser.getFirstName());
         assertThat(actual.getRelatedPrNumbers())
@@ -180,6 +181,7 @@ class PurchaseOrderServiceTest {
 
         PurchaseOrderCreateViewDto actual = purchaseOrderService.getPurchaseOrderCreateView(draft, purchaserUserId);
 
+        assertThat(actual.getPaymentTermName()).isNull();
         assertThat(actual.getLines()).hasSize(3);
         assertThat(actual.getLines()).allSatisfy(line -> assertThat(line.getAllocations()).hasSize(1));
         assertAllocation(actual.getLines().get(0).getAllocations().get(0), firstDetail, null);

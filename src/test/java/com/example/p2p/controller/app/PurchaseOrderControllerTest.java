@@ -44,6 +44,7 @@ import com.example.p2p.enums.VisibilityScope;
 import com.example.p2p.form.app.PurchaseOrderCreatePreparationForm;
 import com.example.p2p.security.CustomUserDetails;
 import com.example.p2p.service.app.PurchaseOrderService;
+import com.example.p2p.service.app.PurchaseOrderService.PurchaseOrderCreateOptionsDto;
 import com.example.p2p.session.app.PurchaseOrderCreateDraft;
 
 @SpringBootTest
@@ -134,6 +135,7 @@ class PurchaseOrderControllerTest {
                     .param("supplierName", supplierName)
                     .param("orderType", PurchaseOrderType.STANDARD.toString())
                     .param("details[0].prDetailId", "detail-1")
+                    .param("details[0].orderMaxQuantity", "10")
                     .param("details[0].selectedQuantity", "0")
                     .param("details[0].selected", "true")
                     .with(csrf()))
@@ -145,7 +147,8 @@ class PurchaseOrderControllerTest {
             BindingResult bindingResult = (BindingResult) result.getModelAndView()
                 .getModel()
                 .get(BindingResult.MODEL_KEY_PREFIX + "form");
-            assertThat(bindingResult.hasFieldErrors("details[0].selectedQuantity")).isTrue();
+
+            assertThat(bindingResult.hasFieldErrors("selectedQuantityValid")).isTrue();
             assertThat(bindingResult.hasFieldErrors("orderType")).isFalse();
             assertThat(bindingResult.hasFieldErrors("supplierName")).isFalse();
 
@@ -164,12 +167,15 @@ class PurchaseOrderControllerTest {
                     .param("supplierName", supplierName)
                     .param("orderType", PurchaseOrderType.STANDARD.toString())
                     .param("details[0].prDetailId", "detail-1")
+                    .param("details[0].orderMaxQuantity", "10")
                     .param("details[0].selectedQuantity", "2")
                     .param("details[0].selected", "true")
                     .param("details[1].prDetailId", "detail-2")
+                    .param("details[1].orderMaxQuantity", "20")
                     .param("details[1].selectedQuantity", "3")
                     .param("details[1].selected", "false")
                     .param("details[2].prDetailId", "detail-3")
+                    .param("details[2].orderMaxQuantity", "30")
                     .param("details[2].selectedQuantity", "4")
                     .param("details[2].selected", "true")
                     .with(csrf()))
@@ -206,16 +212,22 @@ class PurchaseOrderControllerTest {
         @Test
         void directCreation_setsPurchaserAndLeavesOtherViewFieldsNull() throws Exception {
             CustomUserDetails loginUser = loginUser("user-1", "テスト 太郎");
+            doReturn(new PurchaseOrderCreateOptionsDto(List.of(), List.of()))
+                .when(purchaseOrderService)
+                .gePurchaseOrderCreateOptions();
 
-            MvcResult result = mockMvc.perform(get("/purchase-order/create").with(user(loginUser)))
+            MvcResult result = mockMvc.perform(get("/purchase-order/create")
+                    .param("orderType", PurchaseOrderType.STANDARD.toString())
+                    .with(user(loginUser)))
                 .andExpect(status().isOk())
                 .andExpect(view().name("app/purchase-order-create"))
+                .andExpect(model().attribute("orderType", PurchaseOrderType.STANDARD.toString()))
                 .andExpect(model().attributeExists("view"))
                 .andReturn();
 
             PurchaseOrderCreateViewDto direct = modelAttribute(result, "view", PurchaseOrderCreateViewDto.class);
             assertThat(direct.getPurchaser()).isEqualTo("テスト 太郎");
-            assertThat(direct.getSupplierId()).isNull();
+            assertThat(direct.getSelectedSupplierId()).isNull();
             assertThat(direct.getSupplierName()).isNull();
             assertThat(direct.getRelatedPrNumbers()).isNull();
             assertThat(direct.getLines()).isNull();
@@ -229,6 +241,7 @@ class PurchaseOrderControllerTest {
 
             mockMvc.perform(get("/purchase-order/create")
                     .param("draftId", "expired-draft")
+                    .param("orderType", PurchaseOrderType.STANDARD.toString())
                     .with(user(loginUser)))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/purchase-order/create"))
@@ -246,11 +259,12 @@ class PurchaseOrderControllerTest {
                     PurchaseOrderType.STANDARD,
                     List.of(new PurchaseOrderCreateDraft.SelectedPurchaseRequestDetail("detail-1", 2)));
             PurchaseOrderCreateViewDto expectedView = new PurchaseOrderCreateViewDto();
-            expectedView.setSupplierId("supplier-1");
+            expectedView.setSelectedSupplierId("supplier-1");
             doReturn(expectedView).when(purchaseOrderService).getPurchaseOrderCreateView(same(draft), eq(userId));
 
             mockMvc.perform(get("/purchase-order/create")
                     .param("draftId", draftId)
+                    .param("orderType", PurchaseOrderType.STANDARD.toString())
                     .sessionAttr(draftId, draft)
                     .with(user(loginUser)))
                 .andExpect(status().isOk())

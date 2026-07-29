@@ -13,6 +13,8 @@ public class PurchaseOrderCreateSourceDto {
     private String supplierName;
 
     private String purchaser;
+    
+    private String paymentTermName;
 
     private List<Integer> relatedPrNumbers;
 

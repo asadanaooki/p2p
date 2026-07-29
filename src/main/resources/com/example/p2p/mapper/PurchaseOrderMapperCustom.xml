@@ -429,6 +429,7 @@
     <id property="mappingKey" column="mapping_key"/>
     <result property="supplierName" column="supplier_name"/>
     <result property="purchaser" column="purchaser"/>
+    <result property="paymentTermName" column="payment_term_name"/>
 
     <collection property="relatedPrNumbers" ofType="java.lang.Integer">
       <id column="display_number"/>
@@ -450,6 +451,7 @@
       coalesce(#{supplierId}, #{supplierName}) as mapping_key,
       coalesce(s.name, #{supplierName}) as supplier_name,
       concat_ws(' ', u.last_name, u.first_name) as purchaser,
+      pt.name as payment_term_name,
       pr.display_number,
       prd.pr_detail_id,
       prd.item_id,
@@ -465,6 +467,8 @@
       on u.user_id = #{userId}
     left join supplier s
       on prd.supplier_id = s.supplier_id
+    left join payment_term pt
+      on s.payment_term_id = pt.payment_term_id
     where prd.pr_detail_id in
     <foreach collection="prDetailIds" item="prDetailId" open="(" separator="," close=")">
       #{prDetailId}

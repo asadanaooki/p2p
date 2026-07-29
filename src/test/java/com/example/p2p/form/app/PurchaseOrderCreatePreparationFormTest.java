@@ -69,12 +69,6 @@ class PurchaseOrderCreatePreparationFormTest {
 
     static Stream<Arguments> ngCases() {
         return Stream.of(
-                Arguments.of("supplierNameが空欄",
-                        (Consumer<PurchaseOrderCreatePreparationForm>) form -> form.setSupplierName(""),
-                        "supplierName"),
-                Arguments.of("supplierNameがnull",
-                        (Consumer<PurchaseOrderCreatePreparationForm>) form -> form.setSupplierName(null),
-                        "supplierName"),
                 Arguments.of("orderTypeがnull",
                         (Consumer<PurchaseOrderCreatePreparationForm>) form -> form.setOrderType(null),
                         "orderType"),
@@ -111,7 +105,7 @@ class PurchaseOrderCreatePreparationFormTest {
                         (Consumer<PurchaseOrderCreatePreparationForm>) form -> form.getDetails()
                             .get(0)
                             .setSelectedQuantity(0),
-                        "details[0].selectedQuantity"),
+                        "selectedQuantityValid"),
                 Arguments.of("detailsのselectedがnull",
                         (Consumer<PurchaseOrderCreatePreparationForm>) form -> form.getDetails()
                             .get(0)
@@ -130,10 +124,13 @@ class PurchaseOrderCreatePreparationFormTest {
         form.setSupplierId("supplier-1");
         form.setSupplierName("テスト仕入先");
         form.setOrderType(PurchaseOrderType.STANDARD);
-        form.setDetails(List.of(
-                detail("detail-1", 1, true),
-                detail("detail-2", 2, true),
-                detail("detail-3", null, false)));
+        PurchaseRequestDetailSelectionRowForm detail1 = detail("detail-1", 1, true);
+        detail1.setOrderMaxQuantity(10);
+        PurchaseRequestDetailSelectionRowForm detail2 = detail("detail-2", 2, true);
+        detail2.setOrderMaxQuantity(20);
+        PurchaseRequestDetailSelectionRowForm detail3 = detail("detail-3", null, false);
+        detail3.setOrderMaxQuantity(30);
+        form.setDetails(List.of(detail1, detail2, detail3));
         return form;
     }
 

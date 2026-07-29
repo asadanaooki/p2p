@@ -890,6 +890,7 @@ class PurchaseOrderMapperCustomTest {
 
             assertThat(actual.getMappingKey()).isEqualTo(supplierId);
             assertThat(actual.getSupplierName()).isEqualTo(supplier.getName());
+            assertThat(actual.getPaymentTermName()).isEqualTo("30日後払い");
             assertThat(actual.getPurchaser())
                 .isEqualTo(purchaser.getLastName() + " " + purchaser.getFirstName());
             assertThat(actual.getRelatedPrNumbers()).containsExactly(1, 3);
@@ -905,6 +906,7 @@ class PurchaseOrderMapperCustomTest {
             PurchaseOrderCreateSourceDto actual = purchaseOrderMapperCustom.selectPurchaseOrderCreateSource(null,
                     supplierName, purchaserUserId, List.of(expectedDetail.getPrDetailId()));
 
+            assertThat(actual.getPaymentTermName()).isNull();
             assertThat(actual.getRelatedPrNumbers()).hasSize(1);
             assertThat(actual.getDetails()).hasSize(1);
             assertDetail(actual.getDetails().get(0), expectedDetail);

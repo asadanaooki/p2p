@@ -1,6 +1,7 @@
 package com.example.p2p.controller.app;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
@@ -32,6 +33,7 @@ import com.example.p2p.form.app.PurchaseOrderSearchForm;
 import com.example.p2p.form.app.PurchaseOrderSupplierSelectionSearchForm;
 import com.example.p2p.security.CustomUserDetails;
 import com.example.p2p.service.app.PurchaseOrderService;
+import com.example.p2p.service.app.PurchaseOrderService.PurchaseOrderCreateOptionsDto;
 import com.example.p2p.session.app.PurchaseOrderCreateDraft;
 import com.example.p2p.session.app.PurchaseOrderCreateDraft.SelectedPurchaseRequestDetail;
 
@@ -121,17 +123,12 @@ public class PurchaseOrderController {
 
     @PreAuthorize("hasAuthority('PO_CREATE')")
     @GetMapping("/create/detail-selection")
-    public String showDetailSelectionFromPr(@RequestParam PurchaseOrderType orderType,
-            @RequestParam(required = false) String supplierId, @RequestParam(required = false) String supplierName,
-            @ModelAttribute("form") PurchaseOrderCreatePreparationForm form, Model model) {
+    public String showDetailSelectionFromPr(@ModelAttribute("form") PurchaseOrderCreatePreparationForm form,
+            Model model) {
         logger.debug("発注明細選択画面表示開始");
 
-        form.setOrderType(orderType);
-        form.setSupplierId(supplierId);
-        form.setSupplierName(supplierName);
-
-        PurchaseOrderDetailSelectionViewDto view = purchaseOrderService.getDetailSelectionView(orderType, supplierId,
-                supplierName);
+        PurchaseOrderDetailSelectionViewDto view = purchaseOrderService.getDetailSelectionView(form.getOrderType(),
+                form.getSupplierId(), form.getSupplierName());
         model.addAttribute("view", view);
 
         // formバインディング用の明細作成
@@ -187,6 +184,7 @@ public class PurchaseOrderController {
         session.setAttribute(draftId, draft);
 
         redirectAttributes.addAttribute("draftId", draftId);
+        redirectAttributes.addAttribute("orderType", form.getOrderType());
 
         logger.info("発注書作成Draft保存完了");
         return "redirect:/purchase-order/create";
@@ -195,21 +193,32 @@ public class PurchaseOrderController {
     @PreAuthorize("hasAuthority('PO_CREATE')")
     @GetMapping("/create")
     public String showPurchaseOrderCreateForm(@AuthenticationPrincipal CustomUserDetails principal,
-            @RequestParam(required = false) String draftId, Model model, HttpSession session,
-            RedirectAttributes redirectAttributes) {
+            @RequestParam String orderType, @RequestParam(required = false) String draftId, Model model,
+            HttpSession session, RedirectAttributes redirectAttributes) {
         logger.debug("発注作成画面表示開始");
 
         model.addAttribute("draftId", draftId);
+        model.addAttribute("orderType", orderType);
         // 直接作成
         if (draftId == null) {
-            PurchaseOrderCreateViewDto direct = new PurchaseOrderCreateViewDto();
-            direct.setPurchaser(principal.getFullName());
-            model.addAttribute("view", direct);
+            logger.debug("発注作成画面を直接作成モードで表示します");
+
+            // TODO:直接作成フラグをModelにセット
+
+            PurchaseOrderCreateViewDto directCreateView = new PurchaseOrderCreateViewDto();
+            directCreateView.setPurchaser(principal.getFullName());
+            PurchaseOrderCreateOptionsDto options = purchaseOrderService.gePurchaseOrderCreateOptions();
+            model.addAttribute("supplierOptions", options.supplierOptions());
+            model.addAttribute("paymentTermOptions", options.paymentTermOptions());
+            model.addAttribute("view", directCreateView);
+
             return "app/purchase-order-create";
         }
         PurchaseOrderCreateDraft draft = (PurchaseOrderCreateDraft) session.getAttribute(draftId);
         // セッション切れ
         if (draft == null) {
+            logger.warn("発注作成ドラフトがセッションに存在しません");
+
             redirectAttributes.addFlashAttribute("errorMessage",
                     messageSource.getMessage("purchaseOrder.create.draft.expired", null, null));
             return "redirect:/purchase-order/create";

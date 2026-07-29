@@ -1,0 +1,96 @@
+.card {
+  border-radius: 8px;
+}
+
+/* 表示専用項目 */
+.po-display-field {
+  display: flex;
+  min-height: 38px;
+  align-items: center;
+}
+
+/* 関連PR */
+.po-related-pr-list {
+  display: flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 発注明細 */
+.po-line-table {
+  table-layout: fixed;
+}
+
+.po-col-line {
+  width: 70px;
+}
+
+.po-col-quantity {
+  width: 130px;
+}
+
+.po-col-unit {
+  width: 100px;
+}
+
+.po-col-price,
+.po-col-amount {
+  width: 150px;
+}
+
+/* PR内訳開閉ボタン */
+.po-detail-toggle {
+  width: 34px;
+  height: 34px;
+  line-height: 1;
+}
+
+.po-toggle-icon {
+  display: inline-block;
+  font-size: 10px;
+  transition: transform 150ms ease-in-out;
+}
+
+.po-detail-toggle[aria-expanded="false"] .po-toggle-icon {
+  transform: rotate(180deg);
+}
+
+/* PR内訳 */
+.po-allocation-panel {
+  padding: 16px 24px 20px 80px;
+}
+
+.po-col-requested {
+  width: 140px;
+}
+
+.po-col-order {
+  width: 220px;
+}
+
+.po-col-limit {
+  width: 150px;
+}
+
+.po-order-quantity-group {
+  width: 180px;
+}
+
+.po-quantity-error:empty {
+  display: none !important;
+}
+
+/* 金額集計 */
+.po-total-area {
+  width: 380px;
+}
+
+.po-total-value {
+  width: 130px;
+  font-variant-numeric: tabular-nums;
+}
+
+.po-tax-rate-group {
+  width: 110px;
+}

@@ -6,8 +6,6 @@ import com.example.p2p.enums.PurchaseOrderType;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -42,7 +40,8 @@ public class PurchaseOrderCreatePreparationForm {
         return switch (orderType) {
             case STANDARD -> details.stream()
                 .filter(d -> Boolean.TRUE.equals(d.getSelected()))
-                .allMatch(d -> d.getSelectedQuantity() >=1 && d.getSelectedQuantity() <= d.getOrderMaxQuantity());
+                .allMatch(d -> d.getSelectedQuantity() != null && d.getSelectedQuantity() >= 1
+                        && d.getSelectedQuantity() <= d.getOrderMaxQuantity());
 
             case SERVICE -> details.stream()
                 .filter(d -> Boolean.TRUE.equals(d.getSelected()))
@@ -56,7 +55,7 @@ public class PurchaseOrderCreatePreparationForm {
 
         @NotBlank
         private String prDetailId;
-        
+
         private long orderMaxQuantity;
 
         private Integer selectedQuantity;
