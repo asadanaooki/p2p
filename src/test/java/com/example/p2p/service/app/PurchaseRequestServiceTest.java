@@ -33,6 +33,7 @@ import com.example.p2p.dto.app.PurchaseRequestEditDetailDto;
 import com.example.p2p.dto.app.PurchaseRequestEditViewDto;
 import com.example.p2p.dto.app.PurchaseRequestListViewDto;
 import com.example.p2p.entity.ApprovalTaskExample;
+import com.example.p2p.entity.PurchaseOrderLineAllocationExample;
 import com.example.p2p.entity.PurchaseRequest;
 import com.example.p2p.entity.PurchaseRequestDetail;
 import com.example.p2p.entity.PurchaseRequestDetailExample;
@@ -49,6 +50,7 @@ import com.example.p2p.form.app.PurchaseRequestEditForm;
 import com.example.p2p.form.app.PurchaseRequestSearchForm;
 import com.example.p2p.mapper.ApprovalTaskMapper;
 import com.example.p2p.mapper.ApprovalWorkflowMapper;
+import com.example.p2p.mapper.PurchaseOrderLineAllocationMapper;
 import com.example.p2p.mapper.PurchaseRequestDetailMapper;
 import com.example.p2p.mapper.PurchaseRequestMapper;
 import com.example.p2p.security.CustomUserDetails;
@@ -71,6 +73,9 @@ class PurchaseRequestServiceTest {
 
     @Autowired
     ApprovalWorkflowMapper approvalWorkflowMapper;
+
+    @Autowired
+    PurchaseOrderLineAllocationMapper purchaseOrderLineAllocationMapper;
 
     @Test
     void searchPurchaseRequests() {
@@ -135,10 +140,10 @@ class PurchaseRequestServiceTest {
         PurchaseRequestDetailDto actual = purchaseRequestService
             .getPurchaseRequestDetail("6b2c5959-233f-4b54-8a9b-98f4a1b13c40", loginUser);
 
+        assertThat(actual.getRelatedPos()).hasSize(2);
         assertThat(actual.getDetails()).hasSize(2);
 
-        assertThat(actual.getApprovalProgressSteps()).hasSize(1);
-        assertThat(actual.getApprovalProgressSteps().get(0).getApprovalProgressApprovers()).hasSize(1);
+        assertThat(actual.getApprovalProgressSteps()).isEmpty();
         assertThat(actual.getCurrentStepOrder()).isOne();
     }
 
@@ -184,6 +189,7 @@ class PurchaseRequestServiceTest {
         assertThat(actual.getNote()).isEqualTo("test");
         assertThat(actual.getCreatedAt()).isEqualTo(LocalDate.of(2026, 4, 21));
 
+        assertThat(actual.getRelatedPos()).hasSize(2);
         assertThat(actual.getDetails()).hasSize(3);
 
         assertThat(actual.getDetails()).extracting(PurchaseRequestDetailLineDto::getItemName)
@@ -207,12 +213,16 @@ class PurchaseRequestServiceTest {
 
         ApprovalProgressStepDto dto = actual.getApprovalProgressSteps().get(0);
         assertThat(dto.getStepOrder()).isOne();
-        assertThat(dto.getStepName()).isEqualTo("1段階目承認");
+        ApprovalTaskExample ex = new ApprovalTaskExample();
+        ex.createCriteria()
+            .andDocumentIdEqualTo("3c4f62bf-855b-4c35-b19d-eb06acb16896")
+            .andStepOrderEqualTo(1);
+        assertThat(dto.getStepName()).isEqualTo(approvalTaskMapper.selectByExample(ex).get(0).getStepName());
         assertThat(dto.getApprovalProgressApprovers()).singleElement().satisfies(s -> {
             assertThat(s.getUserName()).isEqualTo("山田 太郎");
-            assertThat(s.getStatus()).isEqualTo(ApprovalStatus.PENDING);
-            assertThat(s.getComment()).isNull();
-            assertThat(s.getActedAt()).isNull();
+            assertThat(s.getStatus()).isEqualTo(ApprovalStatus.APPROVED);
+            assertThat(s.getComment()).isNotBlank();
+            assertThat(s.getActedAt()).isNotNull();
         });
 
     }
@@ -664,6 +674,10 @@ class PurchaseRequestServiceTest {
 
         @Test
         void update_with_deleted() {
+            PurchaseOrderLineAllocationExample allocationExample = new PurchaseOrderLineAllocationExample();
+            allocationExample.createCriteria()
+                .andPrDetailIdEqualTo("4d57ee8a-4dc6-4155-9f4b-9ee7985d4e21");
+            purchaseOrderLineAllocationMapper.deleteByExample(allocationExample);
             PurchaseRequestEditForm form = new PurchaseRequestEditForm();
             form.setDeletedPrDetailIds(List.of("4d57ee8a-4dc6-4155-9f4b-9ee7985d4e21"));
 

@@ -21,6 +21,7 @@ class SupplierMapperCustomTest {
         SupplierDetailDto detail = supplierMapperCustom.selectSupplierDetail("b4d8e1f7-92ac-4c35-8f21-6a7b8c9d0e1f");
         
         assertThat(detail.getSupplierName()).isEqualTo("関西オフィスサービス株式会社");
+        assertThat(detail.getSupplierNameKana()).isEqualTo("カンサイオフィスサービスカブシキガイシャ");
         assertThat(detail.getEmail()).isEqualTo("contact@kansai-office.jp");
         assertThat(detail.getPhoneNumber()).isEqualTo("0661234567");
         assertThat(detail.getPostalCode()).isEqualTo("5400008");

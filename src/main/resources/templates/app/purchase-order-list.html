@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <!-- CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/common.css}">
+  <link rel="stylesheet" th:href="@{/css/app/purchase-order-list.css}">
+
+  <!-- JS -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script th:src="@{/js/common.js}"></script>
+</head>
+
+<body>
+  <main class="page" th:with="filterActive=${
+    form.orderType != null
+    or form.targetDateFrom != null
+    or form.targetDateTo != null
+    or form.supplierId != null
+    or form.status != null}">
+    <div class="success-message" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <h1 class="page-title">発注一覧</h1>
+
+    <form id="purchaseOrderSearchForm" class="keyword-search-form" th:action="@{/purchase-order}" th:object="${form}"
+      method="get">
+      <input type="hidden" th:field="*{sortBy}">
+      <input type="hidden" th:field="*{sortDirection}">
+
+      <div class="toolbar-box">
+        <div class="create-actions">
+          <a th:href="@{/purchase-order/create}" class="btn btn-outline-success create-button">作成</a>
+
+          <div class="dropdown">
+            <button id="createFromPurchaseRequestsButton" class="btn btn-outline-success dropdown-toggle" type="button"
+              data-bs-toggle="dropdown">
+              購買申請から作成
+            </button>
+
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" th:href="@{/purchase-order/create/supplier-selection(orderType='STANDARD')}">
+                  物品発注書
+                </a>
+              </li>
+
+              <li>
+                <a class="dropdown-item" th:href="@{/purchase-order/create/supplier-selection(orderType='SERVICE')}">
+                  サービス発注書
+                </a>
+              </li>
+            </ul>
+
+          </div>
+
+        </div>
+
+
+        <div class="toolbar-actions">
+          <div class="keyword-search-area">
+            <div class="input-group keyword-search-group">
+              <input id="keyword" type="text" th:field="*{keyword}" class="form-control">
+              <button type="submit" class="btn btn-outline-secondary">検索</button>
+            </div>
+          </div>
+          <button type="button" id="filterToggleButton" class="btn btn-outline-secondary">詳細条件</button>
+        </div>
+      </div>
+
+      <div id="filterPanel" class="filter-panel" th:classappend="${filterActive} ? ' is-open' : ''">
+        <div class="filter-box">
+          <div class="filter-grid">
+            <div class="filter-item">
+              <label for="orderType" class="form-label">種別</label>
+              <select id="orderType" th:field="*{orderType}" class="form-select">
+                <option value=""></option>
+                <option th:each="type : ${T(com.example.p2p.enums.PurchaseOrderType).values()}" th:value="${type}"
+                  th:text="${type.label}"></option>
+              </select>
+            </div>
+
+            <div class="filter-item">
+              <label class="form-label">対象日</label>
+              <div class="date-range">
+                <input id="targetDateFrom" type="date" th:field="*{targetDateFrom}" class="form-control">
+                <span>～</span>
+                <input id="targetDateTo" type="date" th:field="*{targetDateTo}" class="form-control">
+              </div>
+            </div>
+
+            <div class="filter-item">
+              <label for="supplierId" class="form-label">仕入先</label>
+              <select id="supplierId" th:field="*{supplierId}" class="form-select">
+                <option value=""></option>
+                <option th:each="supplier : ${view.supplierOptions}" th:value="${supplier.supplierId}"
+                  th:text="${supplier.name}"></option>
+              </select>
+            </div>
+
+            <div class="filter-item">
+              <label for="status" class="form-label">状態</label>
+              <select id="status" th:field="*{status}" class="form-select">
+                <option value=""></option>
+                <option th:each="status : ${T(com.example.p2p.enums.PurchaseOrderStatus).values()}" th:value="${status}"
+                  th:text="${status.label}"></option>
+              </select>
+            </div>
+          </div>
+
+          <div class="filter-actions">
+            <button type="submit" class="btn btn-success">絞り込む</button>
+            <a th:href="@{/purchase-order}" class="btn btn-outline-secondary">リセット</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-box">
+        <table class="table table-hover purchase-order-table mb-0">
+          <thead>
+            <tr>
+              <th class="col-number">
+                <button type="button" class="js-sort sort-button" data-sort-by="NUMBER">
+                  <span>番号</span>
+                  <span class="sort-icon" th:if="${form.sortBy.name().equals('NUMBER')}"
+                    th:text="${form.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
+                </button>
+              </th>
+
+              <th class="col-type">
+                <button type="button" class="js-sort sort-button" data-sort-by="TYPE">
+                  <span>種別</span>
+                  <span class="sort-icon" th:if="${form.sortBy.name().equals('TYPE')}"
+                    th:text="${form.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
+                </button>
+              </th>
+
+              <th class="col-purchaser">
+                <button type="button" class="js-sort sort-button" data-sort-by="PURCHASER">
+                  <span>発注者</span>
+                  <span class="sort-icon" th:if="${form.sortBy.name().equals('PURCHASER')}"
+                    th:text="${form.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
+                </button>
+              </th>
+
+              <th class="col-due-date">
+                <button type="button" class="js-sort sort-button" data-sort-by="TARGET_DATE">
+                  <span>対象日</span>
+                  <span class="sort-icon" th:if="${form.sortBy.name().equals('TARGET_DATE')}"
+                    th:text="${form.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
+                </button>
+              </th>
+
+              <th class="col-supplier">
+                <button type="button" class="js-sort sort-button" data-sort-by="SUPPLIER">
+                  <span>仕入先</span>
+                  <span class="sort-icon" th:if="${form.sortBy.name().equals('SUPPLIER')}"
+                    th:text="${form.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
+                </button>
+              </th>
+
+              <th class="col-total text-end">
+                <button type="button" class="sort-button justify-content-end js-sort" data-sort-by="TOTAL">
+                  <span>合計（税抜）</span>
+                  <span class="sort-icon" th:if="${form.sortBy != null and form.sortBy.name().equals('TOTAL')}"
+                    th:text="${form.sortDirection != null and form.sortDirection.name().equals('ASC') ? '▲' : '▼'}">
+                  </span>
+                </button>
+              </th>
+
+              <th class="col-status">
+                <button type="button" class="js-sort sort-button" data-sort-by="STATUS">
+                  <span>状態</span>
+                  <span class="sort-icon" th:if="${form.sortBy.name().equals('STATUS')}"
+                    th:text="${form.sortDirection.name().equals('ASC') ? '▲' : '▼'}"></span>
+                </button>
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr th:each="po : ${view.purchaseOrders}" class="js-row-link"
+              th:data-href="@{/purchase-order/{poId}(poId=${po.poId})}">
+              <td class="col-number">
+                <a class="purchase-order-link js-row-link-a" th:text="${po.displayNumber}"
+                  th:href="@{/purchase-order/{poId}(poId=${po.poId})}"></a>
+              </td>
+
+              <td class="col-type" th:text="${po.orderType.label}"></td>
+              <td class="col-purchaser" th:text="${po.purchaser}"></td>
+              <td class="col-due-date">
+                <span th:if="${po.orderType.toString().equals('STANDARD')}"
+                  th:text="${po.deliveryDueDate == null ? '' : #temporals.format(po.deliveryDueDate, 'yyyy/M/d')}"></span>
+                <span th:if="${po.orderType.toString().equals('SERVICE')}">
+                  <span
+                    th:text="${po.servicePeriodFrom == null ? '' : #temporals.format(po.servicePeriodFrom, 'yyyy/M/d')}"></span>
+                  <span th:if="${po.servicePeriodFrom != null or po.servicePeriodTo != null}"> - </span>
+                  <span
+                    th:text="${po.servicePeriodTo == null ? '' : #temporals.format(po.servicePeriodTo, 'yyyy/M/d')}"></span>
+                </span>
+              </td>
+              <td class="col-supplier" th:text="${po.supplierName}"></td>
+              <td class="col-total text-end"
+                th:text="${#numbers.formatInteger(po.totalAmountExcludingTax, 1, 'COMMA')}"></td>
+
+              <td class="col-status">
+                <span class="badge text-bg-light border rounded-pill po-status-badge" th:text="${po.status.label}">
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <nav class="pagination-area" th:if="!${#lists.isEmpty(view.pageNumberList)}">
+        <ul class="pagination justify-content-center gap-2">
+          <li class="page-item" th:if="${view.currentPage > 1}">
+            <button type="button" class="page-link js-page" th:data-page="${view.currentPage - 1}">&lt;</button>
+          </li>
+
+          <li class="page-item" th:each="pageNo : ${view.pageNumberList}"
+            th:classappend="${pageNo == view.currentPage} ? 'active' : ''">
+            <button type="button" class="page-link js-page" th:data-page="${pageNo}" th:text="${pageNo}"></button>
+          </li>
+
+          <li class="page-item"
+            th:if="${view.currentPage < view.pageNumberList.get(#lists.size(view.pageNumberList) - 1)}">
+            <button type="button" class="page-link js-page" th:data-page="${view.currentPage + 1}">&gt;</button>
+          </li>
+        </ul>
+      </nav>
+    </form>
+
+
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+  </script>
+</body>
+
+</html>

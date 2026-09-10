@@ -15,9 +15,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.example.p2p.dto.admin.UserDetailDto;
 import com.example.p2p.dto.admin.UserListRowDto;
+import com.example.p2p.dto.app.AuthenticationUserDto;
 import com.example.p2p.entity.ApprovalStepApproverExample;
 import com.example.p2p.entity.ApprovalTaskExample;
 import com.example.p2p.entity.PurchaseRequestDetailExample;
@@ -27,6 +29,7 @@ import com.example.p2p.entity.UsersExample;
 import com.example.p2p.enums.SortDirection;
 import com.example.p2p.enums.UserSortBy;
 import com.example.p2p.form.admin.UserSearchForm;
+import com.example.p2p.security.CustomUserDetails;
 
 @MybatisTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -49,6 +52,17 @@ class UsersMapperCustomTest {
     
     @Autowired
     ApprovalTaskMapper approvalTaskMapper;
+
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
+    @Test
+    void selectAuthenticationUser_setsFullName() {
+        AuthenticationUserDto actual = usersMapperCustom.selectAuthenticationUser("siotan0926@gmail.com");
+
+        assertThat(actual.getFullName()).isEqualTo("山田 太郎");
+        assertThat(new CustomUserDetails(actual).getFullName()).isEqualTo("山田 太郎");
+    }
 
     @Nested
     class SelectUsers {
@@ -122,6 +136,10 @@ class UsersMapperCustomTest {
 
             @BeforeEach
             void setup() {
+                jdbcTemplate.update("delete from purchase_order_line_allocation");
+                jdbcTemplate.update("delete from purchase_order_line");
+                jdbcTemplate.update("delete from purchase_request_purchase_order");
+                jdbcTemplate.update("delete from purchase_order");
                 purchaseRequestDetailMapper.deleteByExample(new PurchaseRequestDetailExample());
                 purchaseRequestMapper.deleteByExample(new PurchaseRequestExample());
                 approvalStepApproverMapper.deleteByExample(new ApprovalStepApproverExample());
@@ -309,6 +327,10 @@ class UsersMapperCustomTest {
 
             @BeforeEach
             void setup() {
+                jdbcTemplate.update("delete from purchase_order_line_allocation");
+                jdbcTemplate.update("delete from purchase_order_line");
+                jdbcTemplate.update("delete from purchase_request_purchase_order");
+                jdbcTemplate.update("delete from purchase_order");
                 purchaseRequestDetailMapper.deleteByExample(new PurchaseRequestDetailExample());
                 purchaseRequestMapper.deleteByExample(new PurchaseRequestExample());
                 approvalStepApproverMapper.deleteByExample(new ApprovalStepApproverExample());

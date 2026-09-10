@@ -4,6 +4,7 @@
   <select id="selectSupplierDetail" resultType="com.example.p2p.dto.admin.SupplierDetailDto">
     select
       s.name as supplier_name,
+      s.name_kana as supplier_name_kana,
       s.email,
       s.phone_number,
       s.postal_code,
@@ -27,6 +28,7 @@
     update supplier
     set
       name = #{name},
+      name_kana = #{nameKana},
       email = #{email},
       phone_number = #{phoneNumber},
       postal_code = #{postalCode},

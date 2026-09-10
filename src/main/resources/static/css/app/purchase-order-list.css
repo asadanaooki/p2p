@@ -1,0 +1,215 @@
+/* =========================
+   発注一覧
+========================= */
+.page {
+  min-height: 100vh;
+  padding: 32px;
+}
+
+.page-title {
+  margin: 0 0 26px;
+  font-size: 24px;
+  font-weight: 400;
+}
+
+/* =========================
+   ツールバー
+========================= */
+.toolbar-box {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.create-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.create-button {
+  min-width: 86px;
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 24px;
+}
+
+.keyword-search-area {
+  width: 480px;
+}
+
+.keyword-search-group {
+  width: 100%;
+}
+
+.filter-toggle-button {
+  min-width: 124px;
+}
+
+/* =========================
+   フィルター
+========================= */
+.filter-panel {
+  display: none;
+  margin-bottom: 24px;
+}
+
+.filter-panel.is-open {
+  display: block;
+}
+
+.filter-box {
+  padding: 28px 16px 24px;
+  border: 1px solid #d8dfdd;
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr 1fr;
+  gap: 28px;
+}
+
+.filter-item .form-label {
+  margin-bottom: 12px;
+  color: #243238;
+  font-weight: 600;
+}
+
+.date-range {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.date-range input[type="date"] {
+  min-width: 0;
+}
+
+.filter-actions {
+  margin-top: 36px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.filter-action-button {
+  min-width: 110px;
+}
+
+/* =========================
+   テーブル
+========================= */
+.table-box {
+  border: 1px solid #d8dfdd;
+  background: #fff;
+}
+
+.purchase-order-table {
+  table-layout: fixed;
+  background: #fff;
+  border-collapse: collapse;
+}
+
+.purchase-order-table thead th {
+  background: #9fb3b2;
+  color: #1f2c30;
+  font-weight: 400;
+  border-right: 1px solid #c7d1ce;
+  white-space: nowrap;
+}
+
+.purchase-order-table thead th:last-child,
+.purchase-order-table tbody td:last-child {
+  border-right: none;
+}
+
+.purchase-order-table tbody td {
+  border-right: 1px solid #edf1ef;
+  overflow-wrap: break-word;
+}
+
+.sort-button {
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  text-align: left;
+}
+
+.sort-button:hover {
+  text-decoration: underline;
+}
+
+.sort-icon {
+  min-width: 12px;
+  font-size: 12px;
+}
+
+.purchase-order-link {
+  color: #14a648;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.purchase-order-link:hover {
+  color: #10833a;
+  text-decoration: underline;
+}
+
+.js-row-link,
+.js-row-link-a,
+.js-sort,
+.js-page {
+  cursor: pointer;
+}
+
+.po-status-badge {
+  min-width: 88px;
+}
+
+/* =========================
+   ページング
+========================= */
+.pagination-area {
+  margin-top: 24px;
+}
+
+/* =========================
+   列幅
+========================= */
+.col-number {
+  width: 8%;
+}
+
+.col-type {
+  width: 10%;
+}
+
+.col-purchaser {
+  width: 14%;
+}
+
+.col-due-date {
+  width: 18%;
+}
+
+.col-supplier {
+  width: 21%;
+}
+
+.col-total {
+  width: 14%;
+}
+
+.col-status {
+  width: 15%;
+}

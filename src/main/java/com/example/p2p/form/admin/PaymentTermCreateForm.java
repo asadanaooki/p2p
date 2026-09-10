@@ -24,7 +24,7 @@ public class PaymentTermCreateForm {
     private DueDateType dueDateType;
 
 
-    @AssertTrue
+    @AssertTrue(message = "{error.paymentTerm.dueDate.invalid}")
     public boolean isDueDateValid() {
         if (days == null) {
             return true;

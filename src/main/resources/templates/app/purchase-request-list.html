@@ -11,6 +11,7 @@
 <body>
   <main class="page">
     <div class="success-message" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <h1 class="page-title">購買申請一覧</h1>
 
     <div class="toolbar">
       <a th:href="@{/purchase-request/create}" class="new-button">作成</a>
@@ -145,7 +146,8 @@
             <td class="col-due-date" th:text="${pr.dueDate == null ? '' : #temporals.format(pr.dueDate, 'yyyy/M/d')}">
             </td>
 
-            <td class="col-total-amount" th:text="${#numbers.formatInteger(pr.totalAmountExcludingTax, 1, 'COMMA')}"></td>
+            <td class="col-total-amount" th:text="${#numbers.formatInteger(pr.totalAmountExcludingTax, 1, 'COMMA')}">
+            </td>
 
             <td class="col-status" th:text="${pr.status.label}"></td>
           </tr>
@@ -179,7 +181,7 @@
         <span th:text="${pageNo}"></span>
       </a>
 
-      <a class="page-link" th:if="${view.currentPage < #lists.size(view.pageNumberList)}" th:href="@{/purchase-request(
+      <a class="page-link" th:if="${view.currentPage < view.pageNumberList.get(#lists.size(view.pageNumberList) - 1)}" th:href="@{/purchase-request(
            page=${view.currentPage + 1},
            keyword=${form.keyword},
            dueDateFrom=${form.dueDateFrom},

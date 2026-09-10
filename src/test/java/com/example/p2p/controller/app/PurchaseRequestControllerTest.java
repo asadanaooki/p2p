@@ -1,16 +1,21 @@
 package com.example.p2p.controller.app;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +32,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import com.example.p2p.dto.app.PurchaseRequestCreateViewDto;
+import com.example.p2p.dto.app.PurchaseRequestDetailDto;
+import com.example.p2p.dto.app.PurchaseRequestListViewDto;
+import com.example.p2p.dto.app.PurchaseRequestRelatedPoDto;
+import com.example.p2p.enums.PurchaseRequestStatus;
 import com.example.p2p.exception.BusinessException;
 import com.example.p2p.service.app.PurchaseRequestService;
 
@@ -40,6 +49,41 @@ class PurchaseRequestControllerTest {
 
     @MockitoBean
     PurchaseRequestService purchaseRequestService;
+
+    @Test
+    @WithMockUser(authorities = { "PR_VIEW_ALL" })
+    void showPurchaseRequestList_storesOwnSearchCondition() throws Exception {
+        doReturn(new PurchaseRequestListViewDto()).when(purchaseRequestService).searchPurchaseRequests(any(), any());
+
+        mockMvc.perform(get("/purchase-request"))
+            .andExpect(status().isOk())
+            .andExpect(request().sessionAttribute("purchaseRequestLastSearchCondition", notNullValue()));
+    }
+
+    @Test
+    @WithMockUser(authorities = { "PR_VIEW_ALL" })
+    void detail_relatedPos() throws Exception {
+        PurchaseRequestRelatedPoDto relatedPo = new PurchaseRequestRelatedPoDto();
+        relatedPo.setPoId("po-1");
+        relatedPo.setDisplayNumber(10);
+
+        PurchaseRequestDetailDto view = new PurchaseRequestDetailDto();
+        view.setDisplayNumber(1);
+        view.setRequester("requester");
+        view.setDueDate(LocalDate.of(2026, 6, 1));
+        view.setStatus(PurchaseRequestStatus.COMPLETED);
+        view.setCreatedAt(LocalDate.of(2026, 6, 2));
+        view.setRelatedPos(List.of(relatedPo));
+        view.setDetails(List.of());
+        view.setApprovalProgressSteps(List.of());
+
+        doReturn(view).when(purchaseRequestService).getPurchaseRequestDetail(anyString(), any());
+
+        MvcResult res = mockMvc.perform(get("/purchase-request/{prId}", "pr-1")).andReturn();
+
+        assertThat(res.getResponse().getStatus()).isEqualTo(200);
+        assertThat(res.getResponse().getContentAsString()).contains("/purchase-order/po-1", ">10<");
+    }
 
     @Test
     void create_bindingError_details() throws Exception {

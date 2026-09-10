@@ -1,0 +1,489 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.p2p.mapper.PurchaseOrderMapperCustom">
+  <sql id="sortDirection">
+    <choose>
+      <when test="form.sortDirection.toString().equals('ASC')">asc</when>
+      <when test="form.sortDirection.toString().equals('DESC')">desc</when>
+    </choose>
+  </sql>
+  
+  <select id="selectPurchaseOrders" resultType="com.example.p2p.dto.app.PurchaseOrderListRowDto">
+    select 
+      po.po_id,
+      po.order_type,
+      po.display_number,
+      CONCAT_WS(' ', u.last_name, u.first_name) as purchaser,
+      
+      <!-- PO納期 -->
+      po.delivery_due_date,
+      <!-- SO期間 -->
+      po.service_period_from,
+      po.service_period_to,
+      
+      po.snap_supplier_name as supplier_name,
+      po.total_amount_excluding_tax,
+      po.status
+    from purchase_order po
+    left join supplier s
+      on po.supplier_id = s.supplier_id
+    join users u
+      on po.purchaser_user_id = u.user_id
+    <where>
+       <if test="poViewScope.toString().equals('SELF')">
+         po.purchaser_user_id = #{userId}
+       </if>
+
+      <if test="form.orderType != null">
+        and po.order_type = #{form.orderType}
+      </if>
+      <if test="form.targetDateFrom != null">
+        <choose>
+          <when test="form.orderType == null">
+            and 
+              (
+                po.delivery_due_date &gt;= #{form.targetDateFrom}
+                or po.service_period_to &gt;= #{form.targetDateFrom}
+              )
+          </when>
+          <when test="form.orderType.toString().equals('STANDARD')">
+             and po.delivery_due_date &gt;= #{form.targetDateFrom}
+          </when>
+          <when test="form.orderType.toString().equals('SERVICE')">
+             and po.service_period_to &gt;= #{form.targetDateFrom}
+          </when>
+        </choose>
+      </if>
+      <if test="form.targetDateTo != null">
+        <choose>
+          <when test="form.orderType == null">
+            and 
+              (
+                po.delivery_due_date &lt;= #{form.targetDateTo}
+                or po.service_period_from &lt;= #{form.targetDateTo}
+              )
+          </when>
+          <when test="form.orderType.toString().equals('STANDARD')">
+             and po.delivery_due_date &lt;= #{form.targetDateTo}
+          </when>
+          <when test="form.orderType.toString().equals('SERVICE')">
+             and po.service_period_from &lt;= #{form.targetDateTo}
+          </when>
+        </choose>
+      </if>
+      <if test="form.supplierId != null">
+        and s.supplier_id = #{form.supplierId}
+      </if>
+      <if test="form.status != null">
+        and po.status = #{form.status}
+      </if>
+
+      <if test="form.keyword != null and form.keyword != ''">
+        and ( 
+          po.display_number::varchar ~ #{form.keywordRegex}
+          or normalization(lower(concat(u.last_name, u.first_name))) ~#{form.keywordRegex}
+          or normalization(lower(concat(u.last_name_kana, u.first_name_kana))) ~#{form.keywordRegex}
+          or normalization(lower(s.name)) ~#{form.keywordRegex}
+          or normalization(lower(s.name_kana)) ~#{form.keywordRegex}
+        )
+      </if>
+    </where>
+    order by
+      <choose>
+        <when test="form.sortBy.toString().equals('NUMBER')">po.display_number</when>
+        <when test="form.sortBy.toString().equals('TYPE')">
+        case po.order_type
+          when 'STANDARD' then 1
+          when 'SERVICE' then 2
+        end
+        </when>
+        <when test="form.sortBy.toString().equals('PURCHASER')">concat(u.last_name_kana, u.first_name_kana)</when>
+        <when test="form.sortBy.toString().equals('TARGET_DATE')">
+          <choose>
+            <when test="form.sortDirection.toString().equals('ASC')">
+              coalesce(po.delivery_due_date, po.service_period_from) asc,
+              coalesce(po.delivery_due_date, po.service_period_to) asc
+            </when>
+            <when test="form.sortDirection.toString().equals('DESC')">
+              coalesce(po.delivery_due_date, po.service_period_to) desc,
+              coalesce(po.delivery_due_date, po.service_period_from) desc
+            </when>
+          </choose>
+        </when>
+        <when test="form.sortBy.toString().equals('SUPPLIER')">s.name_kana</when>
+        <when test="form.sortBy.toString().equals('TOTAL')">po.total_amount_excluding_tax</when>
+        <when test="form.sortBy.toString().equals('STATUS')">
+        case po.status
+          when 'PENDING' then 1
+          when 'APPROVED' then 2
+          when 'REJECTED' then 3
+          when 'COMPLETED' then 4
+          when 'CANCELLED' then 5
+        end
+        </when>
+      </choose>
+      <if test="!form.sortBy.toString().equals('TARGET_DATE')">
+        <include refid="sortDirection"></include>
+      </if>
+      , po.display_number <include refid="sortDirection"></include>
+    limit #{form.size} offset #{form.offset}
+  </select>
+  
+  <select id="countPurchaseOrders" resultType="int">
+    select count(*)
+    from purchase_order po
+    left join supplier s
+      on po.supplier_id = s.supplier_id
+    join users u
+      on po.purchaser_user_id = u.user_id
+    <where>
+       <if test="poViewScope.toString().equals('SELF')">
+         po.purchaser_user_id = #{userId}
+       </if>
+
+      <if test="form.orderType != null">
+        and po.order_type = #{form.orderType}
+      </if>
+      <if test="form.targetDateFrom != null">
+        <choose>
+          <when test="form.orderType == null">
+            and 
+              (
+                po.delivery_due_date &gt;= #{form.targetDateFrom}
+                or po.service_period_to &gt;= #{form.targetDateFrom}
+              )
+          </when>
+          <when test="form.orderType.toString().equals('STANDARD')">
+             and po.delivery_due_date &gt;= #{form.targetDateFrom}
+          </when>
+          <when test="form.orderType.toString().equals('SERVICE')">
+             and po.service_period_to &gt;= #{form.targetDateFrom}
+          </when>
+        </choose>
+      </if>
+      <if test="form.targetDateTo != null">
+        <choose>
+          <when test="form.orderType == null">
+            and 
+              (
+                po.delivery_due_date &lt;= #{form.targetDateTo}
+                or po.service_period_from &lt;= #{form.targetDateTo}
+              )
+          </when>
+          <when test="form.orderType.toString().equals('STANDARD')">
+             and po.delivery_due_date &lt;= #{form.targetDateTo}
+          </when>
+          <when test="form.orderType.toString().equals('SERVICE')">
+             and po.service_period_from &lt;= #{form.targetDateTo}
+          </when>
+        </choose>
+      </if>
+      <if test="form.supplierId != null">
+        and s.supplier_id = #{form.supplierId}
+      </if>
+      <if test="form.status != null">
+        and po.status = #{form.status}
+      </if>
+
+      <if test="form.keyword != null and form.keyword != ''">
+        and ( 
+          po.display_number::varchar ~ #{form.keywordRegex}
+          or normalization(lower(concat(u.last_name, u.first_name))) ~#{form.keywordRegex}
+          or normalization(lower(concat(u.last_name_kana, u.first_name_kana))) ~#{form.keywordRegex}
+          or normalization(lower(s.name)) ~#{form.keywordRegex}
+          or normalization(lower(s.name_kana)) ~#{form.keywordRegex}
+        )
+      </if>
+    </where>
+  </select>
+  
+  <resultMap id="purchaseOrderDetailHeaderMap" type="com.example.p2p.dto.app.PurchaseOrderDetailDto">
+    <id property="poId" column="po_id"/>
+  
+    <result property="displayNumber" column="display_number"/>
+    <result property="orderType" column="order_type"/>
+    <result property="supplierName" column="supplier_name"/>
+    <result property="userId" column="user_id"/>
+    <result property="purchaser" column="purchaser"/>
+    <result property="totalAmountExcludingTax" column="total_amount_excluding_tax"/>
+    <result property="status" column="status"/>
+    <result property="note" column="note"/>
+    <result property="createdAt" column="created_at"/>
+  
+    <result property="deliveryDueDate" column="delivery_due_date"/>
+  
+    <result property="servicePeriodFrom" column="service_period_from"/>
+    <result property="servicePeriodTo" column="service_period_to"/>
+    <collection property="relatedPrs" ofType="com.example.p2p.dto.app.RelatedPrDto">
+      <id property="prId" column="pr_id"></id>
+      <result property="displayNumber" column="pr_display_number"></result>
+    </collection>  
+  
+  </resultMap>
+  
+  <select id="selectPurchaseOrderDetailHeader" resultMap="purchaseOrderDetailHeaderMap">
+    select 
+      po.po_id,
+      po.display_number,
+      po.order_type,
+      po.snap_supplier_name as supplier_name,
+      u.user_id,
+      CONCAT_WS(' ', u.last_name, u.first_name) as purchaser,
+      po.total_amount_excluding_tax,
+      po.status,
+      po.note,
+      CAST(po.created_at AS DATE) as created_at,
+      
+      po.delivery_due_date,
+      
+      po.service_period_from,
+      po.service_period_to,
+      
+      pr.pr_id,
+      pr.display_number as pr_display_number
+    from purchase_order po
+    join users u
+      on po.purchaser_user_id = u.user_id
+    left join purchase_request_purchase_order prpo
+      on po.po_id = prpo.po_id
+    left join purchase_request pr
+      on pr.pr_id = prpo.pr_id
+    where 
+      po.po_id = #{poId}
+      <if test="poViewScope.toString().equals('SELF')">
+        and po.purchaser_user_id = #{userId}
+      </if>
+      order by pr.display_number asc
+  </select>
+  
+  <resultMap id="PurchaseOrderSupplierSelectionRowResultMap" type="com.example.p2p.dto.app.PurchaseOrderSupplierSelectionRowDto">
+    <id column="supplier_id" property="supplierId" />
+    <id column="supplier_name" property="supplierName" />
+    <result column="detail_count" property="detailCount" />
+    <result column="total_amount_excluding_tax" property="totalAmountExcludingTax" />
+    <result column="purchase_requests" property="purchaseRequests"
+      typeHandler="com.example.p2p.typehandler.RelatedPurchaseRequestListTypeHandler"/>
+  </resultMap>
+
+  <select id="selectPurchaseOrderSupplierSelections" resultMap="PurchaseOrderSupplierSelectionRowResultMap">
+   <!-- カタログ + フリー入力(IDあり) -->
+    select
+        s.name_kana as supplier,
+        prd.supplier_id
+        , s.name as supplier_name
+        , count(prd.pr_detail_id) as detail_count
+        , jsonb_agg(
+            jsonb_build_object(
+              'prId', pr.pr_id
+              ,'displayNumber', pr.display_number
+            )
+            order by pr.display_number asc
+        ) as purchase_requests
+        , sum(prd.subtotal_excluding_tax) as total_amount_excluding_tax
+    from
+        purchase_request pr
+        join purchase_request_detail prd
+            on pr.pr_id = prd.pr_id
+        join supplier s
+            on prd.supplier_id = s.supplier_id
+    where
+        prd.snap_kind = #{itemKind}
+        <if test="form.supplierId != null">
+          and s.supplier_id = #{form.supplierId}
+        </if>
+        and pr.status = 'APPROVED'
+    group by
+        prd.supplier_id
+        , s.name
+        , s.name_kana
+    
+    <if test="form.supplierId == null">
+      union all
+
+      <!-- フリー入力(IDなし) -->
+      select
+            prd.snap_supplier_name as supplier,
+            string_agg(prd.supplier_id, '') as supplier_id
+          , prd.snap_supplier_name as supplier_name
+          , count(prd.pr_detail_id) as detail_count
+          , jsonb_agg(
+            jsonb_build_object(
+              'prId', pr.pr_id
+              ,'displayNumber', pr.display_number
+            )
+            order by pr.display_number asc
+          ) as purchase_requests
+          , sum(prd.subtotal_excluding_tax) as total_amount_excluding_tax
+      from
+          purchase_request pr
+          join purchase_request_detail prd
+              on pr.pr_id = prd.pr_id
+      where
+          prd.supplier_id is null
+          and prd.snap_kind = #{itemKind}
+          and pr.status = 'APPROVED'
+      group by
+          prd.snap_supplier_name
+    </if>
+        
+    order by
+    <choose>
+      <when test="form.sortBy.toString().equals('SUPPLIER')">
+        supplier
+      </when>
+      <when test="form.sortBy.toString().equals('DETAIL_COUNT')">
+        detail_count
+      </when>
+      <when test="form.sortBy.toString().equals('TOTAL_AMOUNT')">
+        total_amount_excluding_tax
+      </when>
+    </choose>
+
+    <include refid="sortDirection"></include>
+    , supplier asc
+  </select>
+  
+  <resultMap id="purchaseOrderDetailSelectionMap"
+           type="com.example.p2p.dto.app.PurchaseOrderDetailSelectionViewDto">
+
+  <id property="viewKey" column="view_key" />
+
+  <result property="totalAmountExcludingTax" column="total_amount_excluding_tax" />
+
+  <collection property="prGroups"
+              ofType="com.example.p2p.dto.app.PurchaseOrderDetailSelectionPrGroupDto">
+
+    <id property="prId" column="pr_id" />
+
+    <result property="displayNumber" column="display_number" />
+    <result property="prTotalAmountExcludingTax" column="pr_total_amount_excluding_tax" />
+
+    <collection property="detailRows"
+                ofType="com.example.p2p.dto.app.PurchaseOrderDetailSelectionRowDto">
+
+      <id property="prDetailId" column="pr_detail_id" />
+      <result property="detailIndex" column="index"/>
+
+      <result property="itemName" column="item_name" />
+      <result property="unitPrice" column="unit_price" />
+      <result property="subtotalExcludingTax" column="subtotal_excluding_tax" />
+
+      <result property="unitName" column="unit_name" />
+      <result property="quantity" column="quantity" />
+
+    </collection>
+
+  </collection>
+
+</resultMap>
+
+
+  <select id="selectPurchaseOrderDetailSelectionView"
+          resultMap="purchaseOrderDetailSelectionMap">
+  
+    select
+      'DETAIL_SELECTION' as view_key,
+      sum(prd.subtotal_excluding_tax) over() as total_amount_excluding_tax,
+  
+      pr.pr_id,
+      pr.display_number,
+      sum(prd.subtotal_excluding_tax) over(partition by pr.pr_id) as pr_total_amount_excluding_tax,
+  
+      prd.pr_detail_id,
+      row_number() over(order by pr.display_number asc, prd.line_no asc) - 1 as index,
+      prd.snap_item_name as item_name,
+      prd.snap_unit_price as unit_price,
+      prd.subtotal_excluding_tax,
+  
+      prd.snap_unit_name as unit_name,
+      prd.quantity
+  
+    from purchase_request pr
+  
+    join purchase_request_detail prd
+      on pr.pr_id = prd.pr_id
+  
+    <where>
+      <choose>
+        <when test="supplierId != null">
+          prd.supplier_id = #{supplierId}
+        </when>
+        <otherwise>
+          prd.snap_supplier_name = #{supplierName}
+          and prd.supplier_id is null
+        </otherwise>
+      </choose>
+  
+      and prd.snap_kind = #{itemKind}
+      and pr.status = 'APPROVED'
+    </where>
+  
+    order by
+      pr.display_number asc,
+      prd.line_no asc
+  
+  </select>
+
+  <resultMap id="purchaseOrderCreateSourceMap"
+             type="com.example.p2p.dto.app.PurchaseOrderCreateSourceDto">
+    <id property="mappingKey" column="mapping_key"/>
+    <result property="supplierName" column="supplier_name"/>
+    <result property="purchaser" column="purchaser"/>
+    <result property="paymentTermName" column="payment_term_name"/>
+
+    <collection property="relatedPrNumbers" ofType="java.lang.Integer">
+      <id column="display_number"/>
+    </collection>
+
+    <collection property="details" ofType="com.example.p2p.dto.app.PurchaseOrderCreateSourceRowDto">
+      <id property="prDetailId" column="pr_detail_id"/>
+      <result property="itemId" column="item_id"/>
+      <result property="unitId" column="unit_id"/>
+      <result property="itemName" column="snap_item_name"/>
+      <result property="unitName" column="snap_unit_name"/>
+      <result property="unitPrice" column="snap_unit_price"/>
+      <result property="purchaseRequestQuantity" column="quantity"/>
+    </collection>
+  </resultMap>
+
+  <select id="selectPurchaseOrderCreateSource" resultMap="purchaseOrderCreateSourceMap">
+    select
+      coalesce(#{supplierId}, #{supplierName}) as mapping_key,
+      coalesce(s.name, #{supplierName}) as supplier_name,
+      concat_ws(' ', u.last_name, u.first_name) as purchaser,
+      pt.name as payment_term_name,
+      pr.display_number,
+      prd.pr_detail_id,
+      prd.item_id,
+      prd.unit_id,
+      prd.snap_item_name,
+      prd.snap_unit_name,
+      prd.snap_unit_price,
+      prd.quantity
+    from purchase_request pr
+    join purchase_request_detail prd
+      on pr.pr_id = prd.pr_id
+    join users u
+      on u.user_id = #{userId}
+    left join supplier s
+      on prd.supplier_id = s.supplier_id
+    left join payment_term pt
+      on s.payment_term_id = pt.payment_term_id
+    where prd.pr_detail_id in
+    <foreach collection="prDetailIds" item="prDetailId" open="(" separator="," close=")">
+      #{prDetailId}
+    </foreach>
+    <choose>
+      <when test="supplierId != null">
+        and prd.supplier_id = #{supplierId}
+      </when>
+      <otherwise>
+        and prd.supplier_id is null
+        and prd.snap_supplier_name = #{supplierName}
+      </otherwise>
+    </choose>
+    order by
+      pr.display_number asc,
+      prd.line_no asc
+  </select>
+</mapper>

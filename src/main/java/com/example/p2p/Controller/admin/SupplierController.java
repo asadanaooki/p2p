@@ -83,6 +83,7 @@ public class SupplierController {
             Model model) {
         SupplierDetailDto supplier = supplierService.getSupplierDetail(supplierId);
         form.setName(supplier.getSupplierName());
+        form.setNameKana(supplier.getSupplierNameKana());
         form.setEmail(supplier.getEmail());
         form.setPhoneNumber(supplier.getPhoneNumber());
         form.setPostalCode(supplier.getPostalCode());
@@ -116,7 +117,7 @@ public class SupplierController {
                 messageSource.getMessage("common.update.success", null, null));
         redirectAttributes.addAttribute("supplierId", supplierId);
         
-        return "redirect:/admin/setting/supplier/{supplierId}";
+        return "redirect:/setting/supplier/{supplierId}";
     }
 
 }

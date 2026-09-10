@@ -5,11 +5,15 @@ import java.util.List;
 
 import com.example.p2p.enums.ApprovalStatus;
 import com.example.p2p.enums.PurchaseRequestStatus;
+import com.example.p2p.util.CommonUtil;
 
 import lombok.Data;
 
 @Data
 public class PurchaseRequestDetailDto {
+
+    // Mybatis用
+    private String prId;
 
     // ヘッダー
     private Integer displayNumber;
@@ -28,6 +32,8 @@ public class PurchaseRequestDetailDto {
 
     private String userId;
 
+    private List<PurchaseRequestRelatedPoDto> relatedPos;
+
     // 明細
     private List<PurchaseRequestDetailLineDto> details;
 
@@ -38,22 +44,12 @@ public class PurchaseRequestDetailDto {
 
     // 承認/否認ボタン表示判定
     public boolean isApprovalActionButtonVisible() {
-        if (status != PurchaseRequestStatus.PENDING) {
-            return false;
-        }
-        return approvalProgressSteps.stream()
-            .filter(s -> s.getStepOrder() == currentStepOrder)
-            .flatMap(s -> s.getApprovalProgressApprovers().stream())
-            .anyMatch(a -> a.getUserId().equals(userId) && a.getStatus() == ApprovalStatus.PENDING);
+        return CommonUtil.isApprovalActionButtonVisible(status.toString(), approvalProgressSteps, currentStepOrder,
+                userId);
     }
 
     public ApprovalStatus getCurrentApprovalStepStatus() {
-        boolean rejected = approvalProgressSteps.stream()
-            .filter(s -> s.getStepOrder() == currentStepOrder)
-            .flatMap(s -> s.getApprovalProgressApprovers().stream())
-            .anyMatch(a -> a.getStatus() == ApprovalStatus.REJECTED);
-
-        return rejected ? ApprovalStatus.REJECTED : ApprovalStatus.PENDING;
+        return CommonUtil.getCurrentApprovalStepStatus(approvalProgressSteps, currentStepOrder);
     }
 
     public int getTaxAmount() {

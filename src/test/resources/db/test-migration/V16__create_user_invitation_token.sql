@@ -1,3 +1,5 @@
+drop table if exists user_invitation_token;
+
 create table user_invitation_token (
     user_id char(36) primary key,
     token_hash char(64) not null,

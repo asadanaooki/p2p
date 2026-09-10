@@ -1,3 +1,5 @@
+drop table if exists purchase_request_detail;
+
 create table purchase_request_detail (
     pr_detail_id char(36) primary key default gen_random_uuid()::text,
     pr_id char(36) not null,

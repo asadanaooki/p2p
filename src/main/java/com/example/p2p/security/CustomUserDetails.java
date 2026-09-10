@@ -16,7 +16,11 @@ import lombok.Data;
 @Data
 public class CustomUserDetails implements UserDetails {
 
+    // ユーザーID
     private String username;
+
+    // ユーザー名
+    private String fullName;
 
     private String password;
 
@@ -36,6 +40,7 @@ public class CustomUserDetails implements UserDetails {
 
     public CustomUserDetails(AuthenticationUserDto authUser) {
         this.username = authUser.getUserId();
+        this.fullName = authUser.getFullName();
         this.password = authUser.getPasswordHash();
         this.email = authUser.getEmail();
         this.roleName = authUser.getRoleName();

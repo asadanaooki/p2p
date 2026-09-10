@@ -43,7 +43,7 @@ public class UserController {
 
     private ModelMapper modelMapper;
 
-    private static final String LAST_SEARCH_CONDITION = "lastSearchCondition";
+    private static final String LAST_SEARCH_CONDITION = "userLastSearchCondition";
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 

@@ -44,9 +44,43 @@
 
 
     <div class="summary-grid">
-      <div class=" status-summary-item">
+
+      <!-- 1行目 -->
+      <div class="summary-primary-item">
         <div class="summary-label">状態</div>
-        <div class="summary-value" th:text="${view.status.label}"></div>
+        <div class="summary-value">
+          <th:block th:switch="${view.status.toString()}">
+            <span th:case="'PENDING'"
+              class="badge rounded-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-2"
+              th:text="${view.status.label}">
+              承認待ち
+            </span>
+
+            <span th:case="'APPROVED'"
+              class="badge rounded-pill bg-success-subtle text-success-emphasis border border-success-subtle px-3 py-2"
+              th:text="${view.status.label}">
+              承認済み
+            </span>
+
+            <span th:case="'REJECTED'"
+              class="badge rounded-pill bg-danger-subtle text-danger-emphasis border border-danger-subtle px-3 py-2"
+              th:text="${view.status.label}">
+              否認
+            </span>
+
+            <span th:case="'CANCELLED'"
+              class="badge rounded-pill bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle px-3 py-2"
+              th:text="${view.status.label}">
+              取消
+            </span>
+
+            <span th:case="'COMPLETED'"
+              class="badge rounded-pill bg-primary-subtle text-primary-emphasis border border-primary-subtle px-3 py-2"
+              th:text="${view.status.label}">
+              完了
+            </span>
+          </th:block>
+        </div>
       </div>
 
       <div>
@@ -54,6 +88,7 @@
         <div class="summary-value" th:text="${view.displayNumber}"></div>
       </div>
 
+      <!-- 2行目 -->
       <div>
         <div class="summary-label">申請者</div>
         <div class="summary-value" th:text="${view.requester}"></div>
@@ -67,6 +102,16 @@
       <div>
         <div class="summary-label">申請日</div>
         <div class="summary-value" th:text="${#temporals.format(view.createdAt, 'yyyy/M/d')}"></div>
+      </div>
+
+      <div th:if="${!#lists.isEmpty(view.relatedPos)}">
+        <div class="summary-label">関連PO</div>
+        <div class="summary-value related-po-value">
+          <a th:each="po : ${view.relatedPos}" th:href="@{/purchase-order/{poId}(poId=${po.poId})}"
+            class="badge rounded-pill bg-light text-dark border text-decoration-none me-1 mb-1"
+            th:text="${po.displayNumber}">
+          </a>
+        </div>
       </div>
     </div>
 
@@ -99,14 +144,16 @@
     </table>
 
     <div class="amount-area">
-      <div class="amount-cell">税抜合計</div>
-      <div class="amount-cell" th:text="${#numbers.formatInteger(view.totalAmountExcludingTax, 1, 'COMMA')}"></div>
+      <div class="amount-cell text-right">税抜合計</div>
+      <div class="amount-cell text-right" th:text="${#numbers.formatInteger(view.totalAmountExcludingTax, 1, 'COMMA')}">
+      </div>
 
-      <div class="amount-cell">消費税(10%）</div>
-      <div class="amount-cell" th:text="${#numbers.formatInteger(view.taxAmount, 1, 'COMMA')}"></div>
+      <div class="amount-cell text-right">消費税(10%)</div>
+      <div class="amount-cell text-right" th:text="${#numbers.formatInteger(view.taxAmount, 1, 'COMMA')}"></div>
 
-      <div class="amount-cell">税込合計</div>
-      <div class="amount-cell" th:text="${#numbers.formatInteger(view.totalAmountIncludingTax, 1, 'COMMA')}"></div>
+      <div class="amount-cell text-right">税込合計</div>
+      <div class="amount-cell text-right" th:text="${#numbers.formatInteger(view.totalAmountIncludingTax, 1, 'COMMA')}">
+      </div>
     </div>
 
     <div class="info-area">

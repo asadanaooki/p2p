@@ -74,7 +74,7 @@ class ItemControllerTest {
             mockMvc
             .perform(get("/setting/item").with(csrf())
                     .param(name, value))
-            .andExpect(request().sessionAttribute("lastSearchCondition", notNullValue()))
+            .andExpect(request().sessionAttribute("itemLastSearchCondition", notNullValue()))
             .andExpect(model().attributeExists("view"))
             .andExpect(model().attributeHasNoErrors("form"))
             .andExpect(view().name("admin/item-list"));
@@ -88,7 +88,7 @@ class ItemControllerTest {
             mockMvc
             .perform(get("/setting/item").with(csrf())
                     .param(name, value))
-            .andExpect(request().sessionAttribute("lastSearchCondition", nullValue()))
+            .andExpect(request().sessionAttribute("itemLastSearchCondition", nullValue()))
             .andExpect(model().attributeExists("view"))
             .andExpect(model().attributeHasErrors("form"))
             .andExpect(view().name("admin/item-list"));
@@ -125,7 +125,7 @@ class ItemControllerTest {
             
             mockMvc
             .perform(get("/setting/item").with(csrf()))
-            .andExpect(request().sessionAttribute("lastSearchCondition", notNullValue()))
+            .andExpect(request().sessionAttribute("itemLastSearchCondition", notNullValue()))
             .andExpect(model().attributeExists("view"))
             .andExpect(view().name("admin/item-list"));
         }
@@ -138,11 +138,11 @@ class ItemControllerTest {
             form.setKeyword("app/test");
             form.setPage(3);
             form.setKind(ItemKind.GOODS);
-            mockHttpServletRequest.getSession().setAttribute("lastSearchCondition", form);
+            mockHttpServletRequest.getSession().setAttribute("itemLastSearchCondition", form);
             
             mockMvc
             .perform(get("/setting/item").with(csrf())
-                    .sessionAttr("lastSearchCondition", form)
+                    .sessionAttr("itemLastSearchCondition", form)
                     .param("priceMin", "-1"))
             .andExpect(model().attributeExists("view"))
             .andExpect(view().name("admin/item-list"));

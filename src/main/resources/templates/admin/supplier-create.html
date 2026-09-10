@@ -19,6 +19,13 @@
       </div>
 
       <div class="form-group">
+        <label class="form-label" for="nameKana">フリガナ</label>
+        <input class="form-input" id="nameKana" type="text" th:field="*{nameKana}"
+          th:classappend="${#fields.hasErrors('nameKana')} ? 'input-error' : ''">
+        <p class="field-error" th:if="${#fields.hasErrors('nameKana')}" th:errors="*{nameKana}"></p>
+      </div>
+
+      <div class="form-group">
         <label class="form-label" for="email">メールアドレス</label>
         <input class="form-input" id="email" type="text" th:field="*{email}"
           th:classappend="${#fields.hasErrors('email')} ? 'input-error' : ''">

@@ -1,6 +1,7 @@
 package com.example.p2p.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.groups.Tuple.tuple;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,9 +12,11 @@ import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 
+import com.example.p2p.dto.app.PurchaseRequestDetailLineDto;
 import com.example.p2p.entity.PurchaseRequestDetail;
 import com.example.p2p.entity.PurchaseRequestDetailExample;
 import com.example.p2p.enums.ItemKind;
+import com.example.p2p.enums.VisibilityScope;
 
 @MybatisTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -24,6 +27,21 @@ class PurchaseRequestDetailMapperCustomTest {
 
     @Autowired
     PurchaseRequestDetailMapperCustom purchaseRequestDetailMapperCustom;
+
+    @Test
+    void selectPurchaseRequestDetailLines_orderByLineNo() {
+        updateLineNo("fae1963c-2d5b-450a-8b12-4be480e65ecd", 2);
+        updateLineNo("72a9f12f-bb87-4604-93f6-5d866542b0d8", 3);
+        updateLineNo("ad3e8b17-092a-4c73-acc4-1b799a5f5e97", 1);
+
+        List<PurchaseRequestDetailLineDto> actual = purchaseRequestDetailMapperCustom.selectPurchaseRequestDetailLines(
+                "3c4f62bf-855b-4c35-b19d-eb06acb16896", VisibilityScope.ALL,
+                "36a1d5d9-15b8-45d5-8ae7-607244bbe36e");
+
+        assertThat(actual).extracting(PurchaseRequestDetailLineDto::getUnitPrice,
+                PurchaseRequestDetailLineDto::getQuantity, PurchaseRequestDetailLineDto::getSubtotalExcludingTax)
+            .containsExactly(tuple(16800, 2, 33600), tuple(680, 5, 3400), tuple(980, 3, 2940));
+    }
 
     @Nested
     class BulkUpsert {
@@ -206,6 +224,13 @@ class PurchaseRequestDetailMapperCustomTest {
             assertThat(first.getUpdatedAt()).isNotNull();
         }
 
+    }
+
+    private void updateLineNo(String prDetailId, int lineNo) {
+        PurchaseRequestDetail detail = new PurchaseRequestDetail();
+        detail.setPrDetailId(prDetailId);
+        detail.setLineNo(lineNo);
+        purchaseRequestDetailMapper.updateByPrimaryKeySelective(detail);
     }
 
 }

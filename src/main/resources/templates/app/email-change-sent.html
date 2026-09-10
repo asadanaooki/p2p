@@ -8,8 +8,9 @@
 
 <body>
   <main class="page">
+    <div class="success-message" th:if="${successMessage}" th:text="${successMessage}"></div>
     <h1 class="page-title">メールアドレス変更受付</h1>
-    <p class="message-text">
+    <p class="message-text" th:unless="${successMessage}">
       新しいメールアドレス宛に確認メールを送信しました。<br>
       メールに記載されたリンクをクリックして、メールアドレス変更を完了してください。
     </p>

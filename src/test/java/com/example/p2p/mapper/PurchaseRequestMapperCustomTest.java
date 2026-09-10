@@ -1,8 +1,10 @@
 package com.example.p2p.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -17,7 +19,11 @@ import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 
+import com.example.p2p.dto.app.PurchaseRequestDetailDto;
 import com.example.p2p.dto.app.PurchaseRequestListRowDto;
+import com.example.p2p.dto.app.PurchaseRequestRelatedPoDto;
+import com.example.p2p.entity.PurchaseRequest;
+import com.example.p2p.entity.PurchaseRequestPurchaseOrder;
 import com.example.p2p.entity.Users;
 import com.example.p2p.enums.PurchaseRequestSortBy;
 import com.example.p2p.enums.PurchaseRequestStatus;
@@ -31,6 +37,12 @@ class PurchaseRequestMapperCustomTest {
 
     @Autowired
     PurchaseRequestMapperCustom purchaseRequestMapperCustom;
+
+    @Autowired
+    PurchaseRequestMapper purchaseRequestMapper;
+
+    @Autowired
+    PurchaseRequestPurchaseOrderMapper purchaseRequestPurchaseOrderMapper;
 
     @Autowired
     UsersMapper usersMapper;
@@ -199,6 +211,61 @@ class PurchaseRequestMapperCustomTest {
 
             }
 
+        }
+
+    }
+
+    @Nested
+    class SelectPurchaseRequestDetailHeader {
+
+        String standardPrId = "88bfbcf6-2be6-4d31-8a46-155a7b58ab93";
+
+        String standardRequesterUserId = "169f1e17-619f-45bf-b6dc-8faed08c404c";
+
+        String otherPoId = "3d062413-54a0-40f0-b764-3d1c6e4f5a02";
+
+        String otherUserId = "36a1d5d9-15b8-45d5-8ae7-607244bbe36e";
+
+        @Test
+        void selectPurchaseRequestDetailHeader_all_relatedPos() {
+            PurchaseRequestPurchaseOrder relation = new PurchaseRequestPurchaseOrder();
+            relation.setPrId(standardPrId);
+            relation.setPoId(otherPoId);
+            purchaseRequestPurchaseOrderMapper.insertSelective(relation);
+
+            LocalDateTime createdAt = LocalDateTime.of(2026, 6, 15, 10, 30);
+            PurchaseRequest request = new PurchaseRequest();
+            request.setPrId(standardPrId);
+            request.setCreatedAt(createdAt);
+            purchaseRequestMapper.updateByPrimaryKeySelective(request);
+
+            PurchaseRequest expectedRequest = purchaseRequestMapper.selectByPrimaryKey(standardPrId);
+            Users requester = usersMapper.selectByPrimaryKey(standardRequesterUserId);
+            String expectedRequester = requester.getLastName() + " " + requester.getFirstName();
+
+            PurchaseRequestDetailDto actual = purchaseRequestMapperCustom.selectPurchaseRequestDetailHeader(standardPrId,
+                    VisibilityScope.ALL, otherUserId);
+
+            assertThat(actual.getDisplayNumber()).isEqualTo(expectedRequest.getDisplayNumber());
+            assertThat(actual.getUserId()).isEqualTo(standardRequesterUserId);
+            assertThat(actual.getRequester()).isEqualTo(expectedRequester);
+            assertThat(actual.getDueDate()).isEqualTo(expectedRequest.getDueDate());
+            assertThat(actual.getTotalAmountExcludingTax()).isEqualTo(expectedRequest.getTotalAmountExcludingTax());
+            assertThat(actual.getStatus()).isEqualTo(expectedRequest.getStatus());
+            assertThat(actual.getNote()).isEqualTo(expectedRequest.getNote());
+            assertThat(actual.getCreatedAt()).isEqualTo(createdAt.toLocalDate());
+            assertThat(actual.getRelatedPos())
+                .extracting(PurchaseRequestRelatedPoDto::getPoId, PurchaseRequestRelatedPoDto::getDisplayNumber)
+                .containsExactly(tuple("6f3b9242-2d1e-4e7a-b875-021c3f9a1a01", 1),
+                        tuple("3d062413-54a0-40f0-b764-3d1c6e4f5a02", 2));
+        }
+
+        @Test
+        void selectPurchaseRequestDetailHeader_self() {
+            PurchaseRequestDetailDto actual = purchaseRequestMapperCustom.selectPurchaseRequestDetailHeader(standardPrId,
+                    VisibilityScope.SELF, standardRequesterUserId);
+
+            assertThat(actual.getUserId()).isEqualTo(standardRequesterUserId);
         }
 
     }

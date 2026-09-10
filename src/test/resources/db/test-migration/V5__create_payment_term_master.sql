@@ -1,3 +1,5 @@
+drop table if exists payment_term;
+
 create table payment_term (
     payment_term_id char(36) primary key default gen_random_uuid () ::text,
     name varchar(50) unique not null,

@@ -14,9 +14,10 @@
     join purchase_request pr
       on prd.pr_id = pr.pr_id
     where prd.pr_id = #{prId}
-      <if test="prViewScope == @com.example.p2p.enums.VisibilityScope@SELF">
+      <if test="prViewScope.toString().equals('SELF')">
         and pr.requester_user_id = #{userId}
       </if>
+    order by prd.line_no asc
   </select>
   
   <insert id="bulkInsert">

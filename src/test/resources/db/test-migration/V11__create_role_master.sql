@@ -1,3 +1,5 @@
+drop table if exists role;
+
 create table role (
     role_id char(36) primary key default gen_random_uuid () ::text,
     name varchar(50) not null unique,

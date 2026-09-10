@@ -18,6 +18,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.example.p2p.dto.admin.ItemListItemDto;
 import com.example.p2p.dto.app.CatalogListRowDto;
@@ -51,6 +52,14 @@ class ItemMapperCustomTest {
 
     @Autowired
     PurchaseRequestDetailMapper purchaseRequestDetailMapper;
+
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
+    private void insertSupplier(Supplier supplier) {
+        supplier.setNameKana(supplier.getName());
+        supplierMapper.insertSelective(supplier);
+    }
     
     @BeforeEach void setup() {
         Item item = new Item();
@@ -205,6 +214,10 @@ class ItemMapperCustomTest {
 
                 @BeforeEach
                 void setup() {
+                    jdbcTemplate.update("delete from purchase_order_line_allocation");
+                    jdbcTemplate.update("delete from purchase_order_line");
+                    jdbcTemplate.update("delete from purchase_request_purchase_order");
+                    jdbcTemplate.update("delete from purchase_order");
                     purchaseRequestDetailMapper.deleteByExample(new PurchaseRequestDetailExample());
                     purchaseRequestMapper.deleteByExample(new PurchaseRequestExample());
                     itemMapper.deleteByExample(new ItemExample());
@@ -213,7 +226,7 @@ class ItemMapperCustomTest {
                     Supplier s = new Supplier();
                     s.setSupplierId("3f7c2a91-5d84-4b6f-9a21-7c8e3f1d6b42");
                     s.setName("dummySupplier");
-                    supplierMapper.insertSelective(s);
+                    insertSupplier(s);
 
                     Item i = new Item();
                     i.setItemId("a8d14c7e-2f93-46b1-b5d8-1e7a9c3f4d65");
@@ -227,7 +240,7 @@ class ItemMapperCustomTest {
                     Supplier s = new Supplier();
                     s.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                     s.setName("SUpPlieR2");
-                    supplierMapper.insertSelective(s);
+                    insertSupplier(s);
 
                     Item i = new Item();
                     i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
@@ -251,7 +264,7 @@ class ItemMapperCustomTest {
                     Supplier s = new Supplier();
                     s.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                     s.setName("ｖu５カ％");
-                    supplierMapper.insertSelective(s);
+                    insertSupplier(s);
 
                     Item i = new Item();
                     i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
@@ -275,7 +288,7 @@ class ItemMapperCustomTest {
                     Supplier s = new Supplier();
                     s.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                     s.setName("ｖu５カ％");
-                    supplierMapper.insertSelective(s);
+                    insertSupplier(s);
 
                     Item i = new Item();
                     i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
@@ -299,7 +312,7 @@ class ItemMapperCustomTest {
                     Supplier s = new Supplier();
                     s.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                     s.setName("ｶあモﾃ");
-                    supplierMapper.insertSelective(s);
+                    insertSupplier(s);
 
                     Item i = new Item();
                     i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
@@ -324,7 +337,7 @@ class ItemMapperCustomTest {
                     Supplier s = new Supplier();
                     s.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                     s.setName("abc" + symbol + "de");
-                    supplierMapper.insertSelective(s);
+                    insertSupplier(s);
 
                     Item i = new Item();
                     i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
@@ -348,7 +361,7 @@ class ItemMapperCustomTest {
                     Supplier s = new Supplier();
                     s.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                     s.setName("sup");
-                    supplierMapper.insertSelective(s);
+                    insertSupplier(s);
 
                     Item i = new Item();
                     i.setItemId("d1a7c5e9-3b64-4f28-a9c6-5e2f8b1d7c90");
@@ -372,7 +385,7 @@ class ItemMapperCustomTest {
                     Supplier s = new Supplier();
                     s.setSupplierId("6b2e9f40-8c17-4ad3-91fe-c2d8a5b7e134");
                     s.setName("sup");
-                    supplierMapper.insertSelective(s);
+                    insertSupplier(s);
 
                     Item i = new Item();
                     i.setName("myI");

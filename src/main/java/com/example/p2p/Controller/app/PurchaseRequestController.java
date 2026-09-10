@@ -47,7 +47,7 @@ public class PurchaseRequestController {
 
     private static final Logger logger = LoggerFactory.getLogger(PurchaseRequestController.class);
 
-    private static final String LAST_SEARCH_CONDITION = "lastSearchCondition";
+    private static final String LAST_SEARCH_CONDITION = "purchaseRequestLastSearchCondition";
 
     private PurchaseRequestService purchaseRequestService;
 

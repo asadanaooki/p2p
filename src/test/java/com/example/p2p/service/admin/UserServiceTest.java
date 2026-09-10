@@ -30,6 +30,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
@@ -81,6 +82,9 @@ class UserServiceTest {
     @Autowired
     ApprovalTaskMapper approvalTaskMapper;
 
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
     @Nested
     class SearchItems {
 
@@ -89,6 +93,10 @@ class UserServiceTest {
 
             @BeforeEach
             void setup() {
+                jdbcTemplate.update("delete from purchase_order_line_allocation");
+                jdbcTemplate.update("delete from purchase_order_line");
+                jdbcTemplate.update("delete from purchase_request_purchase_order");
+                jdbcTemplate.update("delete from purchase_order");
                 purchaseRequestDetailMapper.deleteByExample(new PurchaseRequestDetailExample());
                 purchaseRequestMapper.deleteByExample(new PurchaseRequestExample());
                 approvalStepApproverMapper.deleteByExample(new ApprovalStepApproverExample());
@@ -372,6 +380,10 @@ class UserServiceTest {
     @ParameterizedTest
     @CsvSource(value = {"testPass123, true, false", "null, false, true"}, nullValues = "null")
     void getUserDetail_canInvite(String password, boolean isActive, boolean expected) {
+        jdbcTemplate.update("delete from purchase_order_line_allocation");
+        jdbcTemplate.update("delete from purchase_order_line");
+        jdbcTemplate.update("delete from purchase_request_purchase_order");
+        jdbcTemplate.update("delete from purchase_order");
         purchaseRequestDetailMapper.deleteByExample(new PurchaseRequestDetailExample());
         purchaseRequestMapper.deleteByExample(new PurchaseRequestExample());
         approvalStepApproverMapper.deleteByExample(new ApprovalStepApproverExample());

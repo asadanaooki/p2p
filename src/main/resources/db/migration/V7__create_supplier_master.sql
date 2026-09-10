@@ -1,3 +1,5 @@
+drop table if exists supplier;
+
 create table supplier (
     supplier_id char(36) primary key default gen_random_uuid () ::text,
     name varchar(50) not null,

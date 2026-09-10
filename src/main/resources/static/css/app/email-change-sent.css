@@ -12,3 +12,7 @@
   margin: 0;
   margin-left: 12px;
 }
+
+.success-message {
+  white-space: pre-line;
+}

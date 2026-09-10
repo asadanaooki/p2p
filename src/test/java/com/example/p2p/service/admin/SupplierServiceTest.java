@@ -79,6 +79,7 @@ class SupplierServiceTest {
         void update_allFields() {
             SupplierEditForm form = new SupplierEditForm();
             form.setName("test");
+            form.setNameKana("testkana");
             form.setEmail("test@example.com");
             form.setPhoneNumber("0743712224");
             form.setPostalCode("6312214");
@@ -93,6 +94,7 @@ class SupplierServiceTest {
 
             Supplier updated = supplierMapper.selectByPrimaryKey("b4d8e1f7-92ac-4c35-8f21-6a7b8c9d0e1f");
             assertThat(updated.getName()).isEqualTo("test");
+            assertThat(updated.getNameKana()).isEqualTo("testkana");
             assertThat(updated.getEmail()).isEqualTo("test@example.com");
             assertThat(updated.getPhoneNumber()).isEqualTo("0743712224");
             assertThat(updated.getPostalCode()).isEqualTo("6312214");
@@ -108,6 +110,7 @@ class SupplierServiceTest {
         void update_optionalFieldsNotSet() {
             SupplierEditForm form = new SupplierEditForm();
             form.setName("test");
+            form.setNameKana("testkana");
             form.setEmail("test@example.com");
             form.setStatus(false);
 
@@ -115,6 +118,7 @@ class SupplierServiceTest {
 
             Supplier updated = supplierMapper.selectByPrimaryKey("b4d8e1f7-92ac-4c35-8f21-6a7b8c9d0e1f");
             assertThat(updated.getName()).isEqualTo("test");
+            assertThat(updated.getNameKana()).isEqualTo("testkana");
             assertThat(updated.getEmail()).isEqualTo("test@example.com");
             assertThat(updated.getPhoneNumber()).isNull();
             assertThat(updated.getPostalCode()).isNull();
@@ -135,6 +139,7 @@ class SupplierServiceTest {
         void create_allFields() {
             SupplierCreateForm form = new SupplierCreateForm();
             form.setName("test1234");
+            form.setNameKana("test1234kana");
             form.setEmail("test@example.com");
             form.setPhoneNumber("0743712224");
             form.setPostalCode("6312214");
@@ -152,6 +157,7 @@ class SupplierServiceTest {
 
             assertThat(created.getSupplierId()).isNotBlank();
             assertThat(created.getName()).isEqualTo("test1234");
+            assertThat(created.getNameKana()).isEqualTo("test1234kana");
             assertThat(created.getEmail()).isEqualTo("test@example.com");
             assertThat(created.getPhoneNumber()).isEqualTo("0743712224");
             assertThat(created.getPostalCode()).isEqualTo("6312214");
@@ -170,6 +176,7 @@ class SupplierServiceTest {
         void create_onlyRequiredField() {
             SupplierCreateForm form = new SupplierCreateForm();
             form.setName("test1234");
+            form.setNameKana("test1234kana");
 
             supplierService.create(form);
 
@@ -179,6 +186,7 @@ class SupplierServiceTest {
 
             assertThat(created.getSupplierId()).isNotBlank();
             assertThat(created.getName()).isEqualTo("test1234");
+            assertThat(created.getNameKana()).isEqualTo("test1234kana");
             assertThat(created.getEmail()).isNull();
             assertThat(created.getPhoneNumber()).isNull();
             assertThat(created.getPostalCode()).isNull();

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.p2p.mapper.PurchaseOrderDetailMapperCustom">
+  <select id="selectPurchaseOrderDetailLines" resultType="com.example.p2p.dto.app.PurchaseOrderDetailLineDto">
+    select 
+      <!-- 共通 -->
+      pod.line_no,
+      pod.snap_item_name as item_name,
+      pod.line_amount_excluding_tax,
+      
+      <!-- POのみ -->
+      pod.snap_unit_name as unit_name,
+      pod.quantity,
+      pod.snap_unit_price as unit_price
+
+    from purchase_order_line pod
+    join purchase_order po
+      on pod.po_id = po.po_id
+    where pod.po_id = #{poId}
+      <if test="poViewScope.toString().equals('SELF')">
+        and po.purchaser_user_id = #{userId}
+      </if>
+    order by pod.line_no asc
+  </select>
+  
+  <insert id="bulkInsert">
+    insert into purchase_request_detail
+    (
+       pr_id,
+       line_no,
+       item_id,
+       snap_item_name,
+       snap_kind,
+       unit_id,
+       snap_unit_name,
+       supplier_id,
+       snap_supplier_name,
+       quantity,
+       snap_unit_price,
+       subtotal_excluding_tax
+    ) 
+    values
+    <foreach collection="details" item="detail" separator=",">
+     (
+      #{detail.prId},
+      #{detail.lineNo},
+      #{detail.itemId},
+      #{detail.snapItemName},
+      #{detail.snapKind},
+      #{detail.unitId},
+      #{detail.snapUnitName},
+      #{detail.supplierId},
+      #{detail.snapSupplierName},
+      #{detail.quantity},
+      #{detail.snapUnitPrice},
+      #{detail.subtotalExcludingTax}
+      )
+    </foreach>
+  </insert>
+
+  <update id="bulkUpsert">
+    <foreach collection="details" item="detail" separator=";">
+      merge into purchase_request_detail as t
+      using(
+        values(
+          #{detail.prDetailId},
+          #{detail.prId},
+          #{detail.lineNo},
+          #{detail.itemId},
+          #{detail.snapItemName},
+          #{detail.snapKind},
+          #{detail.unitId},
+          #{detail.snapUnitName},
+          #{detail.supplierId},
+          #{detail.snapSupplierName},
+          #{detail.quantity},
+          #{detail.snapUnitPrice},
+          #{detail.subtotalExcludingTax}
+        ) 
+      ) as s
+      (
+        pr_detail_id,
+        pr_id,
+        line_no,
+        item_id,
+        snap_item_name,
+        snap_kind,
+        unit_id,
+        snap_unit_name,
+        supplier_id,
+        snap_supplier_name,
+        quantity,
+        snap_unit_price,
+        subtotal_excluding_tax
+      )
+      
+      on t.pr_detail_id = s.pr_detail_id
+      when matched then
+        update
+        <set> 
+          quantity = #{detail.quantity},
+          line_no = #{detail.lineNo},
+          subtotal_excluding_tax = #{detail.subtotalExcludingTax},
+          
+          <!-- フリー入力 -->
+          <if test="detail.itemId == null">
+            snap_item_name = #{detail.snapItemName},
+            snap_kind = #{detail.snapKind},
+            supplier_id = #{detail.supplierId},
+            snap_supplier_name = #{detail.snapSupplierName},
+            unit_id = #{detail.unitId},
+            snap_unit_name = #{detail.snapUnitName},
+            snap_unit_price = #{detail.snapUnitPrice}
+          </if>
+        </set>
+        
+      when not matched then
+        insert (
+          pr_id,
+          line_no,
+          item_id,
+          snap_item_name,
+          snap_kind,
+          unit_id,
+          snap_unit_name,
+          supplier_id,
+          snap_supplier_name,
+          quantity,
+          snap_unit_price,
+          subtotal_excluding_tax
+        )
+        values (
+          #{detail.prId},
+          #{detail.lineNo},
+          #{detail.itemId},
+          #{detail.snapItemName},
+          #{detail.snapKind},
+          #{detail.unitId},
+          #{detail.snapUnitName},
+          #{detail.supplierId},
+          #{detail.snapSupplierName},
+          #{detail.quantity},
+          #{detail.snapUnitPrice},
+          #{detail.subtotalExcludingTax}
+        )
+    </foreach>
+  </update>
+</mapper>

@@ -54,6 +54,7 @@ class SupplierControllerTest {
     void showSupplierEditForm() throws Exception {
         SupplierDetailDto dto = new SupplierDetailDto();
         dto.setSupplierName("app/test");
+        dto.setSupplierNameKana("apptestkana");
         dto.setEmail("test@example.com");
         dto.setPhoneNumber("0743712224");
         dto.setPostalCode("6312214");
@@ -75,6 +76,7 @@ class SupplierControllerTest {
         SupplierEditForm form = (SupplierEditForm) map.get("form");
 
         assertThat(form.getName()).isEqualTo("app/test");
+        assertThat(form.getNameKana()).isEqualTo("apptestkana");
         assertThat(form.getEmail()).isEqualTo("test@example.com");
         assertThat(form.getPhoneNumber()).isEqualTo("0743712224");
         assertThat(form.getPostalCode()).isEqualTo("6312214");
@@ -98,6 +100,7 @@ class SupplierControllerTest {
 
             MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
             params.add("name", "app/test");
+            params.add("nameKana", "apptestkana");
             params.add("email", "");
             params.add("phoneNumber", "123");
             params.add("postalCode", "0123456");
@@ -111,7 +114,7 @@ class SupplierControllerTest {
             MvcResult res = mockMvc
                 .perform(post("/setting/supplier/{supplierId}/update", "test").with(csrf()).params(params))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/admin/setting/supplier/" + "test"))
+                .andExpect(redirectedUrl("/setting/supplier/" + "test"))
                 .andReturn();
 
             assertThat(res.getFlashMap().get("successMessage")).isEqualTo("編集完了しました");
@@ -137,12 +140,17 @@ class SupplierControllerTest {
             // name
             MultiValueMap<String, String> okmap1 = baseParam();
             okmap1.set("name", "app/test");
+            // nameKana
+            MultiValueMap<String, String> okmapNameKana = baseParam();
+            okmapNameKana.set("nameKana", "apptestkana");
             // email
             MultiValueMap<String, String> okmap2 = baseParam();
             okmap2.set("email", "test@gmail.com");
             return Stream.of(
                     // name
                     Arguments.of(okmap1),
+                    // nameKana
+                    Arguments.of(okmapNameKana),
                     // email
                     Arguments.of(okmap2));
         }
@@ -151,12 +159,17 @@ class SupplierControllerTest {
             // name
             MultiValueMap<String, String> ngmap1 = baseParam();
             ngmap1.set("name", "  ");
+            // nameKana
+            MultiValueMap<String, String> ngmapNameKana = baseParam();
+            ngmapNameKana.set("nameKana", "  ");
             // email
             MultiValueMap<String, String> ngmap2 = baseParam();
             ngmap2.set("email", "sample@");
             return Stream.of(
                     // name
                     Arguments.of(ngmap1),
+                    // nameKana
+                    Arguments.of(ngmapNameKana),
                     // email
                     Arguments.of(ngmap2));
         }
@@ -164,6 +177,7 @@ class SupplierControllerTest {
         private static MultiValueMap<String, String> baseParam() {
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
             params.add("name", "テストサプライヤー");
+            params.add("nameKana", "テストサプライヤー");
             params.add("email", "test@example.com");
             params.add("phoneNumber", "09012345678");
             params.add("postalCode", "1234567");
@@ -188,6 +202,7 @@ class SupplierControllerTest {
 
             MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
             params.add("name", "app/test");
+            params.add("nameKana", "apptestkana");
             params.add("email", "trest@example.com");
             params.add("phoneNumber", "123");
             params.add("postalCode", "0123456");
@@ -226,12 +241,17 @@ class SupplierControllerTest {
             // name
             MultiValueMap<String, String> okmap1 = baseParam();
             okmap1.set("name", "app/test");
+            // nameKana
+            MultiValueMap<String, String> okmapNameKana = baseParam();
+            okmapNameKana.set("nameKana", "apptestkana");
             // email
             MultiValueMap<String, String> okmap2 = baseParam();
             okmap2.set("email", "test@gmail.com");
             return Stream.of(
                     // name
                     Arguments.of(okmap1),
+                    // nameKana
+                    Arguments.of(okmapNameKana),
                     // email
                     Arguments.of(okmap2));
         }
@@ -240,12 +260,17 @@ class SupplierControllerTest {
             // name
             MultiValueMap<String, String> ngmap1 = baseParam();
             ngmap1.set("name", "  ");
+            // nameKana
+            MultiValueMap<String, String> ngmapNameKana = baseParam();
+            ngmapNameKana.set("nameKana", "  ");
             // email
             MultiValueMap<String, String> ngmap2 = baseParam();
             ngmap2.set("email", "sample@");
             return Stream.of(
                     // name
                     Arguments.of(ngmap1),
+                    // nameKana
+                    Arguments.of(ngmapNameKana),
                     // email
                     Arguments.of(ngmap2));
         }
@@ -253,6 +278,7 @@ class SupplierControllerTest {
         private static MultiValueMap<String, String> baseParam() {
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
             params.add("name", "テストサプライヤー");
+            params.add("nameKana", "テストサプライヤー");
             params.add("email", "test@example.com");
             params.add("phoneNumber", "09012345678");
             params.add("postalCode", "1234567");

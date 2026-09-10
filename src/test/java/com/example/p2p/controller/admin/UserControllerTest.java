@@ -55,7 +55,7 @@ class UserControllerTest {
             doReturn(new UserListViewDto()).when(userService).searchUsers(any());
 
             mockMvc.perform(get("/setting/user").with(csrf()))
-                .andExpect(request().sessionAttribute("lastSearchCondition", notNullValue()))
+                .andExpect(request().sessionAttribute("userLastSearchCondition", notNullValue()))
                 .andExpect(model().attributeExists("view"))
                 .andExpect(view().name("admin/user-list"));
         }
@@ -70,7 +70,7 @@ class UserControllerTest {
 
             mockMvc
                 .perform(get("/setting/user").with(csrf())
-                    .sessionAttr("lastSearchCondition", form)
+                    .sessionAttr("userLastSearchCondition", form)
                     .param("roleId", "a".repeat(37)))
                 .andExpect(model().attributeExists("view"))
                 .andExpect(view().name("admin/user-list"));

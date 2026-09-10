@@ -157,7 +157,7 @@
         )}">
       </a>
 
-      <a class="page-link" th:if="${view.currentPage < #lists.size(view.pageNumberList)}" th:href="@{/setting/user(
+      <a class="page-link" th:if="${view.currentPage < view.pageNumberList.get(#lists.size(view.pageNumberList) - 1)}" th:href="@{/setting/user(
           page=${view.currentPage + 1},
           keyword=${form.keyword},
           roleId=${form.roleId},
